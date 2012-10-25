@@ -14,12 +14,12 @@ enum()
 
 	wire()
 	{
-		ln -sfi $SRC $DST >&2
+		rm -rf $DST && ln -s $SRC $DST
 	}
 
 	unwire()
 	{
-		same && rm -rf $DST >&2
+		same && rm -rf $DST
 	}
 
 	symlink()
