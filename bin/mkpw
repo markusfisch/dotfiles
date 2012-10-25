@@ -1,0 +1,11 @@
+#!/bin/bash
+
+C=${CHARSET:-'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!-_'}
+P=
+
+for (( N=${1:-8}; N--; ))
+do
+	P=$P${C:$(( $RANDOM%${#C} )):1}
+done
+
+echo $P

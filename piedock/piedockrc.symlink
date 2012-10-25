@@ -1,0 +1,87 @@
+size 320
+fitts 1
+
+title 1
+font Sans 8.0
+
+#compositing 1
+
+ignore-mask Num_Lock
+
+trigger button 8
+trigger menu selection button-down Mod4 1
+trigger menu window-list button Mod4 4
+trigger menu window-list button Mod4 5
+trigger menu window-list key Mod4 Tab
+trigger menu window-control button-down Mod4 3
+trigger menu windows-of-active key Mod4 less
+
+button 1 ShowNext
+button 2 ShowPrevious
+button 3 Launch
+button 4 SpinNext
+button 5 SpinPrevious
+
+key Escape Disappear
+key Return ShowNext
+key-up Super_L ShowNext
+key Up SpinNext
+key Down SpinPrevious
+key Tab SpinNext
+key less SpinNext
+
+active-indicator "~/.PieDock/active-indicators/gnome-emblem-new-with-shadow.png" right bottom
+missing-icon "~/.PieDock/applications/generic/PixelPressIcons/TheJollyRoger.png"
+
+path "~/.PieDock/applications" "~/.PieDock/actions" "/usr/share/pixmaps"
+
+alias class "Opera" opera
+alias class "Firefox" firefox
+alias class "NEdit" nedit
+alias class "Eclipse" eclipse
+alias class "MPlayer" mplayer
+alias class "VirtualBox" virtualbox
+alias class "jetbrains-idea-ce" intellij
+alias class "xvim" xvim
+alias "urxvt" terminal
+alias "aterm" terminal
+alias "xterm" terminal
+alias "chromium-browser" chrome
+alias "chromium" chrome
+alias "googleearth-bin" googleearth
+alias "Blender" blender
+alias "Blender:Render" blender
+alias "TeamViewer.exe" teamviewer
+
+menu
+	icon terminal urxvt
+	icon nedit
+	icon intellij "/home/markus/opt/idea-IC-117.418/bin/idea.sh"
+	icon opera "opera -geometry 1280x708+39+4"
+	icon firefox "firefox-bin"
+	icon blender "blender-2.60"
+	icon gimp
+	icon inkscape
+	icon virtualbox "VirtualBox"
+	icon hibernate "glxinfo > /dev/null && sudo /usr/sbin/hibernate"
+	*
+end
+
+menu window-list
+	**
+end
+
+menu window-control
+	icon close "piedockutils -c $WID"
+	icon iconify "piedockutils -i $WID"
+	icon fullscreen "piedockutils -f $WID"
+	icon lower "piedockutils -o $WID"
+	icon stick "piedockutils -s $WID"
+	icon shade "piedockutils -d $WID"
+end
+
+menu windows-of-active
+	***
+end
+
+preload menus

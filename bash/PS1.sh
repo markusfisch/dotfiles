@@ -1,0 +1,8 @@
+case $TERM_PROGRAM in
+	Apple_Terminal)
+		PS1='â€º '
+		;;
+	*)
+		PS1='» '
+		;;
+esac

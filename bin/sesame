@@ -1,0 +1,19 @@
+#!/bin/bash
+
+readonly CIPHER=${CIPHER:--bf}
+
+open()
+{
+	stat $1 && openssl enc -d $CIPHER < $1 | tar xjv && rm $1
+}
+
+close()
+{
+	(( $# < 2 )) && return 1
+	local ARCHIVE=$1
+	shift
+	stat $@ && tar cjv $@ | openssl enc -e $CIPHER > $ARCHIVE && rm -rf $@
+}
+
+set -o pipefail
+$@ &>/dev/null

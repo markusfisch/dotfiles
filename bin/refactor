@@ -1,0 +1,30 @@
+#!/bin/bash
+
+readonly PATTERN=$1
+readonly REPLACEMENT=$2
+
+[ "$REPLACEMENT" ] || {
+	echo "usage: ${0##*/} PATTERN REPLACEMENT [DIR]"
+	exit
+}
+
+DIR=$3
+[ "$DIR" ] || DIR=.
+
+# rename directories before files
+for T in d f
+do
+	find $DIR -type $T -name "*$PATTERN*" | while read F
+	do
+		N=${F//$PATTERN/$REPLACEMENT}
+		echo "$F > $N"
+		mv "$F" "$N"
+	done
+done
+
+TMP=".tmp-${0##*/}-$$"
+grep -rl "$PATTERN" "$DIR"/* | while read F
+do
+	echo "replacing pattern in $F"
+	sed -e "s/$PATTERN/$REPLACEMENT/g" < "$F" > $TMP && mv $TMP "$F"
+done

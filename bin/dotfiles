@@ -1,0 +1,106 @@
+#!/bin/bash
+
+readonly DOTFILES=${DOTFILES:-`cd ${0%/*} && echo ${PWD%/*}`}
+
+# Enumerate files
+#
+# @param ... - function to call for every matching file
+enum()
+{
+	same()
+	{
+		diff -rq $SRC $DST
+	}
+
+	wire()
+	{
+		ln -sfi $SRC $DST >&2
+	}
+
+	unwire()
+	{
+		same && rm -rf $DST >&2
+	}
+
+	symlink()
+	{
+		local DST=${SRC##*/}
+		DST=~/.${DST%.*}
+		$@
+	}
+
+	load()
+	{
+		. $SRC
+	}
+
+	sh()
+	{
+		$@
+	}
+
+	local TYPE SRC
+	for SRC in $DOTFILES/*/*.$1
+	do
+		[ -r $SRC ] || continue
+
+		TYPE=${SRC%/*}
+		TYPE=${TYPE##*/}
+		type $TYPE &>/dev/null || continue
+		$@
+	done
+}
+
+# Install/Update dot file repository
+update()
+{
+	[ -d $DOTFILES ] || return 1
+
+	enum symlink unwire &>/dev/null
+
+	type git &>/dev/null &&
+		cd $DOTFILES &&
+		git fetch &&
+		git merge master
+
+	enum symlink wire
+
+	cat << EOF > ~/.bash_aliases
+export DOTFILES=$DOTFILES
+export PATH=\$DOTFILES/bin:\$PATH
+. \$DOTFILES/bin/dotfiles true && setup
+EOF
+}
+
+# Check if all links are up to date
+check()
+{
+	enum symlink same
+}
+
+# Source all shell files within $DOTFILES
+setup()
+{
+	alias()
+	{
+		local C ALIAS=${1%%=*} CMD=${@#*=}
+		for C in $CMD
+		do
+			case $C in
+				sudo|*=*)
+					continue
+					;;
+			esac
+	
+			command -v "$C" &>/dev/null &&
+				command alias $ALIAS="$CMD"
+
+			break
+		done
+	}
+
+	enum sh load
+	unset alias
+}
+
+${@:-check}

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+declare -a WORDS=(
+	'Kaschperkopf'
+	'Haubentaucher'
+	'Aff'
+	'Vollpfosten'
+	'Warmduscher'
+	'Hampelmann'
+	'Mal eben auf dem Dehsgdob Ableger'
+	'H 2 O K O P F'
+	'Pommbaer');
+
+LNG=de say "${WORDS[$RANDOM % ${#WORDS[*]}]}"

@@ -1,0 +1,1297 @@
+#!/usr/bin/env bash
+#
+#   O         ,-
+#  ° o    . -´  '     ,-
+#   °  .´        ` . ´,´
+#     ( °   ))     . (
+#      `-;_    . -´ `.`.
+#          `._'       ´
+#
+# 2006,2011,2012 Markus Fisch <mf@markusfisch.de>
+# Public Domain
+#
+
+##############################################################################
+#### POP interface
+##############################################################################
+
+# Send request and read succeeding response
+#
+# @param ... - request
+pop_request()
+{
+	echo "$@" >&6
+	read <&6
+
+	[[ $REPLY == -ERR* ]] && {
+		echo 'error:' ${REPLY#*-ERR} >&2
+		return 1
+	}
+
+	return 0
+}
+
+# Logout and close connection to pop box
+pop_close()
+{
+	pop_request 'QUIT'
+
+	exec 6<&-
+	exec 6>&-
+}
+
+# Open connection to pop box and login
+pop_open()
+{
+	exec 6<>/dev/tcp/$POP_HOST/$POP_PORT ||
+		return 1
+
+	read <&6
+
+	[[ $REPLY == +OK* ]] &&
+		pop_request "USER $POP_ACCOUNT" &&
+		pop_request "PASS $POP_PASSWORD" &&
+		return 0
+
+	pop_close
+
+	echo 'error: authentification failed!' >&2
+	return 1
+}
+
+##############################################################################
+#### SMTP interface
+##############################################################################
+
+# Send request and read succeeding response
+#
+# @param ... - request
+smtp_request()
+{
+	echo "$@" >&7
+
+	for ((;;))
+	do
+		read <&7
+		[ "${REPLY:3:1}" != "-" ] && break
+	done
+
+	[[ $REPLY == [23]* ]] || {
+		echo "error: $REPLY" >&2
+		return 1
+	}
+
+	return 0
+}
+
+# Close connection to smtp server and log off
+smtp_close()
+{
+	smtp_request 'QUIT'
+
+	exec 7<&-
+	exec 7>&-
+}
+
+# Open connection to smtp server and log on
+smtp_open()
+{
+	exec 7<>/dev/tcp/$SMTP_HOST/$SMTP_PORT ||
+		return 1
+
+	read <&7
+
+	if [ "$SMTP_PASSWORD" ]
+	then
+		smtp_request "EHLO $SMTP_HOST" &&
+			smtp_request 'AUTH LOGIN' &&
+			smtp_request "`echo -n "$SMTP_ACCOUNT" | base64`" &&
+			smtp_request "`echo -n "$SMTP_PASSWORD" | base64`" &&
+			return 0
+	else
+		smtp_request "HELO $SMTP_HOST" && return 0
+	fi
+
+	smtp_close
+	return 1
+}
+
+##############################################################################
+#### Encoding/Decoding
+##############################################################################
+
+# Decode quoted-printable-encoded stream
+decode_quoted_printable()
+{
+	local C=0 EOF=0
+
+	while (( ! EOF ))
+	do
+		read -d '=' || EOF=1
+
+		(( C )) &&
+			if [[ $REPLY == [$'\r'$'\n']* ]]
+			then
+				REPLY=${REPLY:1}
+			else
+				printf \\x"${REPLY:0:2}"
+				REPLY=${REPLY:2}
+			fi
+
+		echo -n "$REPLY"
+		C=1
+	done
+}
+
+# Decode MIME encoded-word syntax
+decode_encoded_word()
+{
+	while read
+	do
+		while [[ $REPLY == *'=?'* ]]
+		do
+			echo -n ${REPLY%%'=?'*}
+			local A=${REPLY#*'?='} V=${REPLY#*'=?'}
+			V=${V%%'?='*}
+			local P=( ${V//\?/ } )
+			if (( ${#P[@]} == 3 ))
+			then
+				case "${P[1]}" in
+					[Qq])
+						echo -n "${P[2]}" | decode_quoted_printable
+						;;
+					[Bb])
+						echo -n "${P[2]}" | base64 -d -i
+						;;
+				esac | iconv -f "${P[0]}" -t utf-8
+			else
+				echo -n $V
+			fi
+
+			REPLY=$A
+		done
+
+		echo -n $REPLY
+	done
+}
+
+which iconv &>/dev/null || iconv() {
+	cat
+}
+
+which base64 &>/dev/null || {
+	echo 'error: base64 not found!' >&2
+	echo 'Either install it or get this fallback implementation:' >&2
+	echo 'https://gist.github.com/2648733' >&2
+	exit 1
+}
+
+##############################################################################
+#### String auxiliaries
+##############################################################################
+
+# Find a key/value pair in the given string and set VALUE accordingly
+#
+# @param 1 - string
+# @param 2 - pattern of key
+value()
+{
+	[[ "$1" == *$2* ]] || {
+		VALUE=
+		return
+	}
+
+	VALUE=${1#*$2}
+
+	local QUOTE="${VALUE:0:1}"
+	case "$QUOTE" in
+		'"'|"'")
+			;;
+		*)
+			QUOTE=
+			;;
+	esac
+
+	if [ "$QUOTE" ]
+	then
+		VALUE=${VALUE:1}
+		VALUE=${VALUE%%$QUOTE*}
+	else
+		VALUE=${VALUE%% *}
+	fi
+}
+
+# Echo eMail address from long format
+#
+# @param 1 - eMail address in long format
+address()
+{
+	local A=$1
+
+	[[ $A == *\<* ]] && {
+		A=${A#*<}
+		A=`echo ${A%>*}`
+	}
+
+	echo $A
+}
+
+##############################################################################
+#### MIME interface
+##############################################################################
+
+# Parse message in MIME format and create a temporary cache directory
+mime_parse()
+{
+	MIME_CACHE=${MIME_CACHE:-`mktemp -d ${BIN}.XXXXXXXXXX`}
+
+	local D=$MIME_CACHE
+	local HEADER=1
+	local LAST=
+	local BOUNDARY=
+
+	while read
+	do
+		REPLY=${REPLY%$CR}
+
+		[ "$REPLY" == '.' ] && break
+
+		# in mime header
+		if [ "$HEADER" ]
+		then
+			# header closed
+			[ "$REPLY" ] || {
+				HEADER=
+
+				[ -r "$D/content-type" ] && {
+					local VALUE
+					value "`< "$D/content-type"`" \
+						'[Bb][Oo][Uu][Nn][Dd][Aa][Rr][Yy]='
+					[ "$VALUE" ] && {
+						BOUNDARY=$VALUE
+						echo "$BOUNDARY" > "$D/boundary"
+					}
+				}
+
+				[ -r "$D/content-disposition" ] && {
+					local VALUE
+					value "`< $D/content-disposition`" \
+						'[Ff][Ii][Ll][Ee][Nn][Aa][Mm][Ee]='
+					[ "$VALUE" ] && {
+						echo "$VALUE" >> "$MIME_CACHE/attachments"
+						echo "$D" >> "$MIME_CACHE/attachments-paths"
+					}
+				}
+
+				continue
+			}
+
+			local F
+			if [[ "$REPLY" == [' '$'\t']* ]]
+			then
+				[ "$LAST" ] || continue
+				F=$LAST
+			else
+				F=${REPLY%%:*}
+				LAST=$F
+			fi
+
+			case "$F" in
+				[Ff]rom|FROM) F='from';;
+				[Tt]o|TO) F='to';;
+				[Ss]ubject|SUBJECT) F='subject';;
+				[Dd]ate|DATE) F='date';;
+				[Cc]ontent-[Tt]ype|CONTENT-TYPE) F='content-type';;
+				[Cc]ontent-[Tt]ransfer-[Ee]ncoding|CONTENT-TRANSFER-ENCODING) F='content-transfer-encoding';;
+				[Cc]ontent-[Dd]isposition|CONTENT-DISPOSITION) F='content-disposition';;
+				*) continue;;
+			esac
+
+			echo ${REPLY#*:} >> "$D/$F"
+			continue
+		elif [ "$BOUNDARY" ] && [ "${REPLY:0:2}" == '--' ]
+		then
+			[[ "$REPLY" == --$BOUNDARY* ]] && {
+				[ "$D" == "$MIME_CACHE" ] || D=${D%/*}
+
+				if [ "$REPLY" == "--$BOUNDARY--" ]
+				then
+					if [ -r "$D/boundary" ]
+					then
+						BOUNDARY=`< "$D/boundary"`
+					else
+						BOUNDARY=
+					fi
+
+					HEADER=
+				else
+					local PART=1
+
+					[ -r "$D/parts" ] && {
+						PART=`< "$D/parts"`
+						(( ++PART ))
+					}
+
+					echo $PART > "$D/parts"
+					D="$D/part-$PART"
+
+					mkdir "$D" || return 1
+
+					HEADER=1
+				fi
+			}
+
+			continue
+		fi
+
+		echo "$REPLY"$CR >> $D/body
+	done
+}
+
+# Free MIME data structure
+mime_free()
+{
+	rm -rf $MIME_CACHE
+	MIME_CACHE=
+}
+
+# Decode possibly encoded message text
+#
+# @param 1 - message directory
+mime_decode_message()
+{
+	local F="$1/body"
+
+	[ -r "$F" ] && {
+		local T=`< "$1/content-type"` CS='cat'
+
+		case "$T" in
+			[Tt][Ee][Xx][Tt]/*)
+				local VALUE
+				value "$T" '[Cc][Hh][Aa][Rr][Ss][Ee][Tt]='
+				[ "$VALUE" ] &&
+					CS="iconv -f $VALUE -t utf-8"
+				;;
+		esac
+
+		case "`< "$1/content-transfer-encoding"`" in
+			*[Qq][Uu][Oo][Tt][Ee][Dd]-[Pp][Rr][Ii][Nn][Tt][Aa][Bb][Ll][Ee]*)
+				decode_quoted_printable
+				;;
+			*[Bb][Aa][Ss][Ee]64*)
+				base64 -d -i
+				;;
+			*)
+				cat
+				;;
+		esac < "$F" | $CS
+	} 2>/dev/null
+}
+
+# Display message with header information
+#
+# @param 1 - message directory
+mime_display_message()
+{
+	# echo headers
+	{
+		local H HEADERS=${HEADERS:-from to subject date attachments}
+		local M=0
+
+		# get length of longest header label
+		{
+			local L
+			for H in $HEADERS
+			do
+				L=${#H}
+				(( L > M )) &&
+					M=$L
+			done
+		}
+
+		local W=$(( ${WIDTH:-80}-(M+2) ))
+		for H in $HEADERS
+		do
+			local F="$1/$H"
+			while ! [ -r "$F" ]
+			do
+				[ "$F" == "$MIME_CACHE/$H" ] && break
+				F="$MIME_CACHE/$H"
+			done
+			[ -r "$F" ] || continue
+
+			local S
+			if [ "$H" == 'attachments' ]
+			then
+				S=`< "$F"`
+				S=${S//$'\n'/ }
+			else
+				S=`decode_encoded_word < "$F"`
+			fi
+
+			local N L=${#S} LABEL=$H
+			for (( N = 0; N < L; N += W ))
+			do
+				printf "%-${M}s %-${W}s\n" "$LABEL" "${S:$N:$W}"
+				LABEL=
+			done
+		done
+
+		[ "$H" ] && echo
+	}
+
+	mime_decode_message "$1"
+}
+
+# Returns true if content type is text
+#
+# @param 1 - file with content type
+mime_content_is_text()
+{
+	case "`< "$1"`" in
+		*[Tt][Ee][Xx][Tt]/[Pp][Ll][Aa][Ii][Nn]*|\
+		*[Tt][Ee][Xx][Tt]/[Hh][Tt][Mm][Ll]*)
+			return 0
+			;;
+	esac 2>/dev/null
+
+	return 1
+}
+
+# Traverse message tree to find message text
+#
+# @param 1 - directory in MIME tree
+# @param 2 - callback function
+mime_find_message()
+{
+	(( $# < 2 )) && return 1
+
+	local TYPE=0
+
+	case "`< "$1/content-type"`" in
+		*[Mm][Uu][Ll][Tt][Ii][Pp][Aa][Rr][Tt]/[Aa][Ll][Tt][Ee][Rr][Nn][Aa][Tt][Ii][Vv][Ee]*)
+			TYPE=1
+			;;
+		*[Mm][Uu][Ll][Tt][Ii][Pp][Aa][Rr][Tt]/[Dd][Ii][Gg][Ee][Ss][Tt]*)
+			TYPE=2
+			;;
+	esac 2>/dev/null
+
+	local N PARTS=`< "$1/parts"`
+
+	for (( N=1; N < PARTS; ++N ))
+	do
+		local P="$1/part-$N"
+
+		[ -r "$P/body" ] &&
+			mime_content_is_text "$P/content-type" && {
+				$2 "$P"
+				(( TYPE == 2 )) || return 0
+			}
+
+		(( TYPE == 2 )) && return 0
+
+		[ -r "$P/parts" ] && mime_find_message "$P" "$2" && return 0
+	done
+
+	return 1
+}
+
+# Echo message from MIME data structure
+#
+# @param 1 - callback function (optional)
+mime_message()
+{
+	local C=${1:-mime_display_message}
+
+	[ -r "$MIME_CACHE/parts" ] &&
+		mime_find_message "$MIME_CACHE" $C &&
+		return
+
+	[ -r "$MIME_CACHE/content-type" ] && {
+		mime_content_is_text "$MIME_CACHE/content-type" ||
+		return
+	}
+
+	$C "$MIME_CACHE"
+}
+
+##############################################################################
+#### Features
+##############################################################################
+
+# Return current mailbox status in STATUS, MAILS and SIZE
+status()
+{
+	pop_open || return 1
+	pop_request 'STAT' || {
+		pop_close
+		return 1
+	}
+
+	read STATUS MAILS SIZE <<EOF
+$REPLY
+EOF
+
+	SIZE=${SIZE%$CR}
+	pop_close
+	return 0
+}
+
+# List message
+#
+# @param ... - list of message indices (optional)
+list_messages()
+{
+	pop_open || return
+	pop_request 'UIDL' && {
+		local IDS T=`mktemp -d ${BIN}.XXXXXXXXXX`
+
+		# read list of unique IDs
+		{
+			local I ID
+			while read I ID <&6
+			do
+				[ "$I" == '.'$CR ] && break
+				ID=${ID%$CR}
+				IDS[$I]=$ID
+				echo $I > "$T/$ID"
+			done
+		}
+
+		# clean cache by removing all messages not in list
+		{
+			local F
+			for F in "$CACHE/*"
+			do
+				[ -r "$T/$F" ] || rm -rf "$CACHE/$F"
+			done
+			rm -rf "$T"
+		}
+
+		# read message details
+		{
+			local LIST_FORMAT=${LIST_FORMAT:-}
+			local M=${#IDS[@]}
+			M=${#M}
+
+			[ "$LIST_FORMAT" ] || {
+				local I=`for (( N=M+2; N--; )) do echo -n ' '; done`
+				LIST_FORMAT="%${M}d: %s\n${I}%s\n${I}%s\n\n"
+			}
+
+			local N ONLY_NEW=0 W=$(( ${WIDTH:-80}-(M+2) ))
+
+			[ "$1" == 'new' ] && {
+				shift
+				ONLY_NEW=1
+			}
+
+			if (( $# > 0 ))
+			then
+				L=$@
+			else
+				L=${!IDS[*]}
+			fi
+
+			for N in $L
+			do
+				local ID=${IDS[$N]}
+				[ "$ID" ] || continue
+
+				local FROM= TO= SUBJECT= DATE= READ=
+				local F="$CACHE/$ID"
+
+				if [ -d "$F" ]
+				then
+					(( ONLY_NEW )) && continue
+				else
+					local RESPONSE
+					pop_request "TOP $N 0" || break
+					mkdir -p "$F" && MIME_CACHE="$F" mime_parse <&6
+				fi
+
+				{
+					FROM=`decode_encoded_word < "$F/from"`
+					DATE=`decode_encoded_word < "$F/date"`
+					SUBJECT=`decode_encoded_word < "$F/subject"`
+				} 2>/dev/null
+
+				printf \
+					"$LIST_FORMAT" \
+					$N \
+					"${FROM:0:$W}" \
+					"${DATE:0:$W}" \
+					"${SUBJECT:0:$W}"
+			done
+		}
+	}
+
+	pop_close
+}
+
+# Retrieve message and set MIME_CACHE
+#
+# @param 1 - index of message to retrieve
+retrieve_message()
+{
+	[ "$1" ] || return
+	pop_open || return
+
+	for ((;;))
+	do
+		pop_request "UIDL $1" || break
+
+		# read ID
+		{
+			local OK I ID
+			read OK I ID <<EOF
+$REPLY
+EOF
+			[ "$ID" ] || break
+			F="$CACHE/${ID%$CR}"
+		}
+
+		[ -r "$F/read" ] || {
+			[ -d "$F" ] && rm -rf $F
+			mkdir -p "$F" || break
+			pop_request "RETR $1" || break
+			MIME_CACHE="$F" mime_parse <&6 || break
+			echo 'true' > "$F/read"
+		}
+
+		pop_close
+		MIME_CACHE=$F
+		return
+	done
+
+	pop_close
+}
+
+# Display a message
+#
+# @param 1 - index of message to show
+read_message()
+{
+	local MIME_CACHE
+	retrieve_message $1 || return
+	mime_message | less
+}
+
+# Extract attachments
+#
+# @param ... - list of message indices
+extract_attachments()
+{
+	local N
+	for N in $@
+	do
+		local MIME_CACHE
+		retrieve_message $N || continue
+
+		[ -r "$MIME_CACHE/attachments" ] && {
+			local F
+			while read F
+			do
+				local D
+				read D < "$MIME_CACHE/attachments-paths"
+  				[ "$D" ] || continue
+				[ -r "$F" ] && {
+					echo "error: $F already exists" >&2
+					continue
+				}
+
+				mime_decode_message "$D" > "$F"
+			done < "$MIME_CACHE/attachments"
+		}
+	done
+}
+
+# File message
+#
+# @param ... - list of message indices
+file_message()
+{
+	(( $# > 0 )) || return
+	pop_open || return
+
+	local N
+	for N in $@
+	do
+		local T=`mktemp ${BIN}.XXXXXXXXXX`
+		pop_request "RETR $N" || break
+		while read <&6
+		do
+			[ "$REPLY" == '.'$CR ] && break
+			echo "$REPLY" >> "$T"
+		done
+		mime_parse < "$T" && {
+			local FROM=`decode_encoded_word < "$MIME_CACHE/from"`
+			local DATE=`decode_encoded_word < "$MIME_CACHE/date"`
+
+			[ "$FROM" ] && mv "$T" "`address "$FROM"`-${DATE//[ ,:+-]/}.mbs"
+		} 2>/dev/null
+		mime_free
+		[ -r "$T" ] && mv -i "$T" 'unknown-message.mbs'
+	done
+
+	pop_close
+}
+
+# Read next new message
+read_next_message()
+{
+	[ -d "$CACHE" ] || {
+		local STATUS MAILS SIZE
+		status || return
+		read_message 1
+		return
+	}
+
+	pop_open || return
+	pop_request 'UIDL' || {
+		pop_close
+		return
+	}
+
+	local NEXT=0 N ID IDS
+	while read N ID <&6
+	do
+		[ "$N" == '.'$CR ] && break
+		IDS[$N]=${ID%$CR}
+	done
+
+	pop_close
+
+	# because UID listing starts with index 1, # is the last element
+	for (( N=${#IDS[@]}; N; --N ))
+	do
+		[ "${IDS[$N]}" ] || continue
+		[ -r "$CACHE/${IDS[$N]}/read" ] || {
+			NEXT=$N
+			break
+		}
+	done
+
+	(( $NEXT )) && read_message $NEXT
+}
+
+# Check for new messages and set NEW_MAILS accordingly
+new_messages()
+{
+	pop_open || return 1
+	pop_request 'UIDL' || {
+		pop_close
+		return 1
+	}
+
+	NEW_MAILS=0
+
+	local N ID
+	while read N ID <&6
+	do
+		[ "$N" == '.'$CR ] && break
+		[ -d "$CACHE/${ID%$CR}" ] || (( ++NEW_MAILS ))
+	done
+
+	pop_close
+	return 0
+}
+
+# Delete messages from server
+#
+# @param ... - list of indices of messages to delete
+delete_messages()
+{
+	pop_open || return
+
+	local N
+	for N in $@
+	do
+		pop_request "DELE $N"
+	done
+
+	pop_close
+}
+
+# Write a message
+#
+# @param ... - recipients (optional)
+write_message()
+{
+	local SUBJECT=${SUBJECT:-}
+	local BODY=${BODY:-}
+	local ATTACHMENTS=${ATTACHMENTS:-}
+
+	if (( $# > 0 ))
+	then
+		local TO
+
+		for TO in "$@"
+		do
+			echo "To         : $TO"
+		done
+	else
+		local TO=
+
+		while [ -z "$TO" ]
+		do
+			read -p 'To         : ' -e TO || return
+		done
+
+		set ${TO//,/ }
+	fi
+
+	if [ "$SUBJECT" ]
+	then
+		echo "Subject    : $SUBJECT"
+	else
+		read -p 'Subject    : ' -e SUBJECT
+	fi
+
+	if [ "$ATTACHMENTS" ]
+	then
+		echo "Attachments: $ATTACHMENTS"
+	else
+		read -p 'Attachments: ' -e ATTACHMENTS
+	fi
+
+	[ "$ATTACHMENTS" ] && {
+		local A=( $ATTACHMENTS ) N L
+		for (( N=0, L=${#A[@]}; N < L; ++N ))
+		do
+			while ! [ -r "${A[$N]}" ]
+			do
+				read -p "${A[$N]} not found, try again: " -e || {
+					A[$N]=
+					break
+				}
+				A[$N]=$REPLY
+			done
+		done
+		ATTACHMENTS=${A[@]}
+	}
+
+	if [ "$BODY" ]
+	then
+		echo "$BODY"
+	else
+		echo 'Message: (CTRL-D to send, CTRL-C to abort)'
+		BODY=`cat`
+	fi
+
+	BODY=$BODY$QUOTE
+
+	smtp_open && {
+		for ((;;))
+		do
+			smtp_request "MAIL FROM: <`address "$SMTP_ACCOUNT"`>" || break
+
+			local R RECIPIENTS=
+			for R in "$@"
+			do
+				smtp_request "RCPT TO: <`address "$R"`>" || {
+					RECIPIENTS=
+					break
+				}
+				RECIPIENTS=$RECIPIENTS${RECIPIENTS:+, }$R
+			done
+
+			[ "$RECIPIENTS" ] || break
+
+			local MESSAGE_ID="`date +%s`.$SMTP_ACCOUNT"
+			local MESSAGE="From: $SMTP_ACCOUNT
+To: $RECIPIENTS
+Subject: $SUBJECT
+Date: `LANG= date +"%a, %d %b %Y %H:%M:%S %z"`
+Message-ID: <$MESSAGE_ID>
+MIME-Version: 1.0"
+
+			BODY=`echo "$BODY" | while read -n 76; do echo "$REPLY"; done`
+
+			[ "$SIGNATURE" ] && BODY=$BODY"
+
+--
+$SIGNATURE"
+
+			if [ "$ATTACHMENTS" ]
+			then
+				local A BOUNDARY=WPMMQGSVFWFEJXWYY43QKXY7DBHQNHKJ
+				MESSAGE="$MESSAGE
+Content-Type: multipart/mixed; boundary=${BOUNDARY}
+
+--${BOUNDARY}
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+
+$BODY
+
+"
+				for A in $ATTACHMENTS
+				do
+					MESSAGE="$MESSAGE
+
+--${BOUNDARY}
+Content-Disposition: inline; filename=\"${A##*/}\"
+Content-Type: application/octet-stream; name=\"${A##*/}\"
+Content-Transfer-Encoding: base64
+
+`base64 < "$A"`
+"
+				done
+
+				MESSAGE="$MESSAGE
+--${BOUNDARY}--
+."
+			else
+				MESSAGE="$MESSAGE
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+
+$BODY
+
+."
+			fi
+
+			smtp_request "DATA" || break
+			smtp_request "$MESSAGE" || break
+			smtp_close && return
+
+			break
+		done
+
+		smtp_close
+	}
+
+	echo 'error: message REJECTED!'
+}
+
+# Quote message
+#
+# @param 1 - directory in MIME tree
+quote_message()
+{
+	mime_decode_message "$1" | while read -n 76
+	do
+		echo "> $REPLY"
+	done
+}
+
+# Answer a message
+#
+# @param ... -  message indices
+answer_message()
+{
+	local N MIME_CACHE FROM SUBJECT QUOTE
+	for N in $@
+	do
+		retrieve_message $N || return 1
+
+		FROM=`decode_encoded_word < "$MIME_CACHE/from"`
+		SUBJECT="Re: `decode_encoded_word < "$MIME_CACHE/subject"`"
+		QUOTE=`mime_message quote_message`
+
+		[ "$FROM" ] || return 1
+		[ "$QUOTE" ] && QUOTE=$'\n'$'\n'$QUOTE
+
+		write_message "$FROM"
+	done
+}
+
+##############################################################################
+#### Configuration
+##############################################################################
+
+# Ask for a setting and put it into $CONFIG
+#
+# @param 1 - name of the setting
+# @param 2 - question phrase
+config_prompt()
+{
+	local REPLY= PRESET= DEFAULT=
+
+	eval "DEFAULT=\$$1"
+
+	[ "$DEFAULT" ] && PRESET=" [$DEFAULT]"
+	[ "$OPTIONAL" ] && PRESET="$PRESET (optional)"
+	[ "$PASSWORD" ] && PASSWORD='-s'
+
+	while [ -z "$REPLY" ]
+	do
+		read $PASSWORD -p "$2$PRESET: " -e || break
+
+		[ "$REPLY" ] || {
+			[ "$OPTIONAL" ] && break
+			[ "$DEFAULT" ] && REPLY="$DEFAULT"
+		}
+	done
+
+	[ "$REPLY" ] || {
+		[ "$OPTIONAL" ] && return
+	}
+
+	[ "$VOLATILE" ] ||
+		echo "$1='$REPLY'" >> "$CONFIG"
+
+	eval "$1=\$REPLY"
+}
+
+# Check configuration
+config_check()
+{
+	[ "$POP_HOST" ] &&
+		[ "$POP_ACCOUNT" ] &&
+		[ "$SMTP_HOST" ] &&
+		[ "$SMTP_ACCOUNT" ] && {
+		# ask for passwords and don't save them
+		[ -z "$POP_PASSWORD" ] && {
+			PASSWORD=true \
+				VOLATILE=true \
+				config_prompt POP_PASSWORD 'POP3 password'
+
+			[ -z "$SMTP_PASSWORD" ] && {
+				PASSWORD=true \
+					VOLATILE=true \
+					OPTIONAL=true \
+					config_prompt SMTP_PASSWORD 'SMTP password'
+
+				# if nothing was given assume POP password
+				[ -z "$SMTP_PASSWORD" ] &&
+					SMTP_PASSWORD=$POP_PASSWORD
+			}
+		}
+		return 0
+	}
+
+	if [ -f "$CONFIG" ]; then
+		cat <<EOF
+Missing settings in $CONFIG!
+Do you like to change/complete your configuration now ([yes]/no)
+EOF
+	else
+		cat <<EOF
+Missing configuration file! This seems to be the first time you are running
+this script. Do you like to set up a configuration now? ([yes]/no)
+EOF
+	fi
+
+	local ANSWER
+	read -e ANSWER
+
+	case "$ANSWER" in
+		[Yy]*|'')
+			# remove any previous configuration
+			[ -f "$CONFIG" ] && rm "$CONFIG"
+			;;
+		*)
+			return 1
+			;;
+	esac
+
+	config_prompt POP_HOST 'POP3 host'
+	config_prompt POP_PORT 'POP3 port'
+	config_prompt POP_ACCOUNT 'POP3 account'
+	config_prompt POP_PASSWORD 'POP3 password'
+	config_prompt SMTP_HOST 'SMTP host'
+	config_prompt SMTP_PORT 'SMTP port'
+	config_prompt SMTP_ACCOUNT 'SMTP account'
+	OPTIONAL=true config_prompt SMTP_PASSWORD 'SMTP password'
+
+	echo 'setup complete.'
+
+	return 0
+}
+
+##############################################################################
+#### Command processing
+##############################################################################
+
+# Expand ranges
+#
+# @param ... - a range of numbers
+expand_range()
+{
+	local STATUS MAILS SIZE
+	status || return
+
+	local N
+	for N in $@
+	do
+		[[ $N == [0-9-]* ]] || continue
+
+		local START=${N%-*}
+		local STOP=${N#*-}
+
+		# intercept 0 and "" (when skipped)
+		if [ -z "$START" ] ||
+			(( ! $START )); then
+			START=1
+		fi
+
+		# intercept 0, "" and check if valid
+		if [ -z "$STOP" ] ||
+			(( ! "$STOP" )) ||
+			(( $STOP > $MAILS )); then
+			STOP=$MAILS
+		fi
+
+		(( $START == $STOP )) && {
+			echo $N
+			continue
+		}
+
+		for (( C=$START; $C <= $STOP; ++C ))
+		do
+			echo $C
+		done
+	done
+}
+
+# Run given command
+#
+# @param 1 - some command
+# @param ... - command arguments
+run()
+{
+	case "$1" in
+		h*|\?*)
+			cat <<EOF
+  p(eek)               peek for new messages
+  s(tatus)             request mailbox status
+  n(ew)                list new messages only
+  t(ail) [N]           list the latest N messages
+  l(ist) [N[-N]]...    list messages
+  r(ead) [N[-N]]...    read message
+  x(tract) N[-N]...    extract attachments of message N
+  f(ile) N[-N]...      file message
+  d(elete) N[-N]...    remove message
+  a(nswer) N           answer message
+  w(rite) ADDRESS      write a message to ADDRESS
+  m(ime) FILE          show a message file in MIME format (e.g. *.mbs)
+  c(lear)              clear screen (or CTRL+L)
+  h(elp)               show this info
+  q(uit)               quit (or CTRL+D)
+EOF
+			;;
+		p*)
+			local NEW_MAILS FORMAT=${FORMAT:-"%d new mails\n"}
+			new_messages &&
+				printf "$FORMAT" $NEW_MAILS
+			;;
+		s*)
+			local STATUS MAILS SIZE FORMAT=${FORMAT:-"%d mails (%d bytes)\n"}
+			status &&
+				printf "$FORMAT" $MAILS $SIZE
+			;;
+		n*)
+			list_messages 'new'
+			;;
+		t*)
+			shift
+			local STATUS MAILS SIZE
+			status && (( MAILS )) && {
+				(( (MAILS -= ${1:-2}) < 1 )) && MAILS=1
+				list_messages `expand_range "${MAILS}-"`
+			}
+			;;
+		l*)
+			shift
+			list_messages `expand_range $@`
+			;;
+		d*)
+			(( $# < 2 )) && return
+			shift
+			# because the following indices will change after
+			# a message is deleted, it is very important to
+			# sort them reversely
+			delete_messages `expand_range $@ | sort -r`
+			;;
+		r*)
+			(( $# < 2 )) && {
+				read_next_message
+				return
+			}
+
+			shift
+			local N
+			for N in `expand_range $@`
+			do
+				read_message $N
+			done
+			;;
+		x*)
+			(( $# < 2 )) && return
+			shift
+			extract_attachments `expand_range $@`
+			;;
+		f*)
+			(( $# < 2 )) && return
+			shift
+			file_message `expand_range $@`
+			;;
+		a*)
+			(( $# < 2 )) && return
+			shift
+			answer_message `expand_range $@`
+			;;
+		w*)
+			shift
+			write_message $@
+			;;
+		m*)
+			(( $# < 2 )) && return
+			shift
+			local N MIME_CACHE
+			for N in $@
+			do
+				[ -r "$N" ] || {
+					echo "error: $N not found!" >&2
+					continue
+				}
+				mime_parse < "$N" && mime_message | less
+				mime_free
+			done
+			;;
+		c*)
+			clear
+			;;
+		q*|exit)
+			exit
+			;;
+		*)
+			[ "$1" ] && {
+				echo "error: unknown command '$1'" >&2
+				return
+			}
+
+			read_next_message
+			;;
+	esac
+}
+
+readonly BIN=${0##*/}
+readonly CONFIG="$HOME/.${BIN}rc"
+readonly CACHE="$HOME/.${BIN}cache"
+readonly CR=$'\r'
+
+# read configuration
+[ -r $CONFIG ] && . $CONFIG
+
+POP_PORT=${POP_PORT:-110}
+SMTP_PORT=${SMTP_PORT:-25}
+
+config_check || exit 1
+
+[ -d "$CACHE" ] || mkdir -p "$CACHE" || exit 1
+
+# process command line arguments
+for CMD in "$@"
+do
+	run $CMD
+done
+
+# interactive operation
+while read -p "$POP_ACCOUNT> " -e CMD
+do
+	run $CMD
+done
