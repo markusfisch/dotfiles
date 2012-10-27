@@ -9,7 +9,7 @@ compress()
 		perl -e 'my $s = join( "", <STDIN> );
 
 # remove comments
-$s =~ s¦/\*[^*]*\*+([^/][^*]*\*+)*/¦¦g;
+$s =~ s|/\*[^*]*\*+([^/][^*]*\*+)*/||g;
 
 # remove newlines and white space at the beginning and at the end of lines
 $s =~ s/[\t ]*[\r\n]+[\t ]*//g;
