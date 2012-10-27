@@ -60,8 +60,7 @@ update()
 
 	type git &>/dev/null &&
 		cd $DOTFILES &&
-		git fetch &&
-		git merge master
+		git pull
 
 	enum symlink wire
 
