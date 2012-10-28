@@ -3,6 +3,6 @@ case $TERM_PROGRAM in
 		PS1='â€º '
 		;;
 	*)
-		PS1='» '
+		PS1='$ '
 		;;
 esac
