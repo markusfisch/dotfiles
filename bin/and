@@ -1,0 +1,110 @@
+#!/bin/bash
+
+# Parse manifest for given pattern
+#
+# @param ... - pattern to find
+manifest()
+{
+	while read
+	do
+		case $REPLY in
+			*$@*)
+				REPLY=${REPLY##*$@}
+				echo ${REPLY%%\"*}
+				break
+				;;
+		esac
+	done < AndroidManifest.xml
+}
+
+# Print package
+package()
+{
+	manifest 'package=\"'
+}
+
+# Print first activity
+activity()
+{
+	manifest 'android:name=\".'
+}
+
+# Clean builds & resources
+clean()
+{
+	rm -rf bin gen out
+}
+
+# Build only
+#
+# @param ... - additional build arguments
+build()
+{
+	ant ${TARGET:-debug} $@
+}
+
+# Build & install
+install()
+{
+	build install
+}
+
+# Uninstall package
+#
+# @param ... - package name (optional)
+uninstall()
+{
+	adb uninstall ${@:-`package`}
+}
+
+# Build, install & run
+run()
+{
+	local PACKAGE
+
+	PACKAGE=`package` &&
+		[ "$PACKAGE" ] &&
+		uninstall $PACKAGE &&
+		install &&
+		adb shell "am start -n ${PACKAGE}/.`activity`"
+}
+
+# Run release, needs key.store & key.name to be set in ant.properties
+release()
+{
+	TARGET=release ${@:-run}
+}
+
+# Run debug
+debug()
+{
+	TARGET=debug ${@:-run}
+}
+
+# Update existing source with build.xml file
+update()
+{
+	android update project --path .
+}
+
+# Create a new android project
+#
+# @param 1 - full namespace with default activity
+# @param 2 - SDK target version (optional)
+create()
+{
+	(( $# < 1 )) && {
+		echo 'error: missing namespace and main activity' >&2
+		return 1
+	}
+
+	android create project \
+		--target ${2:-$ANDROID_DEFAULT_TARGET} \
+		--package ${1%.*} \
+		--activity ${1##*.} \
+		--path .
+}
+
+readonly ANDROID_DEFAULT_TARGET=${ANDROID_DEFAULT_TARGET:-6}
+
+${@:-debug}
