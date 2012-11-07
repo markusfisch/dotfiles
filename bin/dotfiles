@@ -1,7 +1,5 @@
 #!/bin/bash
 
-readonly DOTFILES=${DOTFILES:-`cd ${0%/*} && echo ${PWD%/*}`}
-
 # Enumerate files
 #
 # @param ... - function to call for every matching file
@@ -49,6 +47,23 @@ enum()
 		type $TYPE &>/dev/null || continue
 		$@
 	done
+
+	unset sh
+	unset load
+	unset symlink
+	unset unwire
+	unset wire
+	unset same
+}
+
+# Print invocation
+invocation()
+{
+	cat << EOF
+export DOTFILES=$DOTFILES
+export PATH=\$DOTFILES/bin:\$PATH
+. \$DOTFILES/bin/dotfiles true && setup
+EOF
 }
 
 # Install/Update dot file repository
@@ -64,18 +79,14 @@ update()
 		git merge master origin
 
 	enum symlink wire
-
-	cat << EOF > ~/.bash_aliases
-export DOTFILES=$DOTFILES
-export PATH=\$DOTFILES/bin:\$PATH
-. \$DOTFILES/bin/dotfiles true && setup
-EOF
+	invocation > $RC
 }
 
 # Check if all links are up to date
 check()
 {
 	enum symlink same
+	invocation | diff -q $RC -
 }
 
 # Source all shell files within $DOTFILES
@@ -102,5 +113,8 @@ setup()
 	enum sh load
 	unset alias
 }
+
+readonly DOTFILES=${DOTFILES:-`cd ${0%/*} && echo ${PWD%/*}`}
+readonly RC=${RC:-~/.bash_aliases}
 
 ${@:-check}

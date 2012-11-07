@@ -35,5 +35,4 @@ without further notice. I'm a daredevil. However, you may run
 
 	$ bin/dotfiles
 
-to see a diff for all files that are about to change. And be sure to add
-~/.bash_aliases to that list as well.
+to see a diff for all files that are about to change.
