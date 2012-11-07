@@ -1,19 +1,27 @@
 #!/bin/bash
 
-# Parse manifest for given pattern
+# Parse manifest for given patterns and print first argument value
 #
-# @param ... - pattern to find
+# @param ... - patterns to find in order
 manifest()
 {
 	while read
 	do
-		case $REPLY in
-			*$@*)
-				REPLY=${REPLY##*$@}
-				echo ${REPLY%%\"*}
-				break
-				;;
-		esac
+		for (( ;; ))
+		do
+			case $REPLY in
+				*$1*)
+					REPLY=${REPLY##*$1}
+					shift
+					(( $# > 0 )) && continue
+					REPLY=${REPLY%%\"*}
+					echo ${REPLY#.}
+					return
+					;;
+			esac
+
+			break
+		done
 	done < AndroidManifest.xml
 }
 
@@ -26,7 +34,7 @@ package()
 # Print first activity
 activity()
 {
-	manifest 'android:name=\".'
+	manifest '<activity' 'android:name=\"'
 }
 
 # Clean builds & resources
