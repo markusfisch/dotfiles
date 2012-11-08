@@ -7,8 +7,9 @@
 		do
 			D=${D##*/}
 			A=`echo ${D%.app} | tr A-Z a-z`
+			A=${A// /_}
 
-			type $A || alias $A="open -a ${D}"
+			type $A || alias $A="open -a $D"
 		done &>/dev/null
 	}
 
