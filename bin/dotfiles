@@ -104,7 +104,7 @@ setup()
 			esac
 	
 			command -v "$C" &>/dev/null &&
-				command alias $ALIAS="$CMD"
+				eval "$ALIAS(){ $CMD \"\$@\"; }"
 
 			break
 		done
