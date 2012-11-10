@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# Enumerate files
+# Enumerate all files that sport the given extension and perform given
+# action on them
 #
-# @param ... - function to call for every matching file
+# @param 1 - extension of files to enumerate
+# @param ... - functions to call in order for every matching file
 enum()
 {
 	same()
@@ -17,7 +19,17 @@ enum()
 
 	unwire()
 	{
+		local F
+		for F in $IGNORE
+		do
+			[ $DST == $F ] && return
+		done
 		same && rm -rf $DST
+	}
+
+	include()
+	{
+		. $SRC
 	}
 
 	symlink()
@@ -27,71 +39,88 @@ enum()
 		$@
 	}
 
-	load()
-	{
-		. $SRC
-	}
-
 	sh()
 	{
 		$@
 	}
 
-	local TYPE SRC
-	for SRC in $DOTFILES/*/*.$1
+	local D SRC
+	for D in $DOTFILES/*
 	do
-		[ -r $SRC ] || continue
+		[ -d $D ] || continue
 
-		TYPE=${SRC%/*}
-		TYPE=${TYPE##*/}
-		type $TYPE &>/dev/null || continue
-		$@
+		# process only files whose parent directory is also a valid command
+		type ${D##*/} &>/dev/null || continue
+
+		for SRC in $D/*.$1
+		do
+			[ -r $SRC ] && $@
+		done
 	done
 
 	unset sh
-	unset load
 	unset symlink
+	unset include
 	unset unwire
 	unset wire
 	unset same
 }
 
-# Print invocation
-invocation()
-{
-	cat << EOF
-export DOTFILES=$DOTFILES
-export PATH=\$DOTFILES/bin:\$PATH
-. \$DOTFILES/bin/dotfiles true && setup
-EOF
-}
-
-# Install/Update dot file repository
+# Install/update dot file repository
+#
+# @param 1 - action to perform (optional)
 update()
 {
 	[ -d $DOTFILES ] || return 1
 
-	enum symlink unwire &>/dev/null
+	invocation()
+	{
+		cat << EOF
+export DOTFILES=$DOTFILES
+export PATH=\$DOTFILES/bin:\$PATH
+. dotfiles initialize
+EOF
+	}
 
-	type git &>/dev/null &&
-		cd $DOTFILES &&
-		git fetch &&
-		git merge master origin
+	show()
+	{
+		enum symlink same
+		invocation | diff -q $DOTFILE_INIT -
+	}
 
-	enum symlink wire
-	invocation > $RC
+	pull()
+	{
+		IGNORE=~/.gitconfig enum symlink unwire &>/dev/null
+
+		type git &>/dev/null &&
+			cd $DOTFILES &&
+			git fetch &&
+			git merge origin
+
+		enum symlink wire
+		invocation > $DOTFILE_INIT
+	}
+
+	local DOTFILE_INIT=${DOTFILE_INIT:-~/.bash_aliases}
+
+	${1:-pull}
+
+	unset pull
+	unset show
+	unset invocation
 }
 
-# Check if all links are up to date
+# Print differences between dot file repository and current setup
 check()
 {
-	enum symlink same
-	invocation | diff -q $RC -
+	update show
 }
 
 # Source all shell files within $DOTFILES
-setup()
+initialize()
 {
+	# make sure target command is available and use functions instead of
+	# aliases because functions are more reliable and faster
 	alias()
 	{
 		local C ALIAS=${1%%=*} CMD=${@#*=}
@@ -102,7 +131,7 @@ setup()
 					continue
 					;;
 			esac
-	
+
 			command -v "$C" &>/dev/null &&
 				eval "$ALIAS(){ $CMD \"\$@\"; }"
 
@@ -110,11 +139,10 @@ setup()
 		done
 	}
 
-	enum sh load
+	enum sh include
 	unset alias
 }
 
 readonly DOTFILES=${DOTFILES:-`cd ${0%/*} && echo ${PWD%/*}`}
-readonly RC=${RC:-~/.bash_aliases}
 
 ${@:-check}
