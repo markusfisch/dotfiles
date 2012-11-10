@@ -132,6 +132,10 @@ initialize()
 					;;
 			esac
 
+			# remove existing alias since functions can't overwrite aliases
+			command alias $ALIAS &>/dev/null &&
+				unalias $ALIAS
+
 			command -v "$C" &>/dev/null &&
 				eval "$ALIAS(){ $CMD \"\$@\"; }"
 
