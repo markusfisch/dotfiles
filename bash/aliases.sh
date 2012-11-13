@@ -4,6 +4,7 @@ alias ll='ls -l'
 alias la='ls -la'
 alias lf='printf "%s\n"'
 alias h='history'
+alias hc='history -c'
 alias j='jobs'
 
 # Media playback/viewing
