@@ -1,35 +1,39 @@
 set nocompatible
 set ts=4
 set sw=4
+set ls=0
 set nowrap
+set noruler
 set linebreak
 set autoindent
 set pastetoggle=<F2>
 
 syntax on
+
+" Color scheme settings
 set background=dark
 let g:solarized_termcolors=256
 color solarized
 
-au BufNewFile,BufRead *.hx setf haxe
-au BufNewFile,BufRead *.md setf markdown
+" Always move cursor up/down by visual line instead of text line
+noremap j gj
+noremap k gk
 
-""" FocusMode
+au FileType html,tex,markdown set wrap
+
+au BufNewFile,BufRead *.hx setf haxe
+au BufNewFile,BufRead * setf markdown
+
+" Focus mode
 function! ToggleFocusMode()
-  if (&foldcolumn != 12)
-    set laststatus=0
-    set numberwidth=10
-    set foldcolumn=12
-    set noruler
-    hi FoldColumn ctermbg=none
-    hi LineNr ctermfg=0 ctermbg=none
-    hi NonText ctermfg=0
-  else
-    set laststatus=2
-    set numberwidth=4
-    set foldcolumn=0
-    set ruler
-    execute 'colorscheme ' . g:colors_name
-  endif
+	if( &foldcolumn != 12 )
+		set foldcolumn=12
+		set columns=80
+		set display=lastline
+		hi FoldColumn ctermbg=none
+		hi NonText ctermfg=0
+	else
+		set foldcolumn=0
+	endif
 endfunc
 nnoremap <F1> :call ToggleFocusMode()
