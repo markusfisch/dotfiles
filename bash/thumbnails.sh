@@ -8,7 +8,7 @@
 		for V in "$THUMBNAIL_VIEWER" \
 			'feh -Ftr --magick-timeout -1'
 		do
-			type ${V%% *} &>/dev/null || continue
+			type "${V%% *}" &>/dev/null || continue
 
 			export THUMBNAIL_VIEWER=$V
 			t()
