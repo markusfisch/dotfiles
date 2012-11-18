@@ -14,7 +14,8 @@
 		then
 			vim --servername xvim --remote ${F[*]} &>/dev/null
 		else
-			xterm -class xvim -e "vim --servername xvim ${F[*]}" &>/dev/null &
+			# set up your styles in .Xdefaults for xvim*
+			xterm -name xvim -class xvim -e "vim --servername xvim ${F[*]}" &>/dev/null &
 		fi
 	}
 } &>/dev/null

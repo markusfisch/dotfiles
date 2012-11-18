@@ -8,8 +8,8 @@ urxvt*foreground: white
 urxvt*background: black
 urxvt*termName: xterm-256color
 
-xterm*background: #1c1c1c
-xterm*foreground: white
+xterm*background: black
+xterm*foreground: gray
 xterm*highlightColor: #323232
 xterm*faceName: Luxi Mono
 xterm*faceSize: 8
@@ -28,7 +28,7 @@ xvim*scrollBar: false
 xvim*colorBDMode: false
 xvim*visualBell: false
 xvim*saveLines: 512
-xvim*termName: xvim-256color
+xvim*termName: xterm-256color
 xvim*geometry: 80x40
 
 nedit*fontList: -*-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-*
