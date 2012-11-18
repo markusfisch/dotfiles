@@ -28,7 +28,8 @@ au BufNewFile,BufRead * setf markdown
 function! ToggleFocusMode()
 	if( &foldcolumn != 12 )
 		set foldcolumn=12
-		set columns=80
+		set columns=60
+		set wrap
 		set display=lastline
 		hi FoldColumn ctermbg=none
 		hi NonText ctermfg=0
