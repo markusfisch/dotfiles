@@ -137,7 +137,7 @@ initialize()
 				unalias $ALIAS
 
 			command -v "$C" &>/dev/null &&
-				eval "$ALIAS(){ $CMD \"\$@\"; }"
+				eval "$ALIAS(){ command $CMD \"\$@\"; }"
 
 			break
 		done
