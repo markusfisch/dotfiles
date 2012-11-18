@@ -9,7 +9,9 @@
 			A=`echo ${D%.app} | tr A-Z a-z`
 			A=${A// /_}
 
-			type $A || alias $A="open -a $D"
+			# use functions instead of aliases here because aliases
+			# aren't available in smart_open() for some reason
+			type $A || eval "$A(){ open -a $D \"\$@\"; }"
 		done &>/dev/null
 	}
 

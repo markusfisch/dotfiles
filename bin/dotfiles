@@ -119,8 +119,7 @@ check()
 # Source all shell files within $DOTFILES
 initialize()
 {
-	# make sure target command is available and use functions instead of
-	# aliases because functions are more reliable and faster
+	# make sure target command is available
 	alias()
 	{
 		local C ALIAS=${1%%=*} CMD=${@#*=}
@@ -132,12 +131,8 @@ initialize()
 					;;
 			esac
 
-			# remove existing alias since functions can't overwrite aliases
-			command alias $ALIAS &>/dev/null &&
-				unalias $ALIAS
-
 			command -v "$C" &>/dev/null &&
-				eval "$ALIAS(){ command $CMD \"\$@\"; }"
+				command alias $ALIAS="$CMD"
 
 			break
 		done
