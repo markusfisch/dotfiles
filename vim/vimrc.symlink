@@ -9,6 +9,7 @@ set autoindent
 set pastetoggle=<F2>
 
 syntax on
+match errorMsg /[^\t]\zs\t\+/
 
 " Color scheme settings
 set background=dark
