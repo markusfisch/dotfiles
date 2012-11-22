@@ -9,7 +9,10 @@ set autoindent
 set pastetoggle=<F2>
 
 syntax on
+
+" Highlight tabs within lines and trailing whitespace
 match errorMsg /[^\t]\zs\t\+/
+match errorMsg /\s\+$/
 
 " Color scheme settings
 set background=dark
