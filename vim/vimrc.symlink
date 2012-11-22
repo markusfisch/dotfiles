@@ -23,12 +23,26 @@ color solarized
 noremap j gj
 noremap k gk
 
+" Use tab to complete words
+" (from http://vim.wikia.com/wiki/Autocomplete_with_TAB_when_typing_words)
+function! TabComplete()
+	if col( '.' ) > 1 && strpart( getline( '.' ), col( '.' )-2, 3 ) =~ '^\w'
+		return "\<C-N>"
+	else
+		return "\<Tab>"
+	endif
+endfunction
+:inoremap <Tab> <C-R>=TabComplete()<CR>
+
+" Set wrapping for certain file types
 au FileType html,tex,markdown set wrap
 
+" Complete file types and set a default
 au BufNewFile,BufRead *.hx setf haxe
 au BufNewFile,BufRead * setf markdown
 
 " Focus mode
+" (originally from https://gist.github.com/1824502)
 function! ToggleFocusMode()
 	if( &foldcolumn != 12 )
 		set foldcolumn=12
@@ -41,4 +55,4 @@ function! ToggleFocusMode()
 		set foldcolumn=0
 	endif
 endfunc
-nnoremap <F1> :call ToggleFocusMode()
+nnoremap <F1> :call ToggleFocusMode()<CR>
