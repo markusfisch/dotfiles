@@ -65,6 +65,14 @@ uninstall()
 	adb uninstall ${@:-`package`}
 }
 
+# Start given activity 
+#
+# @param 1 - full package and activity name (optional)
+start()
+{
+	adb shell "am start -n ${1:-`package`/.`activity`}"
+}
+
 # Build, install & run
 run()
 {
@@ -74,7 +82,7 @@ run()
 		[ "$PACKAGE" ] &&
 		uninstall $PACKAGE &&
 		install &&
-		adb shell "am start -n ${PACKAGE}/.`activity`"
+		start "${PACKAGE}/.`activity`"
 }
 
 # Run release, needs key.store & key.name to be set in ant.properties
