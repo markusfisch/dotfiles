@@ -65,7 +65,16 @@ uninstall()
 	adb uninstall ${@:-`package`}
 }
 
-# Start given activity 
+# Stress test given application
+#
+# @param 1 - number of pseudo-random events to send (optional)
+# @param 2 - package name of application to test (optional)
+stress()
+{
+	adb shell monkey -p ${2:-`package`} -v ${1:-1000}
+}
+
+# Start given activity
 #
 # @param 1 - full package and activity name (optional)
 start()
