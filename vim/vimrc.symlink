@@ -10,9 +10,9 @@ set pastetoggle=<F2>
 
 syntax on
 
-" Highlight tabs within lines and trailing whitespace
-match errorMsg /[^\t]\zs\t\+/
-match errorMsg /\s\+$/
+" Highlight tabs within lines, trailing whitespace and spaces at the
+" beginning of lines
+match errorMsg /[^\t]\zs\t\+\|\s\+$\|\^\t\*[ ]\+\t\*/
 
 " Color scheme settings
 set background=dark
