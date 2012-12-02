@@ -109,6 +109,16 @@ debug()
 # Update existing source with build.xml file
 update()
 {
+	[ -r project.properties ] ||
+		if [ -r default.properties ]
+		then
+			mv default.properties project.properties
+		else
+			cat <<EOF > project.properties
+target=`android list target -c | grep android | tail -n 1`
+EOF
+		fi
+
 	android update project --path .
 }
 
