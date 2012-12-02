@@ -6,13 +6,15 @@ set nowrap
 set noruler
 set linebreak
 set autoindent
-set pastetoggle=<F2>
 
 syntax on
 
-" Highlight tabs within lines and trailing whitespace
-match errorMsg /[^\t]\zs\t\+/
-match errorMsg /\s\+$/
+" Highlight tabs within lines, trailing whitespace and spaces at the
+" beginning of lines
+match errorMsg /[^\t]\zs\t\+\|\s\+$\|^[\t]*[ ]\+[\t]*/
+
+" Remove trailing white space before saving
+autocmd BufWritePre * :%s/\s\+$//e
 
 " Color scheme settings
 set background=dark
@@ -22,6 +24,15 @@ color solarized
 " Always move cursor up/down by visual line instead of text line
 noremap j gj
 noremap k gk
+
+" Set wrapping for certain file types
+au FileType html,tex,markdown set wrap
+
+" Additional file types
+au BufNewFile,BufRead *.hx setf haxe
+
+" Set a default file type
+au BufNewFile,BufRead * setf markdown
 
 " Use tab to complete words
 " (from http://vim.wikia.com/wiki/Autocomplete_with_TAB_when_typing_words)
@@ -33,13 +44,6 @@ function! TabComplete()
 	endif
 endfunction
 :inoremap <Tab> <C-R>=TabComplete()<CR>
-
-" Set wrapping for certain file types
-au FileType html,tex,markdown set wrap
-
-" Complete file types and set a default
-au BufNewFile,BufRead *.hx setf haxe
-au BufNewFile,BufRead * setf markdown
 
 " Focus mode
 " (originally from https://gist.github.com/1824502)
@@ -56,3 +60,9 @@ function! ToggleFocusMode()
 	endif
 endfunc
 nnoremap <F1> :call ToggleFocusMode()<CR>
+
+" Disable auto-indent for pasting from clipboard
+set pastetoggle=<F2>
+
+" Convert spaces to tabs
+nnoremap <F3> :%s/    /\t/g<CR>
