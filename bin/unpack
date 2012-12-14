@@ -1,14 +1,18 @@
 #!/bin/bash
 
-# Unpack archive safely (means always in its own directory)
+# Unpack archive safely (means always in its own directory
 #
 # @param 1 - name and path of archive to extract
 function unpack()
 {
 	local ARCHIVE=$1
 	local TMP=.unpack-$USER-$$
-	local EXTRACT=${ARCHIVE##*/}
-	EXTRACT=${EXTRACT%%.*}
+	local NAME=${ARCHIVE##*/}
+	NAME=${NAME%%.*}
+
+	# make path absolute
+	[ ${ARCHIVE:0:1} != '/' ] &&
+		ARCHIVE="$PWD/$ARCHIVE"
 
 	[ -f "$ARCHIVE" ] || {
 		echo "error: $ARCHIVE not found" >&2
@@ -17,12 +21,12 @@ function unpack()
 
 	# ensure destination directory does not exist yet
 	{
-		local BASE=$EXTRACT
+		local BASE=$NAME
 		local N=2
 
-		while [ -d "$EXTRACT" ]
+		while [ -d "$NAME" ]
 		do
-			EXTRACT="$BASE-$N"
+			NAME="$BASE-$N"
 			(( ++N ))
 		done
 	}
@@ -36,8 +40,6 @@ function unpack()
 		echo 'error: cannot change into temporary directory' >&2
 		return 1
 	}
-
-	ARCHIVE="../$ARCHIVE"
 
 	case "$ARCHIVE" in
 		*.[Zz][Ii][Pp])
@@ -86,7 +88,7 @@ function unpack()
 			mv -i $TMP/* .
 			rmdir $TMP
 		else
-			mv -i $TMP $EXTRACT
+			mv -i $TMP "$NAME"
 		fi
 	}
 

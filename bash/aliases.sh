@@ -1,4 +1,5 @@
 # Shortcuts for built-in's
+alias ..='cd ..'
 alias l='ls'
 alias ll='ls -l'
 alias la='ls -la'
