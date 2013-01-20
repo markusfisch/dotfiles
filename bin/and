@@ -106,6 +106,16 @@ debug()
 	TARGET=debug ${@:-run}
 }
 
+# Fire up given (or last used) emulator
+#
+# @param 1 - name of avd (optional)
+emu()
+{
+	local AVD=${1:-`ls -t ~/.android/avd/ | head -n 1`}
+
+	emulator -avd ${AVD%.avd} &
+}
+
 # Update existing source with build.xml file
 update()
 {
