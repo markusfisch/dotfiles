@@ -59,6 +59,7 @@ menu
 	icon intellij "/home/markus/opt/idea-IC-117.418/bin/idea.sh"
 	icon opera "opera -geometry 1280x708+39+4"
 	icon firefox "firefox-bin"
+	icon google-chrome
 	icon blender "blender-2.60"
 	icon gimp
 	icon inkscape
