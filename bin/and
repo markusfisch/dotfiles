@@ -116,6 +116,12 @@ emu()
 	emulator -avd ${AVD%.avd} &
 }
 
+# Echo latest target identifier
+latest_target()
+{
+	android list target -c | grep android | tail -n 1
+}
+
 # Update existing source with build.xml file
 update()
 {
@@ -125,7 +131,7 @@ update()
 			mv default.properties project.properties
 		else
 			cat <<EOF > project.properties
-target=`android list target -c | grep android | tail -n 1`
+target=`latest_target`
 EOF
 		fi
 
@@ -138,18 +144,17 @@ EOF
 # @param 2 - SDK target version (optional)
 create()
 {
-	(( $# < 1 )) && {
-		echo 'error: missing namespace and main activity' >&2
+	if (( $# < 1 )) || [[ $1 != *.* ]] || [[ ${1##*.} != [A-Z]* ]]
+	then
+		echo 'error: missing namespace and/or main activity' >&2
 		return 1
-	}
+	fi
 
 	android create project \
-		--target ${2:-$ANDROID_DEFAULT_TARGET} \
+		--target ${2:-`latest_target`} \
 		--package ${1%.*} \
 		--activity ${1##*.} \
 		--path .
 }
-
-readonly ANDROID_DEFAULT_TARGET=${ANDROID_DEFAULT_TARGET:-6}
 
 ${@:-debug}
