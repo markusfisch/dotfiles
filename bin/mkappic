@@ -1,0 +1,79 @@
+#!/bin/bash
+
+(( $# < 1 )) && {
+	echo "usage: ${0##*/} IMAGE [PLATFORM...]"
+	exit 1
+}
+
+resample()
+{
+	local ICON SIZE D
+
+	while read ICON SIZE
+	do
+		[[ $ICON == */* ]] && {
+			D=${ICON%/*}
+			[ -d "$D" ] || mkdir -p "$D" || return 1
+		}
+
+		convert $1 -thumbnail ${SIZE}x -strip $ICON
+	done
+}
+
+android()
+{
+	resample $1 <<EOF
+${OUTDIR}res/drawable-hdpi/ic_launcher.png 72
+${OUTDIR}res/drawable-ldpi/ic_launcher.png 36
+${OUTDIR}res/drawable-mdpi/ic_launcher.png 48
+${OUTDIR}res/drawable-xhdpi/ic_launcher.png 96
+EOF
+}
+
+ios()
+{
+	resample $1 <<EOF
+${OUTDIR}Icon-72.png 72
+${OUTDIR}Icon-72@2.png 144
+${OUTDIR}Icon-Small-50.png 50
+${OUTDIR}Icon-Small.png 29
+${OUTDIR}Icon-Small@2.png 58
+${OUTDIR}Icon-Small@2.png 58
+${OUTDIR}Icon.png 57
+${OUTDIR}Icon@2.png 114
+EOF
+}
+
+moai()
+{
+	resample $1 <<EOF
+${OUTDIR}android/res/icon-hdpi.png 72
+${OUTDIR}android/res/icon-ldpi.png 36
+${OUTDIR}android/res/icon-mdpi.png 48
+${OUTDIR}android/res/icon-xhdpi.png 96
+EOF
+
+	OUTDIR=${OUTDIR}'ios' ios $1
+}
+
+promotion()
+{
+	resample $1 <<EOF
+${OUTDIR}icon-1024px.png 1024
+EOF
+}
+
+process()
+{
+	local OUTDIR=${OUTDIR:-./} IMAGE=$1 PLATFORM=
+	local BASE=$OUTDIR
+	shift
+
+	for PLATFORM in ${@:-android}
+	do
+		(( $# > 1 )) && OUTDIR=${BASE}${PLATFORM}/
+		$PLATFORM $IMAGE
+	done
+}
+
+process $@
