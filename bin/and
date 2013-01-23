@@ -106,12 +106,41 @@ debug()
 	TARGET=debug ${@:-run}
 }
 
+# List available emulators or only the requested one
+#
+# @param 1 - index of emulator to echo (optional)
+emus()
+{
+	local AVD N=1 I=${1:-0}
+
+	for AVD in ~/.android/avd/*.ini
+	do
+		[ -r "$AVD" ] || continue
+
+		AVD=${AVD##*/}
+		AVD=${AVD%.ini}
+
+		if (( !I ))
+		then
+			printf "%3d %s\n" $N $AVD
+		elif (( N == I ))
+		then
+			echo $AVD
+			break
+		fi
+
+		(( ++N ))
+	done
+}
+
 # Fire up given (or last used) emulator
 #
-# @param 1 - name of avd (optional)
+# @param 1 - name or number of avd (optional)
 emu()
 {
 	local AVD=${1:-`ls -t ~/.android/avd/ | head -n 1`}
+
+	(( $AVD > 0 )) &>/dev/null && AVD=`emus $AVD`
 
 	emulator -avd ${AVD%.avd} &
 }
