@@ -24,9 +24,10 @@ tweet()
 		echo ${D%%\"*}
 	}
 
-	local CF URL='https://mobile.twitter.com' T=${@:-`cat`}
+	local CF URL='https://mobile.twitter.com' T=${@:-`cat`} RV=1
 	CF=`mktemp -t .${0##*/}-XXXX` || return 1
 
+	# oauth requests
 	{
 		request \
 			-d "authenticity_token=`token $URL/session/new`&username=$TWITTER_USERNAME&password=$TWITTER_PASSWORD" \
@@ -36,10 +37,13 @@ tweet()
 			$URL &&
 		request \
 			-d "authenticity_token=`token $URL/account`" \
-			$URL/session/destroy
+			$URL/session/destroy &&
+		RV=0
 	} &>/dev/null
 
 	rm -f $CF
+
+	return $RV
 }
 
 # Cut some text into smaller snippets without cutting words in half
@@ -80,16 +84,24 @@ smart_tweet()
 {
 	snip "${@:-`cat`}" | while read
 	do
-		tweet $REPLY
+		tweet $REPLY || break
 	done
 }
 
 if [ "$BASH_SOURCE" == "$0" ]
 then
+	# Get string form stdin
+	#
+	# @param 1 - prompt
+	gets()
+	{
+		read -p $1': ' && echo $REPLY
+	}
+
 	if (( $# ))
 	then
-		TWITTER_USERNAME=${TWITTER_USERNAME:-`read -p 'user: ' && echo $REPLY`}
-		TWITTER_PASSWORD=${TWITTER_PASSWORD:-`read -p 'pass: ' && echo $REPLY`}
+		TWITTER_USERNAME=${TWITTER_USERNAME:-`gets 'user'`}
+		TWITTER_PASSWORD=${TWITTER_PASSWORD:-`gets 'pass'`}
 	fi
 
 	if [ -z $TWITTER_USERNAME ] || [ -z $TWITTER_PASSWORD ]
