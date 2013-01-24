@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Generate a bar chart by reading value/label pairs from stdin
-barchart()
+bars()
 {
 	local VALUES=() LABELS=()
-	local MAX=0 LMAX=0
-	local N=0 V L
+	local MAX=0 VMAX=0 LMAX=0
+	local N=0 V L LN
 
 	while read V L
 	do
@@ -15,15 +15,18 @@ barchart()
 		LABELS[$N]=$L
 		(( ++N ))
 
-		local LEN=${#L}
-		(( LEN > LMAX )) && LMAX=$LEN
+		LN=${#L}
+		(( LN > LMAX )) && LMAX=$LN
+
+		LN=${#V}
+		(( LN > VMAX )) && VMAX=$LN
 	done
 
 	local COUNT=$N COLUMNS=${COLUMNS:-`tput cols`}
 	local HC=$(( COLUMNS/2 ))
 	(( LMAX > HC )) && LMAX=$(( HC ))
 
-	local BMAX=$(( COLUMNS-LMAX-6 )) BARCHAR=${BARCHAR:-#} BAR=
+	local BMAX=$(( COLUMNS-LMAX-VMAX-2 )) BARCHAR=${BARCHAR:-#} BAR=
 	while (( ${#BAR} < BMAX ))
 	do
 		BAR=$BAR${BAR:-$BARCHAR}
@@ -37,11 +40,11 @@ barchart()
 		L=${LABELS[$N]}
 		(( ${#L} > LMAX )) && L='...'${L:$(( ${#L}-LMAX+3 ))}
 
-		printf "%4d %${LMAX}s %s\n" \
+		printf "%${VMAX}d %${LMAX}s %s\n" \
 			"${VALUES[$N]}" \
 			"$L" \
 			"${BAR:0:$(( (${VALUES[$N]}<<8)/F ))}"
 	done
 }
 
-[ "$BASH_SOURCE" == "$0" ] && barchart
+[ "$BASH_SOURCE" == "$0" ] && bars
