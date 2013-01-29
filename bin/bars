@@ -4,7 +4,7 @@
 bars()
 {
 	local VALUES=() LABELS=()
-	local MAX=0 VMAX=0 LMAX=0
+	local EOL=${EOL:-$'\n'} MAX=${BARMAX:-0} VMAX=0 LMAX=0
 	local N=0 V L LN
 
 	while read V L
@@ -32,7 +32,7 @@ bars()
 		BAR=$BAR${BAR:-$BARCHAR}
 	done
 
-	local F=$(( (MAX<<8)/BMAX ))
+	local F=$(( (MAX<<16)/BMAX ))
 	(( F < 1 )) && F=1
 
 	for (( N = 0; N < COUNT; ++N ))
@@ -40,10 +40,10 @@ bars()
 		L=${LABELS[$N]}
 		(( ${#L} > LMAX )) && L='...'${L:$(( ${#L}-LMAX+3 ))}
 
-		printf "%${VMAX}d %${LMAX}s %s\n" \
+		printf "%${VMAX}d %${LMAX}s %s$EOL" \
 			"${VALUES[$N]}" \
 			"$L" \
-			"${BAR:0:$(( (${VALUES[$N]}<<8)/F ))}"
+			"${BAR:0:$(( (${VALUES[$N]}<<16)/F ))}"
 	done
 }
 
