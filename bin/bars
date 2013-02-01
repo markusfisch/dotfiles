@@ -26,7 +26,16 @@ bars()
 	local HC=$(( COLUMNS/2 ))
 	(( LMAX > HC )) && LMAX=$(( HC ))
 
-	local BMAX=$(( COLUMNS-LMAX-VMAX-2 )) BARCHAR=${BARCHAR:-#} BAR=
+	local BARCHAR=${BARCHAR:-#}
+	local BMAX=$(( COLUMNS-LMAX-VMAX-1 ))
+	local BAR= LSPACE=
+
+	if (( LMAX > 0 ))
+	then
+		(( --BMAX ))
+		LSPACE=' '
+	fi
+
 	while (( ${#BAR} < BMAX ))
 	do
 		BAR=$BAR${BAR:-$BARCHAR}
@@ -40,9 +49,10 @@ bars()
 		L=${LABELS[$N]}
 		(( ${#L} > LMAX )) && L='...'${L:$(( ${#L}-LMAX+3 ))}
 
-		printf "%${VMAX}d %${LMAX}s %s$EOL" \
+		printf "%${VMAX}d %${LMAX}s%s%s$EOL" \
 			"${VALUES[$N]}" \
 			"$L" \
+			"$LSPACE" \
 			"${BAR:0:$(( (${VALUES[$N]}<<16)/F ))}"
 	done
 }
