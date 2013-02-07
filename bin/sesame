@@ -1,19 +1,35 @@
 #!/bin/bash
 
-readonly CIPHER=${CIPHER:--bf}
-
+# Open crypted archive(s)
+#
+# @param ... - archive file(s) to open
 open()
 {
-	stat $1 && openssl enc -d $CIPHER < $1 | tar xjv && rm $1
+	local A
+	for A in "$@"
+	do
+		stat "$A" && \
+			openssl enc -d $CIPHER < "$A" | \
+			tar xjv && \
+			rm "$A"
+	done
 }
 
+# Close files into a crypted archive
+#
+# @param 1 - archive file
+# @param ... - files to close into the archive
 close()
 {
 	(( $# < 2 )) && return 1
-	local ARCHIVE=$1
+	local A=$1
 	shift
-	stat $@ && tar cjv $@ | openssl enc -e $CIPHER > $ARCHIVE && rm -rf $@
+	stat "$@" && \
+		tar cjv "$@" | \
+		openssl enc -e $CIPHER > $A && \
+		${UNLINK:-rm -rf} "$@"
 }
 
+readonly CIPHER=${CIPHER:-'-bf'}
 set -o pipefail
 $@ &>/dev/null
