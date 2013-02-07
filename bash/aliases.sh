@@ -33,7 +33,3 @@ alias sag='LNG=de say'
 
 # Android
 alias ad='adb devices'
-
-# Sesame
-alias so='sesame open .thumbs'
-alias sc='sesame close .thumbs .loot'
