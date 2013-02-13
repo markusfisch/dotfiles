@@ -24,6 +24,7 @@ alias whois='whois -h whois-servers.net'
 # Map BSD/OSX to GNU names
 alias md5sum='md5'
 alias sha1sum='shasum'
+alias ldd='otool -L'
 
 # Text conversion
 alias utf2iso='iconv -f utf8 -t iso_8859-15'
