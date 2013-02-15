@@ -1,30 +1,39 @@
 #!/bin/bash
 
-readonly PATTERN=$1
-readonly REPLACEMENT=$2
+# Refactor
+#
+# @param 1 - case-sensitive pattern to replace
+# @param 2 - replacement
+refactor()
+{
+	local PATTERN=$1
+	local REPLACEMENT=$2
+	local DIR=${3:-.}
 
-[ "$REPLACEMENT" ] || {
-	echo "usage: ${0##*/} PATTERN REPLACEMENT [DIR]"
-	exit
+	(( $# < 2 )) && {
+		echo "usage: ${0##*/} PATTERN REPLACEMENT [DIR]"
+		return 1
+	}
+
+	# rename directories before files
+	local T F N
+	for T in d f
+	do
+		find $DIR -type $T -name "*$PATTERN*" | while read F
+		do
+			N=${F//$PATTERN/$REPLACEMENT}
+			echo "renaming $F to $N"
+			mv "$F" "$N"
+		done
+	done
+
+	local TMP=".tmp-${0##*/}-$$"
+	grep -rl "$PATTERN" "$DIR"/* | while read F
+	do
+		echo "replacing pattern in $F"
+		sed -e "s/$PATTERN/$REPLACEMENT/g" < "$F" > $TMP &&
+			cat $TMP > "$F"
+	done
 }
 
-DIR=$3
-[ "$DIR" ] || DIR=.
-
-# rename directories before files
-for T in d f
-do
-	find $DIR -type $T -name "*$PATTERN*" | while read F
-	do
-		N=${F//$PATTERN/$REPLACEMENT}
-		echo "$F > $N"
-		mv "$F" "$N"
-	done
-done
-
-TMP=".tmp-${0##*/}-$$"
-grep -rl "$PATTERN" "$DIR"/* | while read F
-do
-	echo "replacing pattern in $F"
-	sed -e "s/$PATTERN/$REPLACEMENT/g" < "$F" > $TMP && mv $TMP "$F"
-done
+[ "$BASH_SOURCE" == "$0" ] && refactor "$@"
