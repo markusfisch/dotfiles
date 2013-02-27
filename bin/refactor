@@ -33,6 +33,7 @@ refactor()
 		echo "replacing pattern in $F"
 		sed -e "s/$PATTERN/$REPLACEMENT/g" < "$F" > $TMP &&
 			cat $TMP > "$F"
+		rm -f $TMP
 	done
 }
 
