@@ -173,16 +173,23 @@ EOF
 # @param 2 - SDK target version (optional)
 create()
 {
-	if (( $# < 1 )) || [[ $1 != *.* ]] || [[ ${1##*.} != [A-Z]* ]]
+	local P=$1 A=
+
+	if (( $# < 1 )) || [[ $P != *.* ]]
 	then
 		echo 'error: missing namespace and/or main activity' >&2
 		return 1
 	fi
 
+	A=${P##*.}
+	P=${P%.*}
+
+	[[ $A != [A-Z]* ]] && A=MainActivity
+
 	android create project \
 		--target ${2:-`latest_target`} \
-		--package ${1%.*} \
-		--activity ${1##*.} \
+		--package $P \
+		--activity $A \
 		--path .
 }
 
