@@ -74,7 +74,7 @@ smart_open()
 	${1:-editor_for} "$2"
 	shift
 	case $CMD in
-		vim|nano|emacs|view|less|more|mplayer|mpg123)
+		vi|vim|nano|emacs|view|less|more|mplayer|mpg123)
 			$CMD "$@"
 			;;
 		*)
@@ -86,3 +86,16 @@ smart_open()
 # shortcuts
 alias e='smart_open editor_for'
 alias v='smart_open viewer_for'
+
+# Open all source files in current or given directory
+#
+# @param ... - source directories (optional)
+ec()
+{
+	local D F FT=${FT:-'\.(c|cpp|m|h|java)$'}
+	for D in "${@:-.}"
+	do
+		F=$F${F:+ }`find "$D" -type f | grep -E "$FT"`
+	done
+	e $F
+}
