@@ -9,6 +9,9 @@ set autoindent
 
 syntax on
 
+" Begin syntax synchronisation always from the start
+autocmd BufEnter * :syntax sync fromstart
+
 " Highlight tabs within lines, trailing whitespace and spaces at the
 " beginning of lines
 match errorMsg /[^\t]\zs\t\+\|\s\+$\|^[\t]*[ ]\+[\t]*[^\*]/
