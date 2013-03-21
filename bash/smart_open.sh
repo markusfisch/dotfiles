@@ -95,7 +95,8 @@ ec()
 	local D F FT=${FT:-'\.(c|cpp|m|h|java)$'}
 	for D in "${@:-.}"
 	do
-		F=$F${F:+ }`find "$D" -type f | grep -E "$FT"`
+		[ -d $D ] && D=`find "${D%/}" -type f | grep -E "$FT"`
+		F=$F${F:+ }$D
 	done
 	e $F
 }
