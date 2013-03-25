@@ -33,6 +33,7 @@ au FileType html,tex,markdown set wrap
 
 " Additional file types
 au BufNewFile,BufRead *.hx setf haxe
+au BufNewFile,BufRead *.frag,*.vert,*.fp,*.vp,*.fs,*.vs,*.glsl setf glsl
 
 " Set a default file type
 au BufNewFile,BufRead * setf markdown
