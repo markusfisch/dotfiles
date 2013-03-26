@@ -2,11 +2,11 @@
 
 # Open crypted archive(s)
 #
-# @param ... - archive file(s) to open
+# @param ... - archive file(s) to open (optional)
 open()
 {
 	local A
-	for A in "$@"
+	for A in "${@:-$ARCHIVE}"
 	do
 		stat "$A" && \
 			openssl enc -d $CIPHER < "$A" | \
@@ -17,19 +17,20 @@ open()
 
 # Close files into a crypted archive
 #
-# @param 1 - archive file
-# @param ... - files to close into the archive
+# @param 1 - archive file (optional)
+# @param ... - files to close into the archive (optional)
 close()
 {
-	(( $# < 2 )) && return 1
-	local A=$1
+	local A=${1:-$ARCHIVE}
 	shift
-	stat "$@" && \
-		tar cjv "$@" | \
+	local F=${@:-'.sesame'}
+	stat $F && \
+		tar cjv $F | \
 		openssl enc -e $CIPHER > $A && \
-		${UNLINK:-rm -rf} "$@"
+		${UNLINK:-rm -rf} $F
 }
 
+readonly ARCHIVE=${ARCHIVE:-'.mnt'}
 readonly CIPHER=${CIPHER:-'-bf'}
 set -o pipefail
 $@ &>/dev/null
