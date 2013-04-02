@@ -19,8 +19,8 @@ xterm*visualBell: false
 xterm*saveLines: 512
 xterm*termName: xterm-256color
 
-xvim*background: #1c1c1c
-xvim*foreground: white
+xvim*background: black
+xvim*foreground: gray
 xvim*highlightColor: #323232
 xvim*faceName: Luxi Mono
 xvim*faceSize: 8

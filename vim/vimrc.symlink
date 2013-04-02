@@ -22,7 +22,7 @@ autocmd BufWritePre * :%s/\s\+$//e
 " Color scheme settings
 set background=dark
 let g:solarized_termcolors=256
-color solarized
+color sahara
 
 " Always move cursor up/down by visual line instead of text line
 noremap j gj
@@ -33,7 +33,7 @@ au FileType html,tex,markdown set wrap
 
 " Additional file types
 au BufNewFile,BufRead *.hx setf haxe
-au BufNewFile,BufRead *.frag,*.vert,*.fp,*.vp,*.fs,*.vs,*.glsl setf glsl
+au BufNewFile,BufRead *.glsl set filetype=glsl
 
 " Set a default file type
 au BufNewFile,BufRead * setf markdown
