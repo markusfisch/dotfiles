@@ -151,7 +151,7 @@ latest_target()
 	android list target -c | grep android | tail -n 1
 }
 
-# Update existing source with build.xml file
+# Update existing sources with build.xml file
 update()
 {
 	[ -r project.properties ] ||
@@ -173,7 +173,7 @@ EOF
 # @param 2 - SDK target version (optional)
 create()
 {
-	local P=$1 A=
+	local P=${1%.} A=
 
 	if (( $# < 1 )) || [[ $P != *.* ]]
 	then
@@ -182,9 +182,13 @@ create()
 	fi
 
 	A=${P##*.}
-	P=${P%.*}
 
-	[[ $A != [A-Z]* ]] && A=MainActivity
+	if [[ $A != [A-Z]* ]]
+	then
+		A=MainActivity
+	else
+		P=${P%.*}
+	fi
 
 	android create project \
 		--target ${2:-`latest_target`} \
