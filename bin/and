@@ -89,7 +89,6 @@ run()
 
 	PACKAGE=`package` &&
 		[ "$PACKAGE" ] &&
-		uninstall $PACKAGE &&
 		install &&
 		start "${PACKAGE}/.`activity`"
 }
