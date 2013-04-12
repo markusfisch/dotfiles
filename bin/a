@@ -144,6 +144,14 @@ emu()
 	emulator -avd ${AVD%.avd} &
 }
 
+# Print memory info
+#
+# @param 1 - package name (optional)
+mem()
+{
+	adb shell dumpsys meminfo ${1:-`package`}
+}
+
 # Echo latest target identifier
 latest_target()
 {
