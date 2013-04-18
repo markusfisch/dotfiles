@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Show files in a tree structure
+#
+# @param 1 - root directory
+# @param 2 - level
+tree()
+{
+  local F N=0 L='|'
+
+	for F in "${1:-.}"/*
+	do
+		[ -r $F ] && (( ++N ))
+	done
+
+	for F in "${1:-.}"/*
+	do
+		[ -r $F ] || continue
+
+		(( --N == 0 )) && L=' '
+
+		echo "${2}+- ${F##*/}"
+
+		if [ -d "$F" ]
+		then
+			tree "$F" "$2$L  "
+		fi
+	done
+}
+
+[ "$0" == "$BASH_SOURCE" ] && tree "$@"
