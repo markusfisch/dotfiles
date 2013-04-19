@@ -6,7 +6,7 @@
 # @param 2 - level
 tree()
 {
-  local F N=0 L='|'
+	local F N=0 L='|'
 
 	for F in "${1:-.}"/*
 	do
