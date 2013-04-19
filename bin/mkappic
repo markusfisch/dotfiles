@@ -1,10 +1,8 @@
 #!/bin/bash
 
-(( $# < 1 )) && {
-	echo "usage: ${0##*/} IMAGE [PLATFORM...]"
-	exit 1
-}
-
+# Resample given image file
+#
+# @param 1 - image file
 resample()
 {
 	local ICON SIZE D
@@ -20,16 +18,113 @@ resample()
 	done
 }
 
-android()
+# Android action icons
+#
+# @param 1 - image file
+android_action_bar()
 {
+	local F=${1##*/}
+
 	resample $1 <<EOF
-${OUTDIR}res/drawable-hdpi/ic_launcher.png 72
-${OUTDIR}res/drawable-ldpi/ic_launcher.png 36
-${OUTDIR}res/drawable-mdpi/ic_launcher.png 48
-${OUTDIR}res/drawable-xhdpi/ic_launcher.png 96
+${OUTDIR}res/drawable-ldpi/$F 18
+${OUTDIR}res/drawable-mdpi/$F 24
+${OUTDIR}res/drawable-hdpi/$F 36
+${OUTDIR}res/drawable-xhdpi/$F 48
 EOF
 }
 
+# Android status icons
+#
+# @param 1 - image file
+android_status_bar()
+{
+	local F=${1##*/}
+
+	resample $1 <<EOF
+${OUTDIR}res/drawable-ldpi/$F 16
+${OUTDIR}res/drawable-mdpi/$F 22
+${OUTDIR}res/drawable-hdpi/$F 33
+${OUTDIR}res/drawable-xhdpi/$F 44
+EOF
+}
+
+# Android tab icons
+#
+# @param 1 - image file
+android_tab()
+{
+	local F=${1##*/}
+
+	resample $1 <<EOF
+${OUTDIR}res/drawable-ldpi/$F 22
+${OUTDIR}res/drawable-mdpi/$F 28
+${OUTDIR}res/drawable-hdpi/$F 42
+${OUTDIR}res/drawable-xhdpi/$F 56
+EOF
+}
+
+# Android dialog icons
+#
+# @param 1 - image file
+android_dialog()
+{
+	local F=${1##*/}
+
+	resample $1 <<EOF
+${OUTDIR}res/drawable-ldpi/$F 24
+${OUTDIR}res/drawable-mdpi/$F 32
+${OUTDIR}res/drawable-hdpi/$F 48
+${OUTDIR}res/drawable-xhdpi/$F 64
+EOF
+}
+
+# Android contextual icons
+#
+# @param 1 - image file
+android_contextual()
+{
+	local F=${1##*/}
+
+	resample $1 <<EOF
+${OUTDIR}res/drawable-ldpi/$F 9
+${OUTDIR}res/drawable-mdpi/$F 12
+${OUTDIR}res/drawable-hdpi/$F 18
+${OUTDIR}res/drawable-xhdpi/$F 24
+EOF
+}
+
+# Android menu icons
+#
+# @param 1 - image file
+android_menu()
+{
+	local F=${1##*/}
+
+	resample $1 <<EOF
+${OUTDIR}res/drawable-ldpi/$F 24
+${OUTDIR}res/drawable-mdpi/$F 32
+${OUTDIR}res/drawable-hdpi/$F 48
+${OUTDIR}res/drawable-xhdpi/$F 64
+EOF
+}
+
+# Android icons
+#
+# @param 1 - image file
+android()
+{
+	resample $1 <<EOF
+${OUTDIR}res/drawable-ldpi/ic_launcher.png 36
+${OUTDIR}res/drawable-mdpi/ic_launcher.png 48
+${OUTDIR}res/drawable-hdpi/ic_launcher.png 72
+${OUTDIR}res/drawable-xhdpi/ic_launcher.png 96
+${OUTDIR}res/drawable-xxhdpi/ic_launcher.png 144
+EOF
+}
+
+# iOS icons
+#
+# @param 1 - image file
 ios()
 {
 	resample $1 <<EOF
@@ -44,9 +139,12 @@ ${OUTDIR}Icon@2.png 114
 EOF
 }
 
+# OS X icons
+#
+# @param 1 - image file
 osx()
 {
-    resample $1 <<EOF
+	resample $1 <<EOF
 ${OUTDIR}icon_16x16.png 16
 ${OUTDIR}icon_16x16@2x.png 32
 ${OUTDIR}icon_32x32.png 32
@@ -60,18 +158,25 @@ ${OUTDIR}icon_512x512@2x.png 1024
 EOF
 }
 
+# Moai icons
+#
+# @param 1 - image file
 moai()
 {
 	resample $1 <<EOF
-${OUTDIR}android/res/icon-hdpi.png 72
 ${OUTDIR}android/res/icon-ldpi.png 36
 ${OUTDIR}android/res/icon-mdpi.png 48
+${OUTDIR}android/res/icon-hdpi.png 72
 ${OUTDIR}android/res/icon-xhdpi.png 96
+${OUTDIR}android/res/icon-xxhdpi.png 144
 EOF
 
 	OUTDIR=${OUTDIR}'ios' ios $1
 }
 
+# Android promotion image
+#
+# @param 1 - image file
 promotion()
 {
 	resample $1 <<EOF
@@ -79,6 +184,10 @@ ${OUTDIR}icon-1024px.png 1024
 EOF
 }
 
+# Process image for platforms
+#
+# @param 1 - image file
+# @param ... - platforms to process image for (optional)
 process()
 {
 	local OUTDIR=${OUTDIR:-./} IMAGE=$1 PLATFORM=
@@ -92,4 +201,31 @@ process()
 	done
 }
 
-process $@
+# Echo available platforms
+platforms()
+{
+	local L
+
+	while read L
+	do
+		case "$L" in
+			resample*|process*|platforms*)
+				;;
+			*\(\))
+				echo '    '${L%(*}
+				;;
+		esac
+	done < $0
+}
+
+(( $# < 1 )) && {
+	cat <<EOF
+usage: ${0##*/} IMAGE [PLATFORM...]
+
+Available platform options are:
+`platforms`
+EOF
+	exit 1
+}
+
+[ "$0" == "$BASH_SOURCE" ] && process $@
