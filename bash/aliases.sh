@@ -34,3 +34,4 @@ alias sag='LNG=de say'
 
 # Android
 alias ad='adb devices'
+alias a='and'

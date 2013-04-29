@@ -152,6 +152,36 @@ mem()
 	adb shell dumpsys meminfo ${1:-`package`}
 }
 
+# Dump services of given package
+#
+# @param 1 - package name (optional)
+services()
+{
+	local PACKAGE=${1:-`package`} FOUND=
+
+	adb shell dumpsys activity services | while read
+	do
+		if [ $FOUND ]
+		then
+			case "$REPLY" in
+				'  *'*)
+					FOUND=
+					;;
+				*)
+					echo "$REPLY"
+					;;
+			esac
+		else
+			case "$REPLY" in
+				*$PACKAGE*)
+					echo "$REPLY"
+					FOUND=1
+					;;
+			esac
+		fi
+	done
+}
+
 # Echo latest target identifier
 latest_target()
 {
