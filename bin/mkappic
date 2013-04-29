@@ -33,7 +33,7 @@ ${OUTDIR}res/drawable-xhdpi/$F 48
 EOF
 }
 
-# Android status icons
+# Android status bar/notification icons for Android 2.0 and lower
 #
 # @param 1 - image file
 android_status_bar()
@@ -41,10 +41,36 @@ android_status_bar()
 	local F=${1##*/}
 
 	resample $1 <<EOF
-${OUTDIR}res/drawable-ldpi/$F 16
-${OUTDIR}res/drawable-mdpi/$F 22
-${OUTDIR}res/drawable-hdpi/$F 33
-${OUTDIR}res/drawable-xhdpi/$F 44
+${OUTDIR}res/drawable-hdpi/$F 25
+EOF
+}
+
+# Android status bar/notification icons for Android 2.3
+#
+# @param 1 - image file
+android_status_bar_v9()
+{
+	local F=${1##*/}
+
+	resample $1 <<EOF
+${OUTDIR}res/drawable-ldpi-v9/$F 12
+${OUTDIR}res/drawable-mdpi-v9/$F 16
+${OUTDIR}res/drawable-hdpi-v9/$F 24
+EOF
+}
+
+# Android status bar/notification icons for Android 3 and higher
+#
+# @param 1 - image file
+android_status_bar_v11()
+{
+	local F=${1##*/}
+
+	resample $1 <<EOF
+${OUTDIR}res/drawable-ldpi-v11/$F 18
+${OUTDIR}res/drawable-mdpi-v11/$F 24
+${OUTDIR}res/drawable-hdpi-v11/$F 36
+${OUTDIR}res/drawable-xhdpi-v11/$F 48
 EOF
 }
 
@@ -108,17 +134,49 @@ ${OUTDIR}res/drawable-xhdpi/$F 64
 EOF
 }
 
+# Android figure images
+#
+# @param 1 - image file
+android_figure()
+{
+	local F=${1##*/}
+
+	resample $1 <<EOF
+${OUTDIR}res/drawable-ldpi/$F 72
+${OUTDIR}res/drawable-mdpi/$F 96
+${OUTDIR}res/drawable-hdpi/$F 144
+${OUTDIR}res/drawable-xhdpi/$F 192
+EOF
+}
+
+# Android launcher icons
+#
+# @param 1 - image file
+android_launcher()
+{
+	local F=${1##*/}
+
+	resample $1 <<EOF
+${OUTDIR}res/drawable-ldpi/$F 36
+${OUTDIR}res/drawable-mdpi/$F 48
+${OUTDIR}res/drawable-hdpi/$F 72
+${OUTDIR}res/drawable-xhdpi/$F 96
+${OUTDIR}res/drawable-xxhdpi/$F 144
+EOF
+}
+
 # Android icons
 #
 # @param 1 - image file
 android()
 {
+	local F=${1##*/}
+
 	resample $1 <<EOF
-${OUTDIR}res/drawable-ldpi/ic_launcher.png 36
-${OUTDIR}res/drawable-mdpi/ic_launcher.png 48
-${OUTDIR}res/drawable-hdpi/ic_launcher.png 72
-${OUTDIR}res/drawable-xhdpi/ic_launcher.png 96
-${OUTDIR}res/drawable-xxhdpi/ic_launcher.png 144
+${OUTDIR}res/drawable-ldpi/$F 36
+${OUTDIR}res/drawable-mdpi/$F 48
+${OUTDIR}res/drawable-hdpi/$F 72
+${OUTDIR}res/drawable-xhdpi/$F 96
 EOF
 }
 
