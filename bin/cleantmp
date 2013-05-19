@@ -1,9 +1,12 @@
-# Remove temporary waste files
+#!/bin/bash
+
+# Remove temporary/waste files
 #
 # @param 1 - root path (optional)
-cleanup()
+clean_temp()
 {
 	local F R=${1:-.}
+
 	for F in \
 		'.DS_Store' \
 		'Thumbs.db' \
@@ -12,3 +15,5 @@ cleanup()
 		find "$R" -name "$F" -exec rm {} \;
 	done
 }
+
+[ "$BASH_SOURCE" == "$0" ] && clean_temp
