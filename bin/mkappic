@@ -14,7 +14,9 @@ resample()
 			[ -d "$D" ] || mkdir -p "$D" || return 1
 		}
 
-		convert $1 -thumbnail ${SIZE}x -strip $ICON
+		[[ $SIZE == *x* ]] || SIZE='x'$SIZE
+
+		convert $1 -thumbnail $SIZE -strip $ICON
 	done
 }
 
@@ -41,7 +43,7 @@ android_status_bar()
 	local F=${1##*/}
 
 	resample $1 <<EOF
-${OUTDIR}res/drawable-hdpi/$F 25
+${OUTDIR}res/drawable/$F 25
 EOF
 }
 
@@ -53,9 +55,9 @@ android_status_bar_v9()
 	local F=${1##*/}
 
 	resample $1 <<EOF
-${OUTDIR}res/drawable-ldpi-v9/$F 12
-${OUTDIR}res/drawable-mdpi-v9/$F 16
-${OUTDIR}res/drawable-hdpi-v9/$F 24
+${OUTDIR}res/drawable-ldpi-v9/$F 12x19
+${OUTDIR}res/drawable-mdpi-v9/$F 16x25
+${OUTDIR}res/drawable-hdpi-v9/$F 24x38
 EOF
 }
 
