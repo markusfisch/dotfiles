@@ -56,14 +56,13 @@ alias "TeamViewer.exe" teamviewer
 menu
 	icon terminal urxvt
 	icon nedit
-	icon intellij "/home/markus/opt/idea-IC-117.418/bin/idea.sh"
-	icon opera "opera -geometry 1280x708+39+4"
+	icon opera
 	icon firefox "firefox-bin"
 	icon google-chrome
-	icon blender "blender-2.60"
+	icon blender
 	icon gimp
 	icon inkscape
-	icon virtualbox "VirtualBox"
+	icon virtualbox VirtualBox
 	icon hibernate "glxinfo > /dev/null && sudo /usr/sbin/hibernate"
 	*
 end
