@@ -201,7 +201,7 @@ target=`latest_target`
 EOF
 		fi
 
-	android update project --path .
+	android update project --path . -s
 }
 
 # Create a new android project
