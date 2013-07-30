@@ -24,6 +24,9 @@ set background=dark
 let g:solarized_termcolors=256
 color sahara
 
+" Change matching parenthesis style
+:hi MatchParen cterm=bold ctermbg=none ctermfg=none
+
 " Always move cursor up/down by visual line instead of text line
 noremap j gj
 noremap k gk
