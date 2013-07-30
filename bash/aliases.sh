@@ -20,6 +20,7 @@ alias burn='cdrecord dev=/dev/cdrom'
 alias ftp='ftp -pi'
 alias ssh='TERM=xterm ssh'
 alias whois='whois -h whois-servers.net'
+alias htd='python -m SimpleHTTPServer'
 
 # Map BSD/OSX to GNU names
 alias md5sum='md5'
