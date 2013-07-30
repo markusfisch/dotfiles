@@ -10,12 +10,12 @@ tree()
 
 	for F in "${1:-.}"/*
 	do
-		[ -r $F ] && (( ++N ))
+		[ -r "$F" ] && (( ++N ))
 	done
 
 	for F in "${1:-.}"/*
 	do
-		[ -r $F ] || continue
+		[ -r "$F" ] || continue
 
 		(( --N == 0 )) && L=' '
 
