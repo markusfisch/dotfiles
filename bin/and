@@ -237,18 +237,19 @@ create()
 # Print this help
 help()
 {
-	local ARG=
+	local DESC=
 
 	while read
 	do
 		case $REPLY in
 			*\(\))
-				ARG=${REPLY%(*}
+				[ "$DESC" ] || continue
+				echo ${REPLY%(*} '-' $DESC
+				DESC=
 				;;
-			\#*)
-				[ "$ARG" ] || continue
-				echo $ARG - ${REPLY#*#}
-				ARG=
+			\#\ *)
+				[ "$DESC" ] && continue
+				DESC=${REPLY#*#}
 				;;
 		esac
 	done < $0
