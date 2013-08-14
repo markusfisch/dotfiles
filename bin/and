@@ -234,4 +234,24 @@ create()
 		--path .
 }
 
+# Print this help
+help()
+{
+	local ARG=
+
+	while read
+	do
+		case $REPLY in
+			*\(\))
+				ARG=${REPLY%(*}
+				;;
+			\#*)
+				[ "$ARG" ] || continue
+				echo $ARG - ${REPLY#*#}
+				ARG=
+				;;
+		esac
+	done < $0
+}
+
 ${@:-debug}
