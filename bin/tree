@@ -6,14 +6,14 @@
 # @param 2 - level
 tree()
 {
-	local F N=0 L='|'
+	local F N=0 L='|' D=${1:-.}
 
-	for F in "${1:-.}"/*
+	for F in "$D"/*
 	do
 		[ -r "$F" ] && (( ++N ))
 	done
 
-	for F in "${1:-.}"/*
+	for F in "$D"/*
 	do
 		[ -r "$F" ] || continue
 
@@ -21,10 +21,7 @@ tree()
 
 		echo "${2}+- ${F##*/}"
 
-		if [ -d "$F" ]
-		then
-			tree "$F" "$2$L  "
-		fi
+		[ -d "$F" ] && tree "$F" "$2$L  "
 	done
 }
 
