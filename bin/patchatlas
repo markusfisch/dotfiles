@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Patch given JavaScript files with JSON read from stdin
+#
+# @param ... - JavaScript files to patch
+atlas_patch()
+{
+	(( $# < 1 )) && {
+		echo "usage: ${0##*/} FILE..."
+		return 1
+	}
+
+	while read
+	do
+		case $REPLY in
+			*:{*)
+				;;
+			*)
+				continue
+				;;
+		esac
+
+		local NAME=${REPLY%%:\{*}
+
+		[ "$NAME" ] || continue
+
+		local FRAME=${REPLY#*\{}
+		local PATCH="s^{/\*${NAME}\*/[\"xywh:0-9,]*}^{/*${NAME}*/${FRAME%,}^g"
+		local TMP=".${0##*/}-$$.tmp"
+		local SRC
+		for SRC in "$@"
+		do
+			sed -e "$PATCH" < $SRC > $TMP && mv $TMP $SRC
+		done
+	done
+}
+
+[ "$0" == "$BASH_SOURCE" ] && atlas_patch "$@"

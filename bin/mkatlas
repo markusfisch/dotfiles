@@ -1,0 +1,151 @@
+#!/bin/bash
+
+# Horizontal cut
+atlas_cut_horizontal()
+{
+	echo $(( X+$1 )) $Y $W $2 > $NODE/child0/rect
+	echo $X $(( Y+$2 )) $NW $H > $NODE/child1/rect
+}
+
+# Vertical cut
+atlas_cut_vertical()
+{
+	echo $X $(( Y+$2 )) $1 $H > $NODE/child0/rect
+	echo $(( X+$1 )) $Y $W $NH > $NODE/child1/rect
+}
+
+# Insert image, packing algorithm from
+# http://www.blackpawn.com/texts/lightmaps/default.html
+#
+# @param 1 - image width
+# @param 2 - image height
+# @param 3 - image file
+atlas_insert()
+{
+	if [ -d "$NODE/child0" ]
+	then
+		local N=$NODE
+
+		NODE=$N/child0
+		atlas_insert $1 $2 $3 && return 0
+
+		NODE=$N/child1
+		atlas_insert $1 $2 $3 && return 0
+
+		return 1
+	fi
+
+	[ -f $NODE/rect ] || return 1
+
+	local X Y NW NH
+	read X Y NW NH < $NODE/rect
+
+	if (( $1 > NW )) || (( $2 > NH ))
+	then
+		return 1
+	fi
+
+	local W=$(( NW-$1 ))
+	local H=$(( NH-$2 ))
+
+	mkdir $NODE/child0 $NODE/child1
+
+	if (( H > W ))
+	then
+		if (( PREFER_SMALLER ))
+		then
+			atlas_cut_vertical $1 $2
+		else
+			atlas_cut_horizontal $1 $2
+		fi
+	else
+		if (( PREFER_SMALLER ))
+		then
+			atlas_cut_horizontal $1 $2
+		else
+			atlas_cut_vertical $1 $2
+		fi
+	fi
+
+	echo $X $Y $1 $2 $3 > $NODE/image
+
+	return 0
+}
+
+# Create texture atlas from a listing in the format "width height filename"
+atlas_from_list()
+{
+	local CACHE
+	CACHE=`mktemp -d ${0##*/}.XXXXXXXXXX` || return 1
+
+	local WIDTH=${WIDTH:-2048}
+	local HEIGHT=${HEIGHT:-2048}
+	echo 0 0 $WIDTH $HEIGHT > $CACHE/rect
+
+	# sort files and insert them into the atlas
+	local MAX W H FILE
+	while read W H FILE
+	do
+		[ "$FILE" ] || continue
+
+		if (( W > H ))
+		then
+			MAX=$W
+		else
+			MAX=$H
+		fi
+
+		printf '%08d %d %d %s\n' $MAX $W $H $FILE
+	done | sort -r | while read MAX W H FILE
+	do
+		local NODE=$CACHE
+		atlas_insert $W $H $FILE || {
+			echo 'error: canvas too small' >&2
+			break
+		}
+	done
+
+	# print JSON and build arguments for convert
+	echo "var atlas={"
+
+	find $CACHE -type f -name image | while read
+	do
+		local X Y W H FILE
+		read X Y W H FILE < $REPLY
+
+		echo "$FILE -geometry +$X+$Y -composite" >> $CACHE/args
+
+		local NAME=${FILE##*/}
+		echo "${NAME%.*}:{x:$X,y:$Y,w:$W,h:$H},"
+	done
+
+	echo "};"
+
+	# compose images into atlas
+	convert -size "${WIDTH}x${HEIGHT}" xc:transparent \
+		`< $CACHE/args` \
+		-strip -trim "${ATLAS:-atlas.png}"
+
+	rm -rf $CACHE
+}
+
+# Create texture atlas
+#
+# @param ... - image files
+atlas_from_files()
+{
+	local TRIMMED
+	TRIMMED=`mktemp -d ${0##*/}.XXXXXXXXXX` || return 1
+
+	# trim input files first
+	local F
+	for F in "$@"
+	do
+		convert "$F" -strip -trim "$TRIMMED/${F##*/}"
+	done
+
+	identify -format '%w %h %d/%f\n' "$TRIMMED/*" | atlas_from_list
+	rm -rf $TRIMMED
+}
+
+[ "$0" == "$BASH_SOURCE" ] && atlas_from_files "$@"
