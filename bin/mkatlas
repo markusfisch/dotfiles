@@ -124,7 +124,8 @@ atlas_from_list()
 	# compose images into atlas
 	convert -size "${WIDTH}x${HEIGHT}" xc:transparent \
 		`< $CACHE/args` \
-		-strip -trim "${ATLAS:-atlas.png}"
+		-strip -trim -bordercolor none -border 2 \
+		"${ATLAS:-atlas.png}"
 
 	rm -rf $CACHE
 }
@@ -141,7 +142,11 @@ atlas_from_files()
 	local F
 	for F in "$@"
 	do
-		convert "$F" -strip -trim "$TRIMMED/${F##*/}"
+		convert "$F" \
+			-strip \
+			-trim \
+			-bordercolor none -border 2 \
+			"$TRIMMED/${F##*/}"
 	done
 
 	identify -format '%w %h %d/%f\n' "$TRIMMED/*" | atlas_from_list
