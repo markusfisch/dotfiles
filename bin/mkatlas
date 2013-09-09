@@ -124,7 +124,7 @@ atlas_from_list()
 	# compose images into atlas
 	convert -size "${WIDTH}x${HEIGHT}" xc:transparent \
 		`< $CACHE/args` \
-		-strip -trim -bordercolor none -border 2 \
+		-strip -trim -bordercolor none -border $BORDER \
 		"${ATLAS:-atlas.png}"
 
 	rm -rf $CACHE
@@ -145,12 +145,14 @@ atlas_from_files()
 		convert "$F" \
 			-strip \
 			-trim \
-			-bordercolor none -border 2 \
+			-bordercolor none -border $BORDER \
 			"$TRIMMED/${F##*/}"
 	done
 
 	identify -format '%w %h %d/%f\n' "$TRIMMED/*" | atlas_from_list
 	rm -rf $TRIMMED
 }
+
+readonly BORDER=${BORDER:-2}
 
 [ "$0" == "$BASH_SOURCE" ] && atlas_from_files "$@"
