@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Convert ASCII character to its decimal value
+#
+# @param ... - characters to convert
+ord()
+{
+	local S L N
+	for S in "$@"
+	do
+		L=${#S}
+
+		for (( N = 0; N < L; ++N ))
+		do
+			printf "%d\n" "'${S:$N:1}"
+		done
+	done
+}
+
+[ "$BASH_SOURCE" == "$0" ] && ord $@
