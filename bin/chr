@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Convert decimal value(s) to its ASCII representation
+#
+# @param ... - values to convert
+chr()
+{
+	local N
+	for N in "$@"
+	do
+		printf \\$(printf '%03o' $N)
+	done
+	echo
+}
+
+[ "$BASH_SOURCE" == "$0" ] && chr $@
