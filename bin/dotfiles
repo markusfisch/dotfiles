@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Enumerate all files that sport the given extension and perform given
 # action on them

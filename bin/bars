@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Generate a bar chart by reading value/label pairs from stdin
 bars()

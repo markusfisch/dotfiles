@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 readonly LNG=${LNG:=en}
 readonly URL="http://translate.google.com/translate_tts?tl=${LNG}&q="

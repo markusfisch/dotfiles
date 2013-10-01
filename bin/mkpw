@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 C=${CHARSET:-'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!-_'}
 P=

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Cut some text into smaller snippets without cutting words in half
 #

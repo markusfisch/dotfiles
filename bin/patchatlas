@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Patch given JavaScript files with JSON read from stdin
 #
