@@ -9,7 +9,7 @@ font Sans 8.0
 ignore-mask Num_Lock
 
 trigger button 8
-trigger menu selection button-down Mod4 1
+trigger button-down Mod4 1
 trigger menu window-list button Mod4 4
 trigger menu window-list button Mod4 5
 trigger menu window-list key Mod4 Tab
