@@ -23,6 +23,8 @@ tree()
 
 		[ -d "$F" ] && tree "$F" "$2$L  "
 	done
+
+	return 0
 }
 
 [ "$0" == "$BASH_SOURCE" ] && tree "$@"
