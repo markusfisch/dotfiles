@@ -22,6 +22,8 @@ autocmd BufWritePre * :%s/\s\+$//e
 " Color scheme settings
 set background=dark
 let g:solarized_termcolors=256
+
+set t_Co=256
 color sahara
 
 " Change matching parenthesis style
