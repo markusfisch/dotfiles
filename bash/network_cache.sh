@@ -36,3 +36,9 @@ pull()
 			.
 	done
 }
+
+# List cache
+cache()
+{
+	ssh ${NETWORK_CACHE%:*} "ls ${NETWORK_CACHE#*:}"
+}
