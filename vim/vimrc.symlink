@@ -26,6 +26,9 @@ let g:solarized_termcolors=256
 set t_Co=256
 color sahara
 
+" Always show as much as possible of the last line instead of @
+set display+=lastline
+
 " Change matching parenthesis style
 :hi MatchParen cterm=bold ctermbg=none ctermfg=none
 
