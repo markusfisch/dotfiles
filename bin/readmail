@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
 #   O         ,-
-#  ° o    . -´  '     ,-
-#   °  .´        ` . ´,´
-#     ( °   ))     . (
-#      `-;_    . -´ `.`.
-#          `._'       ´
+#  ï¿½ o    . -ï¿½  '     ,-
+#   ï¿½  .ï¿½        ` . ï¿½,ï¿½
+#     ( ï¿½   ))     . (
+#      `-;_    . -ï¿½ `.`.
+#          `._'       ï¿½
 #
 # 2006,2011,2012 Markus Fisch <mf@markusfisch.de>
 # Public Domain
@@ -695,7 +695,7 @@ extract_attachments()
 			do
 				local D
 				read D < "$MIME_CACHE/attachments-paths"
-  				[ "$D" ] || continue
+				[ "$D" ] || continue
 				[ -r "$F" ] && {
 					echo "error: $F already exists" >&2
 					continue
