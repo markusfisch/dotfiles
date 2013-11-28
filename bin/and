@@ -152,6 +152,14 @@ mem()
 	adb shell dumpsys meminfo ${1:-`package`}
 }
 
+# Print process statistics (starting with Android 4.4)
+#
+# @param 1 - package name (optional)
+stats()
+{
+	adb shell dumpsys procstats ${1:-`package`}
+}
+
 # Dump services of given package
 #
 # @param 1 - package name (optional)
