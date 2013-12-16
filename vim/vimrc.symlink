@@ -6,6 +6,7 @@ set nowrap
 set noruler
 set linebreak
 set autoindent
+set viminfo^=h
 
 syntax on
 
