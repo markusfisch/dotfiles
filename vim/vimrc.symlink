@@ -79,3 +79,6 @@ set pastetoggle=<F2>
 
 " Convert spaces to tabs
 nnoremap <F3> :%s/    /\t/g<CR>
+
+" Disable highlighting of search pattern matches
+nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
