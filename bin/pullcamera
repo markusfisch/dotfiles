@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+for CAMERA in ${@:-sdcard/DCIM/Camera}
+do
+	adb shell ls $CAMERA | while read
+	do
+		FILE=${REPLY%$'\r'*}
+
+		[ -r "$FILE" ] && continue
+
+		adb pull "$CAMERA/$FILE"
+	done
+done
