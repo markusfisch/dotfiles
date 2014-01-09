@@ -153,6 +153,6 @@ atlas_from_files()
 	rm -rf $TRIMMED
 }
 
-readonly BORDER=${BORDER:-2}
+readonly BORDER=${BORDER:-0}
 
 [ "$0" == "$BASH_SOURCE" ] && atlas_from_files "$@"
