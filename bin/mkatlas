@@ -67,7 +67,12 @@ atlas_insert()
 		fi
 	fi
 
-	echo $X $Y $1 $2 $3 > $NODE/image
+	echo \
+		$(( X+BORDER )) \
+		$(( Y+BORDER )) \
+		$(( $1-BORDER*2 )) \
+		$(( $2-BORDER*2 )) \
+		$3 > $NODE/image
 
 	return 0
 }
