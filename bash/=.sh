@@ -13,16 +13,32 @@
 
 # Hex to decimal
 #
-# @param ... - hex number without prefix
+# @param ... - hexadeximal numbers
 hx2d()
 {
-	echo "ibase=16; $@" | bc -l
+	= ibase=16 "$@"
 }
 
 # Decimal to hex
 #
-# @param ... - decimal number
+# @param ... - decimal numbers
 d2hx()
 {
-	echo "obase=16; $@" | bc -l
+	= obase=16 "$@"
+}
+
+# Binary to decimal numbers
+#
+# @param ... - binary numbers
+b2d()
+{
+	= ibase=2 "$@"
+}
+
+# Decimal to binary
+#
+# @param ... - decimal numbers
+d2b()
+{
+	= obase=2 "$@"
 }
