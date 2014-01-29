@@ -1,3 +1,6 @@
+set runtimepath^=~/.vim/bundle/ctrlp.vim
+let g:ctrlp_cmd='CtrlPBuffer'
+
 set nocompatible
 set ts=4
 set sw=4
@@ -56,7 +59,7 @@ function! TabComplete()
 		return "\<Tab>"
 	endif
 endfunction
-:inoremap <Tab> <C-R>=TabComplete()<CR>
+inoremap <Tab> <C-R>=TabComplete()<CR>
 
 " Focus mode
 " (originally from https://gist.github.com/1824502)
@@ -82,3 +85,7 @@ nnoremap <F3> :%s/    /\t/g<CR>
 
 " Disable highlighting of search pattern matches
 nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
+
+" Cycle through open buffers
+nnoremap <silent> <C-j> :bn<CR>
+nnoremap <silent> <C-k> :bp<CR>
