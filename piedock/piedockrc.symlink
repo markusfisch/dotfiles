@@ -48,17 +48,18 @@ alias "aterm" terminal
 alias "xterm" terminal
 alias "chromium-browser" chrome
 alias "chromium" chrome
+alias "google-chrome-stable" google-chrome
 alias "googleearth-bin" googleearth
 alias "Blender" blender
 alias "Blender:Render" blender
 alias "TeamViewer.exe" teamviewer
 
 menu
-	icon terminal urxvt
+	icon terminal xterm
 	icon nedit
 	icon opera
 	icon firefox "firefox-bin"
-	icon google-chrome
+	icon google-chrome "google-chrome-stable"
 	icon blender
 	icon gimp
 	icon inkscape
