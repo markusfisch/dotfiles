@@ -52,18 +52,18 @@ atlas_insert()
 
 	if (( H > W ))
 	then
-		if (( PREFER_SMALLER ))
+		if (( PREFER_LARGER_CELLS ))
 		then
-			atlas_cut_vertical $1 $2
-		else
 			atlas_cut_horizontal $1 $2
+		else
+			atlas_cut_vertical $1 $2
 		fi
 	else
-		if (( PREFER_SMALLER ))
+		if (( PREFER_LARGER_CELLS ))
 		then
-			atlas_cut_horizontal $1 $2
-		else
 			atlas_cut_vertical $1 $2
+		else
+			atlas_cut_horizontal $1 $2
 		fi
 	fi
 
