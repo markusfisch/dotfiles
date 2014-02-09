@@ -66,8 +66,6 @@ readonly ARCHIVE=${ARCHIVE:-$OUT/ar.$TYPE}
 readonly COMPRESSOR=${COMPRESSOR:-compress}
 # additional directories to check for newer files
 # WATCH
-# don't gzip archive if set
-# NOGZ
 
 [ -d "$IN" ] || {
 	echo "error: input directory $IN doesn't exist"
@@ -100,5 +98,3 @@ do
 
 	cat $F
 done | $COMPRESSOR > $ARCHIVE
-
-[ $NOGZ ] || gzip < $ARCHIVE > $ARCHIVE.gz
