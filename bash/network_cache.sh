@@ -7,10 +7,10 @@ readonly NETWORK_CACHE_OPTIONS='
 	--times
 	--compress'
 
-# Push a file/directory to network cache
+# Put a file/directory
 #
-# @param ... - files/directories to push
-push()
+# @param ... - files/directories
+nput()
 {
 	local FILE
 	for FILE in "$@"
@@ -22,10 +22,10 @@ push()
 	done
 }
 
-# Pull a file/directory from network cache
+# Get a file/directory
 #
-# @param ... - files/directories to pull
-pull()
+# @param ... - files/directories
+nget()
 {
 	local FILE
 	for FILE in "$@"
@@ -37,8 +37,20 @@ pull()
 	done
 }
 
-# List cache
-cache()
+# List
+nls()
 {
 	ssh ${NETWORK_CACHE%:*} "ls ${NETWORK_CACHE#*:}"
+}
+
+# Remove a file/directory
+#
+# @param ... - files/directories
+nrm()
+{
+	local FILE
+	for FILE in "$@"
+	do
+		ssh ${NETWORK_CACHE%:*} "rm -rf ${NETWORK_CACHE#*:}/${FILE%/}"
+	done
 }
