@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+
+# Wake-on-LAN (https://en.wikipedia.org/wiki/Wake-on-LAN)
+#
+# @param ... - MAC address
+wake_on_lan()
+{
+	local CLASS=${0##*/}$$${USER:-nobody}
+
+	(( $# )) || {
+		echo "usage: ${0##*/} MAC..." >&2
+		return 1
+	}
+
+	cat <<EOF > ${CLASS}.java && javac ${CLASS}.java && java $CLASS "$@" && rm ${CLASS}.*
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
+public class $CLASS
+{
+	public static void main( String args[] )
+	{
+		for( int n = 0, l = args.length; n < l; ++n )
+		{
+			String numbers[] = args[n].split( ":" );
+
+			if( numbers.length != 6 )
+			{
+				System.out.println(
+					"ERROR: invalid MAC address: "+args[n] );
+
+				continue;
+			}
+
+			byte mac[] = {
+				(byte)Integer.valueOf( numbers[0], 16 ).intValue(),
+				(byte)Integer.valueOf( numbers[1], 16 ).intValue(),
+				(byte)Integer.valueOf( numbers[2], 16 ).intValue(),
+				(byte)Integer.valueOf( numbers[3], 16 ).intValue(),
+				(byte)Integer.valueOf( numbers[4], 16 ).intValue(),
+				(byte)Integer.valueOf( numbers[5], 16 ).intValue() };
+
+			wakeOnLan( mac );
+		}
+	}
+
+	private static void wakeOnLan( byte mac[] )
+	{
+		try
+		{
+			byte bytes[] = new byte[6+16*mac.length];
+
+			for( int n = 6; n-- > 0; )
+				bytes[n] = (byte)0xff;
+
+			for( int n = 6; n < bytes.length; n += mac.length )
+				System.arraycopy(
+					mac,
+					0,
+					bytes,
+					n,
+					mac.length );
+
+			DatagramPacket packet = new DatagramPacket(
+				bytes,
+				bytes.length,
+				InetAddress.getByName( "255.255.255.255" ),
+				40000 );
+
+			DatagramSocket socket = new DatagramSocket();
+
+			socket.send(packet);
+			socket.close();
+
+			System.out.println( "Magic packet sent to "+
+				String.format(
+					"%02x:%02x:%02x:%02x:%02x:%02x",
+					mac[0],
+					mac[1],
+					mac[2],
+					mac[3],
+					mac[4],
+					mac[5] )+"." );
+		}
+		catch( Exception e )
+		{
+			System.out.println( "ERROR: "+e.getMessage() );
+		}
+	}
+}
+EOF
+}
+
+[ "$BASH_SOURCE" == $0 ] && wake_on_lan "$@"
