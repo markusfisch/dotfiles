@@ -199,6 +199,29 @@ ${OUTDIR}Icon@2.png 114
 EOF
 }
 
+# iOS cordova icons
+#
+# @param 1 - image file
+ios_cordova()
+{
+	resample $1 <<EOF
+${OUTDIR}icon-40.png 40
+${OUTDIR}icon-40@2x.png 80
+${OUTDIR}icon-50.png 50
+${OUTDIR}icon-50@2x.png 100
+${OUTDIR}icon-60.png 60
+${OUTDIR}icon-60@2x.png 120
+${OUTDIR}icon-72.png 72
+${OUTDIR}icon-72@2x.png 144
+${OUTDIR}icon-76.png 76
+${OUTDIR}icon-76@2x.png 152
+${OUTDIR}icon-small.png 29
+${OUTDIR}icon-small@2x.png 58
+${OUTDIR}icon.png 57
+${OUTDIR}icon@2x.png 114
+EOF
+}
+
 # OS X icons
 #
 # @param 1 - image file
