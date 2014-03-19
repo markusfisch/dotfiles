@@ -242,9 +242,14 @@ create()
 		--path .
 }
 
-# Print this help
+# Print help; use "help NAME" to show details
 help()
 {
+	(( $# > 0 )) && {
+		type $@
+		return $?
+	}
+
 	local DESC=
 
 	while read
