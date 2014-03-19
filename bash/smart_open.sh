@@ -97,7 +97,7 @@ ec()
 	do
 		[ -d $D ] && D=`find "${D%/}" \
 			-maxdepth ${MAXDEPTH:-99} \
-			-type f | grep -E "$FT"`
+			-type f | grep -E "$FT" | sort`
 		F=$F${F:+ }$D
 	done
 	e $F
