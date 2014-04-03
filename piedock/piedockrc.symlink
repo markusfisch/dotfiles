@@ -10,17 +10,20 @@ ignore-mask Num_Lock
 
 trigger button 8
 trigger button-down Mod4 1
+trigger button Shift 4
+trigger button Shift 5
 trigger menu window-list button Mod4 4
 trigger menu window-list button Mod4 5
 trigger menu window-list key Mod4 Tab
 trigger menu window-control button-down Mod4 3
+trigger menu window-control button-down Shift 3
 trigger menu windows-of-active key Mod4 less
 
 button 1 ShowNext
 button 2 ShowPrevious
 button 3 Launch
-button 4 SpinNext
-button 5 SpinPrevious
+#button 4 SpinNext
+#button 5 SpinPrevious
 
 key Escape Disappear
 key Return ShowNext
