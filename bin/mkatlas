@@ -140,22 +140,32 @@ atlas_from_list()
 # @param ... - image files
 atlas_from_files()
 {
-	local TRIMMED
-	TRIMMED=`mktemp -d ${0##*/}.XXXXXXXXXX` || return 1
+	local TRIMDIR
+	TRIMDIR=`mktemp -d ${0##*/}.XXXXXXXXXX` || return 1
 
 	# trim input files first
-	local F
-	for F in "$@"
+	local FILE
+	for FILE in "$@"
 	do
-		convert "$F" \
+		local TRIM="$TRIMDIR/${FILE##*/}"
+
+		case ${TRIM##*.} in
+			svg)
+				TRIM="${TRIM%.*}.png"
+				;;
+		esac
+
+		convert \
+			-background none \
+			"$FILE" \
 			-strip \
 			-trim \
 			-bordercolor none -border $BORDER \
-			"$TRIMMED/${F##*/}"
+			"$TRIM"
 	done
 
-	identify -format '%w %h %d/%f\n' "$TRIMMED/*" | atlas_from_list
-	rm -rf $TRIMMED
+	identify -format '%w %h %d/%f\n' "$TRIMDIR/*" | atlas_from_list
+	rm -rf $TRIMDIR
 }
 
 readonly BORDER=${BORDER:-0}
