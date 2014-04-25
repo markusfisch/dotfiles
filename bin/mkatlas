@@ -140,10 +140,12 @@ atlas_from_list()
 # @param ... - image files
 atlas_from_files()
 {
+	local INKSCAPE=${INKSCAPE:-`which inkscape`}
+
 	local TRIMDIR
 	TRIMDIR=`mktemp -d ${0##*/}.XXXXXXXXXX` || return 1
 
-	# trim input files first
+	# trim/raster input files first
 	local FILE
 	for FILE in "$@"
 	do
@@ -152,6 +154,12 @@ atlas_from_files()
 		case ${TRIM##*.} in
 			svg)
 				TRIM="${TRIM%.*}.png"
+
+				# use inkscape if available
+				[ "$INKSCAPE" ] &&
+					$INKSCAPE "$FILE" \
+						-z -e "$TRIM" &>/dev/null &&
+					FILE=${TRIM}
 				;;
 		esac
 
