@@ -92,3 +92,20 @@ nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 " Cycle through open buffers
 nnoremap <silent> <C-j> :bn<CR>
 nnoremap <silent> <C-k> :bp<CR>
+
+" Use Tabs
+function! UseTabs()
+	" Highlight tabs within lines, trailing whitespace and
+	" spaces at the beginning of lines
+	match errorMsg /[^\t]\zs\t\+\|\s\+$\|^[\t]*[ ]\+[\t]*[^\*]/
+	set noexpandtab
+endfunc
+nnoremap <F5> :call UseTabs()<CR>
+
+" Use Spaces
+function! UseSpaces()
+	" Highlight tabs
+	match errorMsg /[\t]/
+	set expandtab
+endfunc
+nnoremap <F6> :call UseSpaces()<CR>
