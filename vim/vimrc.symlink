@@ -16,10 +16,6 @@ syntax on
 " Begin syntax synchronisation always from the start
 autocmd BufEnter * :syntax sync fromstart
 
-" Highlight tabs within lines, trailing whitespace and spaces at the
-" beginning of lines
-match errorMsg /[^\t]\zs\t\+\|\s\+$\|^[\t]*[ ]\+[\t]*[^\*]/
-
 " Remove trailing white space before saving
 autocmd BufWritePre * :%s/\s\+$//e
 
@@ -93,7 +89,7 @@ nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 nnoremap <silent> <C-j> :bn<CR>
 nnoremap <silent> <C-k> :bp<CR>
 
-" Use Tabs
+" Use tabs
 function! UseTabs()
 	" Highlight tabs within lines, trailing whitespace and
 	" spaces at the beginning of lines
@@ -102,7 +98,10 @@ function! UseTabs()
 endfunc
 nnoremap <F5> :call UseTabs()<CR>
 
-" Use Spaces
+" Use tabs by default
+call UseTabs()
+
+" Use spaces
 function! UseSpaces()
 	" Highlight tabs
 	match errorMsg /[\t]/
