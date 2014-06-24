@@ -182,21 +182,44 @@ ${OUTDIR}res/drawable-xhdpi/$F 96
 EOF
 }
 
-# iOS icons
+# iOS app icons
+#
+# @param 1 - image file
+ios_app()
+{
+	resample $1 <<EOF
+${OUTDIR}icon-57.png 57
+${OUTDIR}icon-114.png 114
+${OUTDIR}icon-120.png 120
+${OUTDIR}icon-72.png 72
+${OUTDIR}icon-144.png 144
+${OUTDIR}icon-76.png 76
+${OUTDIR}icon-152.png 152
+EOF
+}
+
+# iOS spotlight icons
+#
+# @param 1 - image file
+ios_spotlight()
+{
+	resample $1 <<EOF
+${OUTDIR}icon-small-29.png 29
+${OUTDIR}icon-small-58.png 58
+${OUTDIR}icon-small-80.png 80
+${OUTDIR}icon-small-50.png 50
+${OUTDIR}icon-small-100.png 100
+${OUTDIR}icon-small-40.png 40
+EOF
+}
+
+# iOS app icons
 #
 # @param 1 - image file
 ios()
 {
-	resample $1 <<EOF
-${OUTDIR}Icon-72.png 72
-${OUTDIR}Icon-72@2.png 144
-${OUTDIR}Icon-Small-50.png 50
-${OUTDIR}Icon-Small.png 29
-${OUTDIR}Icon-Small@2.png 58
-${OUTDIR}Icon-Small@2.png 58
-${OUTDIR}Icon.png 57
-${OUTDIR}Icon@2.png 114
-EOF
+	ios_app $1
+	ios_spotlight $1
 }
 
 # iOS cordova icons
