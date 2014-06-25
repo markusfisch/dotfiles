@@ -92,4 +92,7 @@ public class $CLASS
 EOF
 }
 
-[ "$BASH_SOURCE" == $0 ] && wake_on_lan "$@"
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	wake_on_lan "$@"
+fi

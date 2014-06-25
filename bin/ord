@@ -17,4 +17,7 @@ ord()
 	done
 }
 
-[ "$BASH_SOURCE" == "$0" ] && ord $@
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	ord $@
+fi

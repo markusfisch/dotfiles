@@ -13,4 +13,7 @@ chr()
 	echo
 }
 
-[ "$BASH_SOURCE" == "$0" ] && chr $@
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	chr $@
+fi

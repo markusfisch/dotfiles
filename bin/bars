@@ -57,4 +57,7 @@ bars()
 	done
 }
 
-[ "$BASH_SOURCE" == "$0" ] && bars
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	bars
+fi

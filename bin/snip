@@ -31,4 +31,7 @@ snip()
 	echo $TEXT
 }
 
-[ "$BASH_SOURCE" == "$0" ] && snip "$@"
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	snip "$@"
+fi

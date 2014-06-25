@@ -16,4 +16,7 @@ clean_temp()
 	done
 }
 
-[ "$BASH_SOURCE" == "$0" ] && clean_temp
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	clean_temp
+fi

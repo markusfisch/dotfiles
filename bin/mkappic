@@ -334,4 +334,7 @@ EOF
 	exit 1
 }
 
-[ "$0" == "$BASH_SOURCE" ] && process $@
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	process $@
+fi

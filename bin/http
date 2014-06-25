@@ -59,4 +59,7 @@ http()
 	exec 6<&-
 }
 
-[ "$BASH_SOURCE" == "$0" ] && http $@
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	http $@
+fi

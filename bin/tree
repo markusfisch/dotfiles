@@ -27,4 +27,7 @@ tree()
 	return 0
 }
 
-[ "$0" == "$BASH_SOURCE" ] && tree "$@"
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	tree "$@"
+fi

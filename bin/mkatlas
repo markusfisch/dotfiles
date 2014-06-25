@@ -219,4 +219,7 @@ atlas_create()
 
 readonly BORDER=${BORDER:-0}
 
-[ "$0" == "$BASH_SOURCE" ] && atlas_create "$@"
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	atlas_create "$@"
+fi

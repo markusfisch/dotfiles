@@ -35,4 +35,7 @@ atlas_patch()
 	done
 }
 
-[ "$0" == "$BASH_SOURCE" ] && atlas_patch "$@"
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	atlas_patch "$@"
+fi

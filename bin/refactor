@@ -37,4 +37,7 @@ refactor()
 	done
 }
 
-[ "$BASH_SOURCE" == "$0" ] && refactor "$@"
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	refactor "$@"
+fi

@@ -58,4 +58,7 @@ fix_cr()
 	done
 }
 
-(( $# > 0 )) && fix_cr $@
+if (( $# > 0 ))
+then
+	fix_cr $@
+fi

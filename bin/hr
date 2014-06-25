@@ -51,4 +51,7 @@ hrs()
 	done
 }
 
-[ "$0" == "$BASH_SOURCE" ] && hrs "$@"
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	hrs "$@"
+fi
