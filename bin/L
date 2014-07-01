@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Print files sorted by time, the latest file's last
+#
+# @param ... - paths (optional)
+if find --version &>/dev/null
+then
+find_latest()
+{
+	find "${@:-.}" -type f -printf "%TY-%Tm-%Td %TH:%TM %h/%f\n" | sort
+}
+else
+find_latest()
+{
+	find "${@:-.}" -type f \
+		-exec stat -t '%Y-%m-%d %H:%M:%S' -f '%Sm %N' {} \; | sort
+}
+fi
+
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	find_latest "$@"
+fi

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Show a stat of lines per file
 #
 # @param ... - files (optional)
@@ -9,3 +11,8 @@ lines()
 		[ -f "$F" ] && wc -l "$F"
 	done | bars
 }
+
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	lines "$@"
+fi

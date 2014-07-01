@@ -1,7 +1,9 @@
+#!/usr/bin/env bash
+
 # Run given file or the next best executable
 #
 # @param ... - name and path of file to run (optional)
-r()
+run()
 {
 	local F=$1 W=.
 
@@ -67,3 +69,8 @@ r()
 			;;
 	esac
 }
+
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	run "$@"
+fi

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Find file(s) in the current directory
+#
+# @param ... - patterns to find in file names
+multi_find()
+{
+	local FILE
+	for FILE
+	do
+		find . -iname "*${FILE}*"
+	done
+}
+
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	multi_find "$@"
+fi

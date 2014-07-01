@@ -1,7 +1,9 @@
+#!/usr/bin/env bash
+
 # Monitor process(es)
 #
 # @param ... - name(s) of processes (optional)
-m()
+monitor()
 {
 	local PROCESS PID PIDS= IFS=' ' DELAY="-d ${DELAY:-.5}"
 
@@ -25,3 +27,8 @@ m()
 		PIDS=${PIDS//-p/-pid}
 	done
 }
+
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	monitor "$@"
+fi
