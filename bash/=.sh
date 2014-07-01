@@ -4,7 +4,7 @@
 =()
 {
 	local X A
-	for A in $@
+	for A
 	do
 		X=$X${X:+ }"$A;"
 	done

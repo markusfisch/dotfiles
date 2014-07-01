@@ -7,7 +7,7 @@ monitor()
 {
 	local PROCESS PID PIDS= IFS=' ' DELAY="-d ${DELAY:-.5}"
 
-	for PROCESS in $@
+	for PROCESS
 	do
 		while read PID
 		do

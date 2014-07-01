@@ -79,7 +79,7 @@ process()
 	for ARG; do true; done
 	[ -d "$ARG" ] || set -- $@ '.'
 
-	for ARG in $@
+	for ARG
 	do
 		if [[ $ARG == -* ]]
 		then
