@@ -95,7 +95,7 @@ function unpack()
 	return 0
 }
 
-for A in "$@"
+for A
 do
 	unpack "$A" || exit 1
 done

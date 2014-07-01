@@ -187,7 +187,7 @@ atlas_create()
 
 	# prepare source files
 	local SRC
-	for SRC in "$@"
+	for SRC
 	do
 		local COPY="$TMPDIR/${SRC##*/}"
 

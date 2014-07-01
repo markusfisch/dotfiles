@@ -6,7 +6,7 @@
 chr()
 {
 	local N
-	for N in "$@"
+	for N
 	do
 		printf \\$(printf '%03o' $N)
 	done

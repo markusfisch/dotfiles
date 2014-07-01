@@ -838,7 +838,7 @@ write_message()
 	then
 		local TO
 
-		for TO in "$@"
+		for TO
 		do
 			echo "To         : $TO"
 		done
@@ -899,7 +899,7 @@ write_message()
 			smtp_request "MAIL FROM: <`address "$SMTP_ACCOUNT"`>" || break
 
 			local R RECIPIENTS=
-			for R in "$@"
+			for R
 			do
 				smtp_request "RCPT TO: <`address "$R"`>" || {
 					RECIPIENTS=
@@ -1296,7 +1296,7 @@ config_check || exit 1
 [ -d "$CACHE" ] || mkdir -p "$CACHE" || exit 1
 
 # process command line arguments
-for CMD in "$@"
+for CMD
 do
 	run $CMD
 done

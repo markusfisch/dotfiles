@@ -3,9 +3,9 @@
 # @param ... - patterns to find in file names
 ff()
 {
-	local F
-	for F in "$@"
+	local FILE
+	for FILE
 	do
-		find . -iname "*$F*"
+		find . -iname "*${FILE}*"
 	done
 }

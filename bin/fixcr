@@ -38,7 +38,7 @@ fix_cr()
 		T=$T-$$
 	done
 
-	for F in "$@"
+	for F
 	do
 		[ -r "$F" ] || {
 			echo "error: cannot read $F" >&2

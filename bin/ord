@@ -6,7 +6,7 @@
 ord()
 {
 	local S L N
-	for S in "$@"
+	for S
 	do
 		L=${#S}
 

@@ -13,7 +13,7 @@ readonly NETWORK_CACHE_OPTIONS='
 nput()
 {
 	local FILE
-	for FILE in "$@"
+	for FILE
 	do
 		rsync \
 			$NETWORK_CACHE_OPTIONS \
@@ -28,7 +28,7 @@ nput()
 nget()
 {
 	local FILE
-	for FILE in "$@"
+	for FILE
 	do
 		rsync \
 			$NETWORK_CACHE_OPTIONS \
@@ -49,7 +49,7 @@ nls()
 nrm()
 {
 	local FILE
-	for FILE in "$@"
+	for FILE
 	do
 		ssh ${NETWORK_CACHE%:*} "rm -rf ${NETWORK_CACHE#*:}/${FILE%/}"
 	done

@@ -28,7 +28,7 @@ atlas_patch()
 		local PATCH="s^{/\*${NAME}\*/[\"xywh:0-9,]*}^{/*${NAME}*/${FRAME%,}^g"
 		local TMP=".${0##*/}-$$.tmp"
 		local SRC
-		for SRC in "$@"
+		for SRC
 		do
 			sed -e "$PATCH" < $SRC > $TMP && mv $TMP $SRC
 		done
