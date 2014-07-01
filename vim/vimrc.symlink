@@ -1,6 +1,3 @@
-set runtimepath^=~/.vim/bundle/ctrlp.vim
-let g:ctrlp_cmd='CtrlPBuffer'
-
 set nocompatible
 set ts=4
 set sw=4
