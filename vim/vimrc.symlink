@@ -37,6 +37,7 @@ noremap k gk
 au FileType html,tex,markdown set wrap
 
 " Additional file types
+au BufNewFile,BufRead *.go set filetype=go
 au BufNewFile,BufRead *.hx setf haxe
 au BufNewFile,BufRead *.glsl set filetype=glsl
 
