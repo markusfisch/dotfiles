@@ -92,13 +92,14 @@ alias v='smart_open viewer_for'
 # @param ... - source directories (optional)
 ec()
 {
-	local D F FT=${FT:-'\.(c|cpp|m|h|java)$'}
-	for D in "${@:-.}"
+	local DIR FILES FILTER=${FILTER:-'\.(c|cpp|m|h|java)$'}
+	for DIR in "${@:-.}"
 	do
-		[ -d $D ] && D=`find "${D%/}" \
+		[ -d "$DIR" ] || continue
+
+		FILES=$FILES${FILES:+ }`find "${DIR%/}" \
 			-maxdepth ${MAXDEPTH:-99} \
-			-type f | grep -E "$FT" | sort`
-		F=$F${F:+ }$D
+			-type f | grep -E "$FILTER" | sort`
 	done
-	e $F
+	e $FILES
 }
