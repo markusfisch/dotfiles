@@ -1,4 +1,5 @@
-for EDITOR in $EDITOR nedit gedit gvim mvim xvim vim nano
+for EDITOR in $EDITOR vim vi nano
 do
 	type $EDITOR &>/dev/null && break
 done
+export EDITOR=$EDITOR

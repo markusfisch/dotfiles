@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# Dive into given path until there's more than one directory;
+# useful for dealing with package paths to change into deepest
+# common directory node
+#
+# @param 1 - path
+cd_until_content()
+{
+	cd "$1" && while true
+	do
+		local FILE
+		local N=0
+
+		for FILE in *
+		do
+			[ -r "$FILE" ] || return 1
+
+			(( ++N > 1 )) && break
+		done
+
+		if (( N > 1 )) || ! [ -d "$FILE" ]
+		then
+			break
+		fi
+
+		cd $FILE
+	done
+}
+
+# Open editor for given files
+#
+# @param ... - files or directories
+edit()
+{
+	if [ -d "$1" ] && (( $# < 2 ))
+	then
+		(cd_until_content "$1" &&
+			$EDITOR `find . -type f | sort`)
+	else
+		$EDITOR "$@"
+	fi
+}
+
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	edit "$@"
+fi

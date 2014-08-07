@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+
+# Put a file/directory
+#
+# @param ... - files/directories
+put()
+{
+	local FILE
+	for FILE
+	do
+		rsync \
+			$TRUNK_OPTIONS \
+			"${FILE%/}" \
+			"${TRUNK%/}/"
+	done
+}
+
+# Get a file/directory
+#
+# @param ... - files/directories
+get()
+{
+	local FILE
+	for FILE
+	do
+		rsync \
+			$TRUNK_OPTIONS \
+			"${TRUNK%/}/${FILE%/}" \
+			.
+	done
+}
+
+# List
+list()
+{
+	ssh ${TRUNK%:*} "ls ${TRUNK#*:}"
+}
+
+# Remove a file/directory
+#
+# @param ... - files/directories
+remove()
+{
+	local FILE
+	for FILE
+	do
+		ssh ${TRUNK%:*} "rm -rf ${TRUNK#*:}/${FILE%/}"
+	done
+}
+
+# Print help; use "help NAME" to show details
+help()
+{
+	(( $# > 0 )) && {
+		type $@
+		return $?
+	}
+
+	local DESC=
+
+	while read
+	do
+		case $REPLY in
+			*\(\))
+				[ "$DESC" ] || continue
+				echo ${REPLY%(*} '-' $DESC
+				DESC=
+				;;
+			\#\ *)
+				[ "$DESC" ] && continue
+				DESC=${REPLY#*#}
+				;;
+		esac
+	done < $0
+}
+
+readonly TRUNK=${TRUNK:-'hhsw.de@ssh.strato.de:cache'}
+readonly TRUNK_OPTIONS=${TRUNK_OPTIONS:-'
+	--exclude="*.swp"
+	--recursive
+	--update
+	--delete-after
+	--times
+	--compress'}
+
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	${@:-help}
+fi

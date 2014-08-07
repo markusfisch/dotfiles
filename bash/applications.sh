@@ -10,7 +10,7 @@
 			A=${A// /_}
 
 			# use functions instead of aliases here because aliases
-			# aren't available in smart_open() for some reason
+			# aren't available in other scripts
 			type $A || eval "$A(){ open -a \"$D\" \"\$@\"; }"
 		done &>/dev/null
 	}

@@ -8,6 +8,9 @@ alias h='history'
 alias hc='history -c'
 alias j='jobs'
 
+# Editing
+alias e='edit'
+
 # Media playback/viewing
 alias feh='feh --magick-timeout -1'
 alias fs='mplayer -fs -af volume=-30'
@@ -38,3 +41,6 @@ alias ad='adb devices'
 alias a='and'
 alias ab='a build'
 alias ac='a clean'
+
+# Memo
+alias m='memo'
