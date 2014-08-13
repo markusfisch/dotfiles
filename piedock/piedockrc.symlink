@@ -33,10 +33,10 @@ key Down SpinPrevious
 key Tab SpinNext
 key less SpinNext
 
-active-indicator "~/.PieDock/active-indicators/gnome-emblem-new-with-shadow.png" right bottom
-missing-icon "~/.PieDock/applications/generic/PixelPressIcons/TheJollyRoger.png"
+active-indicator "~/.piedock/active-indicators/gnome-emblem-new-with-shadow.png" right bottom
+missing-icon "~/.piedock/applications/generic/PixelPressIcons/TheJollyRoger.png"
 
-path "~/.PieDock/applications" "~/.PieDock/actions" "/usr/share/pixmaps"
+path "~/.piedock/applications" "~/.piedock/actions" "/usr/share/pixmaps"
 
 alias class "Opera" opera
 alias class "Firefox" firefox
