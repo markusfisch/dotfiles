@@ -80,6 +80,9 @@ do
 	# alternatively, use --exclude= with GNU grep if available
 	[[ $IGNORE == *${FILE##*/}* ]] && continue
 
+	# ignore hidden files and directories
+	[[ $FILE == */\.* ]] && continue
+
 	TMP=`mktemp $FILE.XXXXXXXXXX`
 
 	if sed -e "s_${VERSION}_${NEW}_g" < $FILE > $TMP &&
