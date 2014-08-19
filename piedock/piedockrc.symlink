@@ -59,14 +59,12 @@ alias "TeamViewer.exe" teamviewer
 
 menu
 	icon terminal xterm
-	icon nedit
 	icon opera
 	icon firefox "firefox-bin"
 	icon google-chrome "google-chrome-stable"
 	icon blender
 	icon gimp
 	icon inkscape
-	icon virtualbox VirtualBox
 	icon hibernate "glxinfo > /dev/null && sudo /usr/sbin/hibernate"
 	*
 end
