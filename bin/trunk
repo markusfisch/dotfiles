@@ -76,6 +76,8 @@ help()
 
 readonly TRUNK=${TRUNK:-'hhsw.de@ssh.strato.de:cache'}
 readonly TRUNK_OPTIONS=${TRUNK_OPTIONS:-'
+	--stats
+	--verbose
 	--exclude="*.swp"
 	--recursive
 	--update
