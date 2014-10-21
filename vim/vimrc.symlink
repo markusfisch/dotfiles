@@ -106,3 +106,15 @@ function! UseSpaces()
 	set expandtab
 endfunc
 nnoremap <F6> :call UseSpaces()<CR>
+
+" Toggle hex mode
+function! ToggleHexMode()
+	if !exists( "b:hexMode" ) || !b:hexMode
+		let b:hexMode=1
+		%!xxd
+	else
+		let b:hexMode=0
+		%!xxd -r
+	endif
+endfunc
+nnoremap <C-x> :call ToggleHexMode()<CR>
