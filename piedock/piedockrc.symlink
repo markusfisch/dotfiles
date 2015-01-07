@@ -22,8 +22,6 @@ trigger menu windows-of-active key Mod4 less
 button 1 ShowNext
 button 2 ShowPrevious
 button 3 Launch
-#button 4 SpinNext
-#button 5 SpinPrevious
 
 key Escape Disappear
 key Return ShowNext
@@ -47,7 +45,6 @@ alias class "VirtualBox" virtualbox
 alias class "jetbrains-idea-ce" intellij
 alias class "xvim" xvim
 alias "urxvt" terminal
-alias "aterm" terminal
 alias "xterm" terminal
 alias "chromium-browser" chrome
 alias "chromium" chrome
