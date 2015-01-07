@@ -1,0 +1,10 @@
+borderwidth 0
+
+mousebind M-3 window_resize
+
+bind C-Left unmap
+bind C-Up unmap
+bind C-Right unmap
+bind C-Down unmap
+
+sticky yes
