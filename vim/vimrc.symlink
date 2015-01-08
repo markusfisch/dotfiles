@@ -18,10 +18,10 @@ autocmd BufWritePre * :%s/\s\+$//e
 
 " Color scheme settings
 set background=dark
-let g:solarized_termcolors=256
+"let g:solarized_termcolors=256
 
 set t_Co=256
-color sahara
+color solarized
 
 " Always show as much as possible of the last line instead of @
 set display+=lastline
