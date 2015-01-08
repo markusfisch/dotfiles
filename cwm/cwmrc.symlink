@@ -7,4 +7,6 @@ bind C-Up unmap
 bind C-Right unmap
 bind C-Down unmap
 
+bind CM-t "tile"
+
 sticky yes
