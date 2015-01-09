@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# Resample given image
+#
+# @param 1 - source image
+# @param ... - sizes
+resample()
+{
+	local SRC=$1
+
+	if ! [ -r "$SRC" ]
+	then
+		echo "error: ${SRC:-file} not found" >&2
+		return 1
+	fi
+
+	local DST=${SRC%.*}
+	local SIZE
+
+	shift
+
+	for SIZE in ${@:-128x128 64x64 32x32}
+	do
+		convert \
+			-background none \
+			"$SRC" \
+			-resize "$SIZE" \
+			-strip \
+			"$DST-$SIZE.png" || {
+			echo "error: failed to convert $SRC to $SIZE" >&2
+			return 1
+		}
+	done
+}
+
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	if (( ${#@} < 2 ))
+	then
+		echo "usage: ${0##*/} FILE SIZE..." >&2
+		exit 1
+	fi
+
+	resample "$@"
+fi
