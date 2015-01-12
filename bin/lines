@@ -8,7 +8,13 @@ lines()
 	local F
 	for F in ${@:-*}
 	do
-		[ -f "$F" ] && wc -l "$F"
+		if [ -f "$F" ]
+		then
+			wc -l "$F"
+		elif [ -d "$F" ]
+		then
+			wc -l "$F"/*
+		fi
 	done | bars
 }
 

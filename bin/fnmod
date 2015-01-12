@@ -157,4 +157,7 @@ EOF
 	exit
 }
 
-process $@
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	process "$@"
+fi

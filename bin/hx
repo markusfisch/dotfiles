@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-type hexdump &>/dev/null &&
-	hexdump -C "$@" | less

@@ -32,5 +32,5 @@ clean_sources()
 
 if [ "$BASH_SOURCE" == "$0" ]
 then
-	clean_sources
+	clean_sources "$@"
 fi

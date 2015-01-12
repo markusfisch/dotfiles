@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Remove temporary/waste files
+# Remove temporary files
 #
 # @param 1 - root path (optional)
 clean_temp()
@@ -18,5 +18,5 @@ clean_temp()
 
 if [ "$BASH_SOURCE" == "$0" ]
 then
-	clean_temp
+	clean_temp "$@"
 fi
