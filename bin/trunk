@@ -30,10 +30,12 @@ get()
 	done
 }
 
-# List
-list()
+# List files
+#
+# @param ... - files/directories (optional)
+ls()
 {
-	ssh ${TRUNK%:*} "ls ${TRUNK#*:}"
+	ssh ${TRUNK%:*} "ls ${TRUNK#*:}/$1"
 }
 
 # Remove a file/directory
@@ -46,6 +48,14 @@ remove()
 	do
 		ssh ${TRUNK%:*} "rm -rf ${TRUNK#*:}/${FILE%/}"
 	done
+}
+
+# Just show what a given command would do
+#
+# @param ... - command with arguments
+dry()
+{
+	TRUNK_OPTIONS="--dry-run $TRUNK_OPTIONS" $@
 }
 
 # Print help; use "help NAME" to show details
@@ -74,8 +84,8 @@ help()
 	done < $0
 }
 
-readonly TRUNK=${TRUNK:-'hhsw.de@ssh.strato.de:cache'}
-readonly TRUNK_OPTIONS=${TRUNK_OPTIONS:-'
+TRUNK=${TRUNK:-'hhsw.de@ssh.strato.de:cache'}
+TRUNK_OPTIONS=${TRUNK_OPTIONS:-'
 	--stats
 	--verbose
 	--exclude="*.swp"
