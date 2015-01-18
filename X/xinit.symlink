@@ -1,0 +1,15 @@
+[[ -f ~/.Xresources ]] && xrdb -merge ~/.Xresources
+
+case ${2:-fluxbox} in
+	cwm)
+		xsetroot -solid '#23603f'
+		piedock
+		exec /usr/bin/cwm
+		;;
+	fluxbox)
+		xsetroot -solid '#002b36'
+		piedock
+		qbat &
+		exec /usr/bin/fluxbox
+		;;
+esac
