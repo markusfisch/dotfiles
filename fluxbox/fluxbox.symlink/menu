@@ -1,0 +1,15 @@
+[begin] (Menu)
+	[exec] (Terminal) {xterm}
+
+	[submenu] (Settings)
+		[config] (Configure)
+		[submenu] (Styles) {Choose a style...}
+			[stylesdir] (~/.fluxbox/styles)
+		[end]
+		[workspaces] (Workspace List)
+		[reconfig] (Reload config)
+		[restart] (Restart)
+	[end]
+
+	[exit] (Exit)
+[end]

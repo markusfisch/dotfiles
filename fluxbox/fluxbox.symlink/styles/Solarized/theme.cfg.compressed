@@ -1,0 +1,20 @@
+bevelWidth: 0
+borderColor: #586e75
+borderWidth: 1
+handleWidth: 0
+frameWidth: 0
+marginWidth: 0
+
+*justify: Center
+*font: Vera-8
+*color: #586e75
+*picColor: #586e75
+*pixmap: empty.xpm
+*pressed.pixmap: empty.xpm
+*unfocused.pixmap: empty.xpm
+*textColor: #fdf6e3
+
+window.title.height: 24
+window.title.unfocus.color: #657b83
+toolbar.height: 20
+menu.hilite.color: #657b83
