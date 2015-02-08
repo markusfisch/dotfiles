@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# Cut sprites from atlas
+#
+# @param 1 - atlas file
+sprites()
+{
+	local PREFIX=${PREFIX:-sprite}
+	local WIDTH=${WIDTH:-16}
+	local HEIGHT=${HEIGHT:-$WIDTH}
+	local ATLAS_WIDTH=`identify -format '%w %h' $1`
+	local ATLAS_HEIGHT=${ATLAS_WIDTH##* }
+	ATLAS_WIDTH=${ATLAS_WIDTH%% *}
+	local X Y N=0
+
+	for (( Y=0; Y < ATLAS_HEIGHT; Y += HEIGHT ))
+	do
+		for (( X=0; X < ATLAS_WIDTH; X += WIDTH ))
+		do
+			convert \
+				$1 \
+				-crop ${WIDTH}x${HEIGHT}+${X}+${Y} \
+				+repage \
+				${PREFIX}$(( N++ ))'.png'
+		done
+	done
+}
+
+if [ $BASH_SOURCE == $0 ]
+then
+	if (( $# < 1 ))
+	then
+		echo "usage: ${0##*/} ATLAS..."
+	else
+		for F in $@
+		do
+			sprites $F
+		done
+	fi
+fi
