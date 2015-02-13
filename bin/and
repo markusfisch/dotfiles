@@ -40,7 +40,7 @@ activity()
 # Clean builds & resources
 clean()
 {
-	rm -rf bin gen obj out
+	ant clean
 }
 
 # Build only
