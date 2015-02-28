@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# Format source files in what appears to be the most popular style
+#
+# @param ... - source files
+internet()
+{
+	astyle \
+		--suffix=none \
+		--unpad-paren \
+		--style=linux \
+		--indent=spaces=4 \
+		"$@"
+}
+
+# Format source files in Markus Fisch' style
+#
+# @param ... - source files
+markusfisch()
+{
+	astyle \
+		--suffix=none \
+		--unpad-paren \
+		--pad-paren-in \
+		--style=allman \
+		--indent=force-tab \
+		--min-conditional-indent=0 \
+		--max-instatement-indent=0 \
+		"$@"
+}
+
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	if (( $# < 2 ))
+	then
+		cat <<EOF
+usage: ${0##*/} STYLE FILE...
+
+Where STYLE can be one of the following:
+
+EOF
+
+		DESC=
+		while read
+		do
+			case $REPLY in
+				*\(\))
+					[ "$DESC" ] || continue
+					echo ${REPLY%(*} '-' $DESC
+					DESC=
+					;;
+				\#\ *)
+					[ "$DESC" ] && continue
+					DESC=${REPLY#*#}
+					;;
+			esac
+		done < $0
+
+		exit 1
+	else
+		STYLE=$1
+		shift
+		${STYLE} "$@"
+	fi
+fi
