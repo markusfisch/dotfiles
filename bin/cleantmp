@@ -10,7 +10,8 @@ clean_temp()
 	for F in \
 		'.DS_Store' \
 		'Thumbs.db' \
-		'*~'
+		'*~' \
+		'._*'
 	do
 		find "$R" -name "$F" -exec rm {} \;
 	done
