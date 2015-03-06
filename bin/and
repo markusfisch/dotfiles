@@ -43,7 +43,7 @@ clean()
 	ant clean
 }
 
-# Build only
+# Build
 #
 # @param ... - additional build arguments
 build()
@@ -144,6 +144,13 @@ emu()
 	emulator -avd ${AVD%.avd} &
 }
 
+# Set up a debugging session for a Android Wear device
+wearable()
+{
+	adb forward tcp:4444 localabstract:/adb-hub
+	adb connect localhost:4444
+}
+
 # Print memory info
 #
 # @param 1 - package name (optional)
@@ -196,7 +203,7 @@ latest_target()
 	android list target -c | grep android | tail -n 1
 }
 
-# Update existing sources with build.xml file
+# Update existing sources with a build.xml file
 update()
 {
 	[ -r project.properties ] ||
@@ -268,4 +275,7 @@ help()
 	done < $0
 }
 
-${@:-debug}
+if [ "$BASH_SOURCE" == $0 ]
+then
+	${@:-debug}
+fi
