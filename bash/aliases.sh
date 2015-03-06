@@ -50,7 +50,7 @@ alias sag='LNG=de say'
 # Android
 type adb &>/dev/null && {
 	alias ad='adb devices'
-	alias a='andgrdl'
+	alias a='and'
 	alias ab='a build'
 	alias ac='a clean'
 }
