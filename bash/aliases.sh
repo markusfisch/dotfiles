@@ -56,5 +56,5 @@ type adb &>/dev/null && {
 }
 
 # Make
-alias m='make'
+alias m='makep'
 alias mc='m clean'
