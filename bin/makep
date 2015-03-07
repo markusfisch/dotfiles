@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Find a Makefile in a parent directory and run it
+#
+# @param ... - make arguments (optional)
+makep()
+{
+	local LEVELS=${LEVELS:-3}
+
+	while (( LEVELS-- ))
+	do
+		[ -r "Makefile" ] && break
+		cd ..
+	done
+
+	make "$@"
+}
+
+if [ "$BASH_SOURCE" == $0 ]
+then
+	makep "$@"
+fi
