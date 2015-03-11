@@ -57,6 +57,7 @@ hi Directory ctermfg=254
 hi ErrorMsg ctermbg=206
 hi Folded ctermfg=243 ctermbg=NONE
 hi FoldColumn ctermfg=251 ctermbg=235
+hi HtmlLink ctermfg=149 ctermbg=NONE
 hi LineNr ctermfg=238 ctermbg=NONE
 hi MatchParen ctermfg=253 ctermbg=242
 hi ModeMsg ctermfg=149
@@ -68,6 +69,7 @@ hi Question ctermfg=149
 hi Search ctermfg=232 ctermbg=149
 hi StatusLine ctermfg=234 ctermbg=243
 hi StatusLineNC ctermfg=234 ctermbg=238
+hi Title ctermfg=254 ctermbg=NONE
 hi VertSplit ctermfg=239 ctermbg=NONE
 hi Visual ctermbg=237
 hi WarningMsg ctermfg=206
