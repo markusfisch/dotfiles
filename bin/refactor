@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
-# Refactor
+# Refactor file and directory names as well as words in files
 #
 # @param 1 - case-sensitive pattern to replace
-# @param 2 - replacement
+# @param 2 - replacement string
+# @param 3 - working directory (optional)
 refactor()
 {
 	local PATTERN=$1
@@ -19,7 +20,7 @@ refactor()
 	local T F N
 	for T in d f
 	do
-		find $DIR -type $T -name "*$PATTERN*" | while read F
+		find "$DIR" -type $T -name "*$PATTERN*" | while read F
 		do
 			N=${F//$PATTERN/$REPLACEMENT}
 			echo "renaming $F to $N"
@@ -31,9 +32,9 @@ refactor()
 	grep -rl "$PATTERN" "$DIR"/* | while read F
 	do
 		echo "replacing pattern in $F"
-		sed -e "s/$PATTERN/$REPLACEMENT/g" < "$F" > $TMP &&
-			cat $TMP > "$F"
-		rm -f $TMP
+		sed -e "s/$PATTERN/$REPLACEMENT/g" < "$F" > "$TMP" &&
+			cat "$TMP" > "$F"
+		rm -f "$TMP"
 	done
 }
 
