@@ -25,6 +25,14 @@ atlas_cache_summarize()
 
 		echo "$FILE -geometry +$X+$Y -composite" >> $CACHE/args
 
+		if (( BORDER > 0 ))
+		then
+			(( X += BORDER ))
+			(( Y += BORDER ))
+			(( W -= BORDER*2 ))
+			(( H -= BORDER*2 ))
+		fi
+
 		local NAME=${FILE##*/}
 		echo "${NAME%.*}:{x:$X,y:$Y,w:$W,h:$H},"
 	done
