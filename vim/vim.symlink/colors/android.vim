@@ -59,7 +59,7 @@ hi Folded ctermfg=243 ctermbg=NONE
 hi FoldColumn ctermfg=251 ctermbg=235
 hi HtmlLink ctermfg=149 ctermbg=NONE
 hi LineNr ctermfg=238 ctermbg=NONE
-hi MatchParen ctermfg=253 ctermbg=242
+hi MatchParen ctermfg=235 ctermbg=149
 hi ModeMsg ctermfg=149
 hi MoreMsg ctermfg=149
 hi NonText ctermfg=239 ctermbg=NONE
