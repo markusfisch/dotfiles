@@ -9,7 +9,7 @@ let g:colors_name = "android"
 
 hi Normal ctermfg=251 ctermbg=235
 
-hi Comment ctermfg=149 ctermbg=NONE
+hi Comment ctermfg=81 ctermbg=NONE
 
 hi Constant ctermfg=149 ctermbg=NONE
 hi link String Constant
