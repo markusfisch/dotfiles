@@ -1,14 +1,14 @@
 Xcursor.theme: pGentoo-24
 
-*color0: #afd75f
+*color0: #262626
 *color1: #ff5fdf
-*color2: #5fd7ff
-*color3: #e4e4e4
-*color4: #e4e4e4
-*color5: #e4e4e4
-*color6: #e4e4e4
-*color7: #e4e4e4
-*color9: #e4e4e4
+*color2: #afd75f
+*color3: #585858
+*color4: #626262
+*color5: #6c6c6c
+*color6: #767676
+*color7: #8a8a8a
+*color9: #808080
 *color8: #e4e4e4
 *color10: #e4e4e4
 *color11: #e4e4e4
