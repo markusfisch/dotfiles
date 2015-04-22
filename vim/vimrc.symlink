@@ -21,7 +21,7 @@ set background=dark
 "let g:solarized_termcolors=256
 
 set t_Co=256
-color solarized
+color android
 
 " Always show as much as possible of the last line instead of @
 set display+=lastline
