@@ -1,0 +1,159 @@
+#!/usr/bin/env bash
+
+# List available skeletons
+list()
+{
+	local SKELETON
+	for SKELETON in ${SKELETONS}/*
+	do
+		[ -d "$SKELETON" ] || continue
+		echo ${SKELETON##*/}
+	done
+}
+
+# Create a new project
+#
+# @param 1 - skeleton name
+# @param 2 - name of new project
+new()
+{
+	(( $# < 2 )) && return 1
+
+	cp -ri "$SKELETONS/$1" "$2" || return $?
+
+	# sub shell to preserve working directory when this file is sourced
+	(
+		cd "$2" || return $?
+
+		local INIT=${BASH_SOURCE##*/}.sh
+		if [ -f "$INIT" ]
+		then
+			source "$INIT" || return $?
+			rm "$INIT"
+		fi
+	)
+}
+
+# Add a new skeleton from a git repository
+#
+# @param 1 - repository
+# @param 2 - skeleton name, when deviating (optional)
+add()
+{
+	(( $# < 1 )) && return 1
+
+	[ -d "$SKELETONS" ] || mkdir -p "$SKELETONS" || return $?
+
+	# sub shell to preserve working directory when this file is sourced
+	(
+		cd "$SKELETONS" || return $?
+		git clone $@ || return $?
+	)
+
+	# add a vanilla skel.sh
+	local NAME=$2
+
+	if [ -z $NAME ]
+	then
+		NAME=${1##*/}
+		NAME=${NAME%.*}
+	fi
+
+	cat << EOF > "$SKELETONS/$NAME/skel.sh"
+#!/usr/bin/env bash
+# init script for
+# https://gist.github.com/markusfisch/5e73a372241231a3a7c8
+
+#refactor 'AppName' "\${PWD##*/}"
+EOF
+}
+
+# Refactor in file contents and file/directory names
+#
+# @param 1 - case-sensitive pattern to replace
+# @param 2 - replacement string
+# @param 3 - working directory (optional)
+refactor()
+{
+	local PATTERN=$1
+	local REPLACEMENT=$2
+	local DIR=${3:-.}
+
+	(( $# < 2 )) && return 1
+
+	# rename directories before files
+	local T F N
+	for T in d f
+	do
+		find "$DIR" -type $T -name "*$PATTERN*" | while read F
+		do
+			N=${F//$PATTERN/$REPLACEMENT}
+			mv "$F" "$N"
+		done
+	done
+
+	local TMP=".tmp-${BASH_SOURCE##*/}-$$"
+	grep -rl "$PATTERN" "$DIR"/* | while read F
+	do
+		sed -e "s/$PATTERN/$REPLACEMENT/g" < "$F" > $TMP &&
+			cat $TMP > "$F"
+		rm -f $TMP
+	done
+}
+
+# Print help; use "help NAME" to show details
+#
+# @param ... - name of a command (optional)
+help()
+{
+	(( $# > 0 )) && {
+		type $@
+		return $?
+	}
+
+	cat << EOF
+            ___
+          ´     \`             ___
+          ( ) ( )           ´     \`
+          \`.(").´           ( ) ( )
+           |===|            \`.(").´
+           \`---´             |===|
+             o               \`---´
+       _--.--o--.--_            o
+      ()\.-- o --./()     _--.--o--.--_
+      |  .-- o --.  |    ()\.-- o --./()
+      |  .-- o --.  |    |  .-- o --.  |
+
+usage: ${BASH_SOURCE##*/} COMMAND [ARGUMENT...]
+
+COMMAND may be one of:
+
+EOF
+
+	local DESC=
+
+	while read
+	do
+		case $REPLY in
+			'')
+				DESC=
+				;;
+			\#\ *)
+				[ "$DESC" ] && continue
+				DESC=${REPLY#*#}
+				;;
+			*\(\))
+				[ "$DESC" ] || continue
+				echo ${REPLY%(*} '-' $DESC
+				DESC=
+				;;
+		esac
+	done < $BASH_SOURCE
+}
+
+readonly SKELETONS=${SKELETONS:-$HOME/src/${BASH_SOURCE##*/}}
+
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	${@:-help}
+fi
