@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# Add a subtree from a repository
+#
+# @param 1 - URL of repository
+# @param 2 - prefix for repository directory (optional)
+add()
+{
+	local NAME=${1##*/}
+	NAME=${NAME%.*}
+
+	[ "$NAME" ] || return $?
+
+	git remote add $NAME $1 &&
+		git fetch --no-tags $NAME &&
+		git read-tree --prefix=$2$NAME -u $NAME/master
+}
+	
+# Update subtree
+#
+# @param 1 - name of remote repository
+update()
+{
+	[ "$1" ] || return $?
+
+	git fetch --no-tags $1 &&
+		git merge -s subtree --squash $1/master
+}
+
+# Print help
+help()
+{
+	cat <<EOF
+usage: git sub add    <repository> <prefix>
+   or: git sub update <remote>
+EOF
+}
+
+if [ "$0" == "$BASH_SOURCE" ]
+then
+	${@:-help}
+fi
