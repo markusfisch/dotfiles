@@ -21,7 +21,7 @@ Xcursor.theme: pGentoo-24
 *foreground: #c6c6c6
 
 ! xterm
-xterm*faceName: Luxi Mono
+xterm*faceName: Curier
 xterm*faceSize: 8
 xterm*scrollBar: false
 xterm*colorBDMode: false
