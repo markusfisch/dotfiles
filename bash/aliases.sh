@@ -1,5 +1,9 @@
 # Shortcuts for built-in's
 alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
 alias l='ls'
 alias ll='ls -l'
 alias la='ls -la'
@@ -7,6 +11,9 @@ alias lf='printf "%s\n"'
 alias h='history'
 alias hc='history -c'
 alias j='jobs'
+
+# Grep
+alias grl='grep -rl'
 
 # Editing
 alias e='edit'
