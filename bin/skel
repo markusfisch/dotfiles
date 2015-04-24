@@ -46,8 +46,8 @@ add()
 
 	# sub shell to preserve working directory when this file is sourced
 	(
-		cd "$SKELETONS" || return $?
-		git clone $@ || return $?
+		cd "$SKELETONS" &&
+			git clone $@ || return $?
 	)
 
 	# add a vanilla skel.sh
