@@ -48,7 +48,7 @@ Mod4 F :ExecCommand firefox
 Mod4 G :ExecCommand gimp
 Mod4 I :ExecCommand inkscape
 Mod4 O :ExecCommand opera
-Mod4 R :ExecCommand fbrun -bg '#fdf6e3' -fg '#657b83'
+Mod4 R :ExecCommand fbrun
 Mod4 Shift R :Reconfigure
 Mod4 T :ExecCommand xterm
 Mod4 X :ExecCommand xterm
