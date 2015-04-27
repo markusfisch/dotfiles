@@ -21,7 +21,7 @@ new()
 
 	cp -ri "$SKELETONS/$1" "$2" || return $?
 
-	# sub shell to preserve working directory when this file is sourced
+	# preserve working directory when sourced
 	(
 		cd "$2" || return $?
 
@@ -29,7 +29,7 @@ new()
 		if [ -f "$INIT" ]
 		then
 			source "$INIT" || return $?
-			rm "$INIT"
+			rm -f "$INIT"
 		fi
 	)
 }
@@ -44,28 +44,18 @@ add()
 
 	[ -d "$SKELETONS" ] || mkdir -p "$SKELETONS" || return $?
 
-	# sub shell to preserve working directory when this file is sourced
+	# preserve working directory when sourced
 	(
 		cd "$SKELETONS" &&
-			git clone $@ || return $?
-	)
-
-	# add a vanilla skel.sh
-	local NAME=$2
-
-	if [ -z $NAME ]
-	then
-		NAME=${1##*/}
-		NAME=${NAME%.*}
-	fi
-
-	cat << EOF > "$SKELETONS/$NAME/skel.sh"
+			git clone $@ &&
+			cat << EOF > ${BASH_SOURCE##*/}.sh
 #!/usr/bin/env bash
 # init script for
 # https://gist.github.com/markusfisch/5e73a372241231a3a7c8
 
 #refactor 'AppName' "\${PWD##*/}"
 EOF
+	)
 }
 
 # Refactor in file contents and file/directory names
