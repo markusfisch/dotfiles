@@ -11,7 +11,7 @@ list()
 	done
 }
 
-# Create a new project
+# Create a new project from a skeleton
 #
 # @param 1 - skeleton name
 # @param 2 - name of new project
@@ -28,10 +28,55 @@ new()
 		local INIT=${BASH_SOURCE##*/}.sh
 		if [ -f "$INIT" ]
 		then
-			source "$INIT" || return $?
+			bash "$INIT" || return $?
 			rm -f "$INIT"
 		fi
 	)
+}
+
+# Create initialization script
+init()
+{
+	cat << EOF > ${BASH_SOURCE##*/}.sh
+#!/usr/bin/env bash
+# Run this script to initialize the template or use skel to do it for you:
+# https://gist.github.com/markusfisch/5e73a372241231a3a7c8
+
+# Refactor in file contents and file/directory names
+#
+# @param 1 - case-sensitive pattern to replace
+# @param 2 - replacement string
+# @param 3 - working directory (optional)
+refactor()
+{
+	local PATTERN=\$1
+	local REPLACEMENT=\$2
+	local DIR=\${3:-.}
+
+	(( \$# < 2 )) && return 1
+
+	# rename directories before files
+	local T F N
+	for T in d f
+	do
+		find "\$DIR" -type \$T -name "*\$PATTERN*" | while read F
+		do
+			N=\${F//\$PATTERN/\$REPLACEMENT}
+			mv "\$F" "\$N"
+		done
+	done
+
+	local TMP=".tmp-\${BASH_SOURCE##*/}-\$\$"
+	grep -rl "\$PATTERN" "\$DIR"/* | while read F
+	do
+		sed -e "s/\$PATTERN/\$REPLACEMENT/g" < "\$F" > \$TMP &&
+			cat \$TMP > "\$F"
+		rm -f \$TMP
+	done
+}
+
+#refactor 'AppName' "\${PWD##*/}"
+EOF
 }
 
 # Add a new skeleton from a git repository
@@ -48,59 +93,15 @@ add()
 	(
 		cd "$SKELETONS" &&
 			git clone $@ &&
-			cat << EOF > ${BASH_SOURCE##*/}.sh
-#!/usr/bin/env bash
-# init script for
-# https://gist.github.com/markusfisch/5e73a372241231a3a7c8
-
-#refactor 'AppName' "\${PWD##*/}"
-EOF
+			init
 	)
 }
 
-# Refactor in file contents and file/directory names
-#
-# @param 1 - case-sensitive pattern to replace
-# @param 2 - replacement string
-# @param 3 - working directory (optional)
-refactor()
-{
-	local PATTERN=$1
-	local REPLACEMENT=$2
-	local DIR=${3:-.}
-
-	(( $# < 2 )) && return 1
-
-	# rename directories before files
-	local T F N
-	for T in d f
-	do
-		find "$DIR" -type $T -name "*$PATTERN*" | while read F
-		do
-			N=${F//$PATTERN/$REPLACEMENT}
-			mv "$F" "$N"
-		done
-	done
-
-	local TMP=".tmp-${BASH_SOURCE##*/}-$$"
-	grep -rl "$PATTERN" "$DIR"/* | while read F
-	do
-		sed -e "s/$PATTERN/$REPLACEMENT/g" < "$F" > $TMP &&
-			cat $TMP > "$F"
-		rm -f $TMP
-	done
-}
-
-# Print help; use "help NAME" to show details
+# Print help
 #
 # @param ... - name of a command (optional)
 help()
 {
-	(( $# > 0 )) && {
-		type $@
-		return $?
-	}
-
 	cat << EOF
             ___
           ´     \`             ___
@@ -125,7 +126,7 @@ EOF
 	while read
 	do
 		case $REPLY in
-			'')
+			''|refactor*)
 				DESC=
 				;;
 			\#\ *)
