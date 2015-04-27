@@ -15,7 +15,7 @@ add()
 		git fetch --no-tags $NAME &&
 		git read-tree --prefix=$2$NAME -u $NAME/master
 }
-	
+
 # Update subtree
 #
 # @param 1 - name of remote repository
