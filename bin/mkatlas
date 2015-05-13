@@ -8,8 +8,6 @@ atlas_cache_compose()
 		xc:transparent \
 		`< $CACHE/args` \
 		-strip \
-		-trim \
-		-bordercolor none -border $BORDER \
 		"${ATLAS:-atlas.png}"
 }
 
