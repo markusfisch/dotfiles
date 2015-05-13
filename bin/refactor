@@ -17,24 +17,25 @@ refactor()
 	}
 
 	# rename directories before files
-	local T F N
-	for T in d f
+	local TYPE REFACTORED
+	for TYPE in d f
 	do
-		find "$DIR" -type $T -name "*$PATTERN*" | while read F
+		find "$DIR" -type $TYPE -name "*$PATTERN*" | while read
 		do
-			N=${F//$PATTERN/$REPLACEMENT}
-			echo "renaming $F to $N"
-			mv "$F" "$N"
+			REFACTORED=${REPLY//$PATTERN/$REPLACEMENT}
+			echo "renaming $REPLY to $REFACTORED"
+			mv "$REPLY" "$REFACTORED"
 		done
 	done
 
 	local TMP=".tmp-${0##*/}-$$"
-	grep -rl "$PATTERN" "$DIR"/* | while read F
+	grep -rl "$PATTERN" "$DIR"/* | while read
 	do
-		echo "replacing pattern in $F"
-		sed -e "s/$PATTERN/$REPLACEMENT/g" < "$F" > "$TMP" &&
-			cat "$TMP" > "$F"
-		rm -f "$TMP"
+		echo "replacing pattern in $REPLY"
+		sed -e "s/$PATTERN/$REPLACEMENT/g" < "$REPLY" > $TMP &&
+			cat $TMP > "$REPLY"
+
+		rm -f $TMP
 	done
 }
 
