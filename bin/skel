@@ -56,7 +56,7 @@ refactor()
 	(( \$# < 2 )) && return 1
 
 	# rename directories before files
-	local TYPE N
+	local TYPE
 	for TYPE in d f
 	do
 		find "\$DIR" -type \$TYPE -name "*\$PATTERN*" | while read
