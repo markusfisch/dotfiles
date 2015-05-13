@@ -56,21 +56,24 @@ refactor()
 	(( \$# < 2 )) && return 1
 
 	# rename directories before files
-	local T F N
-	for T in d f
+	local TYPE N
+	for TYPE in d f
 	do
-		find "\$DIR" -type \$T -name "*\$PATTERN*" | while read F
+		find "\$DIR" -type \$TYPE -name "*\$PATTERN*" | while read
 		do
-			N=\${F//\$PATTERN/\$REPLACEMENT}
-			mv "\$F" "\$N"
+			mv "\$REPLY" "\${REPLY//\$PATTERN/\$REPLACEMENT}"
 		done
 	done
 
-	local TMP=".tmp-\${BASH_SOURCE##*/}-\$\$"
-	grep -rl "\$PATTERN" "\$DIR"/* | while read F
+	local BASH_SOURCE_FILE=\${BASH_SOURCE##*/}
+	local TMP=".tmp-\$BASH_SOURCE_FILE-$$"
+	grep -rl "\$PATTERN" "\$DIR"/* | while read
 	do
-		sed -e "s/\$PATTERN/\$REPLACEMENT/g" < "\$F" > \$TMP &&
-			cat \$TMP > "\$F"
+		[ \${REPLY##*/} == \$BASH_SOURCE_FILE ] && continue
+
+		sed -e "s/\$PATTERN/\$REPLACEMENT/g" < "\$REPLY" > \$TMP &&
+			cat \$TMP > "\$REPLY"
+
 		rm -f \$TMP
 	done
 }
