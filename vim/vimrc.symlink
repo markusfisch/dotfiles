@@ -120,4 +120,4 @@ function! ToggleHexMode()
 		%!xxd -r
 	endif
 endfunc
-nnoremap <C-h> :call ToggleHexMode()<CR>
+nnoremap <F7> :call ToggleHexMode()<CR>
