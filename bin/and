@@ -249,6 +249,16 @@ create()
 		--path .
 }
 
+# Start intent to view given data
+#
+# @param 1 - data
+view()
+{
+	adb shell am start \
+		-a android.intent.action.VIEW \
+		-d "${1:-http://www.google.com}"
+}
+
 # Print help; use "help NAME" to show details
 help()
 {
