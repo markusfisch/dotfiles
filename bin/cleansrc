@@ -15,11 +15,14 @@ clean_sources()
 			*/Makefile)
 				(cd "$D" && make clean)
 				;;
-			*/AndroidManifest.xml)
-				(cd "$D" && and clean)
+			*/build.xml)
+				(cd "$D" && ant clean)
+				;;
+			*/gradlew)
+				(cd "$D" && ./gradlew clean)
 				;;
 			*.o)
-				rm -r "$F";
+				rm "$F";
 				;;
 		esac
 
