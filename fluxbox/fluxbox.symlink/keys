@@ -66,4 +66,9 @@ Mod4 7 :MacroCmd {MoveTo 0 385 TopLeft} {ResizeTo 682 383} {Raise}
 Mod4 8 :MacroCmd {MoveTo 0 385 TopLeft} {ResizeTo 1366 383} {Raise}
 Mod4 9 :MacroCmd {MoveTo 684 385 TopLeft} {ResizeTo 682 383} {Raise}
 
+Mod4 H :MacroCmd {MoveTo 0 0 TopLeft} {ResizeTo 682 768} {Raise}
+Mod4 J :MacroCmd {MoveTo 0 0 TopLeft} {ResizeTo 1366 383} {Raise}
+Mod4 K :MacroCmd {MoveTo 0 385 TopLeft} {ResizeTo 1366 383} {Raise}
+Mod4 L :MacroCmd {MoveTo 684 0 TopLeft} {ResizeTo 682 768} {Raise}
+
 None Menu :RootMenu
