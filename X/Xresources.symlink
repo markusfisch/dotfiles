@@ -18,7 +18,7 @@ Xcursor.theme: pGentoo-24
 *color15: #e4e4e4
 
 *background: #262626
-*foreground: #c6c6c6
+*foreground: #eeeeee
 
 ! xterm
 xterm*faceName: Curier
