@@ -167,6 +167,30 @@ stats()
 	adb shell dumpsys procstats ${1:-`package`}
 }
 
+# Broadcast action
+#
+# @param 1 - full action name
+broadcast()
+{
+	adb shell am broadcast -a $1
+}
+
+# Broadcast new battery status
+#
+# @param 1 - "low" or "okay"
+battery()
+{
+	broadcast android.intent.action.BATTERY_`echo $1 | tr a-z A-Z`
+}
+
+# Broadcast new power status
+#
+# @param 1 - "connected" or "disconnected"
+power()
+{
+	broadcast android.intent.action.ACTION_POWER_`echo $1 | tr a-z A-Z`
+}
+
 # Dump services of given package
 #
 # @param 1 - package name (optional)
@@ -259,27 +283,33 @@ view()
 		-d "${1:-http://www.google.com}"
 }
 
-# Print help; use "help NAME" to show details
+# Print help
+#
+# @param 1 - name of command
 help()
 {
-	(( $# > 0 )) && {
-		type $@
-		return $?
-	}
-
-	local DESC=
+	local DESC= NAME=
 
 	while read
 	do
 		case $REPLY in
-			*\(\))
-				[ "$DESC" ] || continue
-				echo ${REPLY%(*} '-' $DESC
+			'')
 				DESC=
 				;;
 			\#\ *)
-				[ "$DESC" ] && continue
-				DESC=${REPLY#*#}
+				if [ "$DESC" ]
+				then
+					[ $1 ] && DESC=$DESC${DESC:+$'\n'}$'    '${REPLY#*# @param }
+				else
+					DESC=${REPLY#*# }
+				fi
+				;;
+			*\(\))
+				[ "$DESC" ] || continue
+				NAME=${REPLY%(*}
+				[ $1 ] && [ "$NAME" != "$1" ] && continue
+				echo $NAME '-' "$DESC"
+				DESC=
 				;;
 		esac
 	done < $0
