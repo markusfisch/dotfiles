@@ -5,7 +5,7 @@
 # @param 1 - atlas file
 sprites()
 {
-	local PREFIX=${PREFIX:-sprite}
+	local PREFIX=${PREFIX:-${1%.*}}
 	local WIDTH=${WIDTH:-16}
 	local HEIGHT=${HEIGHT:-$WIDTH}
 	local ATLAS_WIDTH=`identify -format '%w %h' $1`
