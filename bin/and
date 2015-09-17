@@ -191,6 +191,26 @@ power()
 	broadcast android.intent.action.ACTION_POWER_`echo $1 | tr a-z A-Z`
 }
 
+# Record screen and fetch video file
+#
+# @param 1 - file name of output video (optional)
+screenrecord()
+{
+	local FILE="./sdcard/${1:-screenrecord-`date +%Y%m%d%H%M%S`.mp4}"
+
+	fetch_screenrecord()
+	{
+		echo "Fetching $FILE"
+		sleep 1
+		adb pull "$FILE" && adb shell rm "$FILE"
+	}
+
+	echo 'Press Ctrl+C to stop recording'
+	trap fetch_screenrecord INT
+	adb shell screenrecord --verbose "$FILE"
+	trap - INT
+}
+
 # Dump services of given package
 #
 # @param 1 - package name (optional)
