@@ -40,9 +40,10 @@ set hlsearch
 au FileType html,tex,markdown set wrap
 
 " Additional file types
-au BufNewFile,BufRead *.glsl setf glsl
-au BufNewFile,BufRead *.go setf go
-au BufNewFile,BufRead *.hx setf haxe
+au BufNewFile,BufRead *.glsl set filetype=glsl
+au BufNewFile,BufRead *.go set filetype=go
+au BufNewFile,BufRead *.hx set filetype=haxe
+au BufNewFile,BufRead *.md set filetype=markdown
 
 " Set a default file type
 au BufNewFile,BufRead * setf markdown
