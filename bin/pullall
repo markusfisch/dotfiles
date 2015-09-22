@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Pull all respositories in all direct subdirectories
+#
+# @param ... - directories to pull (optional)
+pull_all()
+{
+	local D
+
+	for D in ${@:-*}
+	do
+		D=${D%/}
+
+		[ -d "$D/.git" ] || continue
+
+		echo "pulling $D"
+		(cd $D && git pull) || [ "$FORCE" ] || {
+			read -p 'Continue? (y/n) ' -n 1
+			echo
+			[ $REPLY != 'y' ] && break
+		}
+	done
+}
+
+if [ "$BASH_SOURCE" == "$0" ]
+then
+	pull_all "$@"
+fi
