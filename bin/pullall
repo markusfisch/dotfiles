@@ -14,7 +14,7 @@ pull_all()
 		[ -d "$D/.git" ] || continue
 
 		echo "pulling $D"
-		(cd $D && git pull) || [ "$FORCE" ] || {
+		(cd $D && git pull origin master) || [ "$FORCE" ] || {
 			read -p 'Continue? (y/n) ' -n 1
 			echo
 			[ $REPLY != 'y' ] && break
