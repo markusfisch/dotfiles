@@ -35,16 +35,15 @@ smart_prompt()
 	PS1=${PS1}${COLOR_NONE}' '
 }
 
-case $TERM_PROGRAM in
-	Apple_Terminal)
-		PROMPT_PS1='›'
-		PROMPT_PS1_JOBS='»'
-		;;
-	*)
-		PROMPT_PS1='.'
-		PROMPT_PS1_JOBS=':'
-		;;
-esac
+if [[ $TERM_PROGRAM == *Apple_Terminal ]] ||
+	[[ $XTERM_LOCALE == *.utf8 ]]
+then
+	PROMPT_PS1='▷'
+	PROMPT_PS1_JOBS='▶'
+else
+	PROMPT_PS1='.'
+	PROMPT_PS1_JOBS=':'
+fi
 
 [[ $PROMPT_COMMAND == *smart_prompt* ]] ||
 	PROMPT_COMMAND='smart_prompt'${PROMPT_COMMAND:+;}$PROMPT_COMMAND
