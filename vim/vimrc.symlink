@@ -95,7 +95,7 @@ nnoremap <silent> <C-k> :bp<CR>
 function! UseTabs()
 	" Highlight tabs within lines, trailing whitespace and
 	" spaces at the beginning of lines
-	match errorMsg /[^\t]\zs\t\+\|\s\+$\|^[\t]*[ ]\+[\t]*[^\*]/
+	match errorMsg /[^\t]\zs\t\+\|\s\+$\|^[\t]*[ ]\+[\t]*[^\*]\|\%xa0/
 	set noexpandtab
 endfunc
 nnoremap <F5> :call UseTabs()<CR>
@@ -106,7 +106,7 @@ call UseTabs()
 " Use spaces
 function! UseSpaces()
 	" Highlight tabs
-	match errorMsg /[\t]/
+	match errorMsg /[\t]\|\%xa0/
 	set expandtab
 endfunc
 nnoremap <F6> :call UseSpaces()<CR>
