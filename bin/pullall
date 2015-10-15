@@ -17,7 +17,7 @@ pull_all()
 		(cd $D && git pull origin master) || [ "$FORCE" ] || {
 			read -p 'Continue? (y/n) ' -n 1
 			echo
-			[ $REPLY != 'y' ] && break
+			[ "$REPLY" != 'y' ] && break
 		}
 	done
 }
