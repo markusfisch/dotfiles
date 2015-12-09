@@ -44,6 +44,7 @@ au FileType html,tex,markdown set wrap
 au BufNewFile,BufRead *.glsl set filetype=glsl
 au BufNewFile,BufRead *.go set filetype=go
 au BufNewFile,BufRead *.hx set filetype=haxe
+au BufNewFile,BufRead *.kt set filetype=kotlin
 au BufNewFile,BufRead *.md set filetype=markdown
 
 " Set a default file type
