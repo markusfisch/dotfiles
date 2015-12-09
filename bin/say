@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+[ -x /usr/bin/say ] || {
+	/usr/bin/say $@
+	return $?
+}
+
 readonly LNG=${LNG:=en}
 readonly URL="http://translate.google.com/translate_tts?tl=${LNG}&q="
 readonly STOCK="${HOME}/.${0##*/}"
