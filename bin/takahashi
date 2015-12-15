@@ -209,20 +209,23 @@ EOF
 # @param ... - Markdown files to convert into slides
 generate()
 {
-	local MD
+	local FILE TITLE=$TITLE
 
-	for MD in "$@"
+	if [ -z "$TITLE" ]
+	then
+		TITLE=${1##*/}
+		TITLE=${TITLE%.*}
+		TITLE=${TITLE//[_-]/ }
+	fi
+
+	for FILE in "$@"
 	do
-		[ -r "$MD" ] || {
-			echo "error: $MD does NOT exist" >&2
+		[ -r "$FILE" ] || {
+			echo "error: $FILE does NOT exist" >&2
 			continue
 		}
 
-		local TITLE=${MD##*/}
-		TITLE=${TITLE%.*}
-		TITLE=${TITLE//[_-]/ }
-
-		markdown $MD
+		markdown $FILE
 	done | html
 }
 
