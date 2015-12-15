@@ -204,9 +204,9 @@ img
 EOF
 }
 
-# Generate a HTML5 presentation for each Markdown file
+# Generate a HTML5 presentation
 #
-# @param ... - Markdown files to convert into presentations
+# @param ... - Markdown files to convert into slides
 generate()
 {
 	local MD
@@ -222,8 +222,8 @@ generate()
 		TITLE=${TITLE%.*}
 		TITLE=${TITLE//[_-]/ }
 
-		markdown $MD | html > ${MD%.*}'.html'
-	done
+		markdown $MD
+	done | html
 }
 
 if [ $BASH_SOURCE == $0 ]
