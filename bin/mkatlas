@@ -3,8 +3,13 @@
 # Compose images into atlas
 atlas_cache_compose()
 {
+	local W=`< $CACHE/width` H=`< $CACHE/height`
+
+	(( W < MIN_SIZE )) && W=$MIN_SIZE
+	(( H < MIN_SIZE )) && H=$MIN_SIZE
+
 	[ -f $CACHE/args ] && convert \
-		-size "`< $CACHE/width`x`< $CACHE/height`" \
+		-size "${W}x${H}" \
 		xc:transparent \
 		`< $CACHE/args` \
 		-strip \
@@ -23,12 +28,12 @@ atlas_cache_summarize()
 
 		echo "$FILE -geometry +$X+$Y -composite" >> $CACHE/args
 
-		if (( BORDER > 0 ))
+		if (( MARGIN > 0 ))
 		then
-			(( X += BORDER ))
-			(( Y += BORDER ))
-			(( W -= BORDER*2 ))
-			(( H -= BORDER*2 ))
+			(( X += MARGIN ))
+			(( Y += MARGIN ))
+			(( W -= MARGIN*2 ))
+			(( H -= MARGIN*2 ))
 		fi
 
 		local NAME=${FILE##*/}
@@ -195,7 +200,7 @@ atlas_create()
 	local SRC
 	for SRC
 	do
-		local COPY="$TMPDIR/${SRC##*/}"
+		local COPY="$TMPDIR/${SRC##*/}" BORDER=
 
 		case ${SRC##*.} in
 			svg)
@@ -209,13 +214,30 @@ atlas_create()
 				;;
 		esac
 
+		if (( MARGIN > 0 ))
+		then
+			if [[ ${SRC##*/} == ${EXPAND:-tile_*} ]]
+			then
+				local W=`identify -format '%w,%h' "$SRC"`
+				H=$(( MARGIN*2+${W#*,} ))
+				W=$(( MARGIN*2+${W%,*} ))
+				BORDER="-set option:distort:viewport \
+					${W}x${H}-${MARGIN}-${MARGIN} \
+					-virtual-pixel Mirror \
+					-filter point \
+					-distort SRT 0 \
+					+repage"
+			else
+				BORDER="-border $MARGIN"
+			fi
+		fi
+
 		convert \
 			-background none \
 			"$SRC" \
-			-strip \
 			-bordercolor none -border 3x3 \
 			-trim \
-			-bordercolor none -border ${BORDER} \
+			$BORDER \
 			"$COPY"
 	done
 
@@ -223,7 +245,7 @@ atlas_create()
 	rm -rf $TMPDIR
 }
 
-readonly BORDER=${BORDER:-0}
+readonly MARGIN=${MARGIN:-0}
 
 if [ "$BASH_SOURCE" == "$0" ]
 then
