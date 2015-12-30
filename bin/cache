@@ -9,9 +9,9 @@ put()
 	for FILE
 	do
 		rsync \
-			$TRUNK_OPTIONS \
+			$RSYNC_OPTIONS \
 			"${FILE%/}" \
-			"${TRUNK%/}/"
+			"${CACHE%/}/"
 	done
 }
 
@@ -24,8 +24,8 @@ get()
 	for FILE
 	do
 		rsync \
-			$TRUNK_OPTIONS \
-			"${TRUNK%/}/${FILE%/}" \
+			$RSYNC_OPTIONS \
+			"${CACHE%/}/${FILE%/}" \
 			.
 	done
 }
@@ -35,7 +35,7 @@ get()
 # @param ... - files/directories (optional)
 ls()
 {
-	ssh ${TRUNK%:*} "ls ${TRUNK#*:}/$1"
+	ssh ${CACHE%:*} "ls ${CACHE#*:}/$1"
 }
 
 # Remove a file/directory
@@ -46,7 +46,7 @@ remove()
 	local FILE
 	for FILE
 	do
-		ssh ${TRUNK%:*} "rm -rf ${TRUNK#*:}/${FILE%/}"
+		ssh ${CACHE%:*} "rm -rf ${CACHE#*:}/${FILE%/}"
 	done
 }
 
@@ -55,7 +55,7 @@ remove()
 # @param ... - command with arguments
 dry()
 {
-	TRUNK_OPTIONS="--dry-run $TRUNK_OPTIONS" $@
+	RSYNC_OPTIONS="--dry-run $RSYNC_OPTIONS" $@
 }
 
 # Print help; use "help NAME" to show details
@@ -84,8 +84,8 @@ help()
 	done < $0
 }
 
-TRUNK=${TRUNK:-'hhsw.de@ssh.strato.de:cache'}
-TRUNK_OPTIONS=${TRUNK_OPTIONS:-'
+CACHE=${CACHE:-'hhsw.de@ssh.strato.de:cache'}
+RSYNC_OPTIONS=${RSYNC_OPTIONS:-'
 	--stats
 	--verbose
 	--exclude="*.swp"
