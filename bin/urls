@@ -10,7 +10,7 @@ open_urls()
 		type "$BROWSER" &>/dev/null && break
 	done
 
-	while read
+	while read -r
 	do
 		$BROWSER "$REPLY"
 		sleep .1

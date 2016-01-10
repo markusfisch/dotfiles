@@ -7,7 +7,7 @@ bars()
 	local EOL=${EOL:-$'\n'} MAX=${BARMAX:-0} VMAX=0 LMAX=0
 	local N=0 V L LN
 
-	while read V L
+	while read -r V L
 	do
 		(( V > MAX )) && MAX=$V
 
@@ -22,13 +22,13 @@ bars()
 		(( LN > VMAX )) && VMAX=$LN
 	done
 
-	local COUNT=$N COLUMNS=${COLUMNS:-`tput cols`}
+	local COUNT=$N COLUMNS=${COLUMNS:-$(tput cols)}
 	local HC=$(( COLUMNS/2 ))
 	(( LMAX > HC )) && LMAX=$(( HC ))
 
 	local BARCHAR=${BARCHAR:-#}
 	local BMAX=$(( COLUMNS-LMAX-VMAX-1 ))
-	local BAR= LSPACE=
+	local BAR='' LSPACE=''
 
 	if (( LMAX > 0 ))
 	then

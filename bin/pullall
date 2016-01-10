@@ -7,15 +7,15 @@ pull_all()
 {
 	local D
 
-	for D in ${@:-*}
+	for D in "${@:-*}"
 	do
 		D=${D%/}
 
 		[ -d "$D/.git" ] || continue
 
 		echo "pulling $D"
-		(cd $D && git pull origin master) || [ "$FORCE" ] || {
-			read -p 'Continue? (y/n) ' -n 1
+		(cd "$D" && git pull origin master) || [ "$FORCE" ] || {
+			read -r -p 'Continue? (y/n) ' -n 1
 			echo
 			[ "$REPLY" != 'y' ] && break
 		}

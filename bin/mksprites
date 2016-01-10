@@ -8,7 +8,8 @@ sprites()
 	local PREFIX=${PREFIX:-${1%.*}}
 	local WIDTH=${WIDTH:-16}
 	local HEIGHT=${HEIGHT:-$WIDTH}
-	local ATLAS_WIDTH=`identify -format '%w %h' $1`
+	local ATLAS_WIDTH
+	ATLAS_WIDTH=$(identify -format '%w %h' "$1")
 	local ATLAS_HEIGHT=${ATLAS_WIDTH##* }
 	ATLAS_WIDTH=${ATLAS_WIDTH%% *}
 	local X Y N=0
@@ -18,23 +19,23 @@ sprites()
 		for (( X=0; X < ATLAS_WIDTH; X += WIDTH ))
 		do
 			convert \
-				$1 \
-				-crop ${WIDTH}x${HEIGHT}+${X}+${Y} \
+				"$1" \
+				-crop "${WIDTH}x${HEIGHT}+${X}+${Y}" \
 				+repage \
-				${PREFIX}$(( N++ ))'.png'
+				"${PREFIX}$(( N++ )).png"
 		done
 	done
 }
 
-if [ $BASH_SOURCE == $0 ]
+if [ "$BASH_SOURCE" == "$0" ]
 then
 	if (( $# < 1 ))
 	then
 		echo "usage: ${0##*/} ATLAS..."
 	else
-		for F in $@
+		for F
 		do
-			sprites $F
+			sprites "$F"
 		done
 	fi
 fi

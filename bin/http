@@ -12,7 +12,7 @@ Accept-Language:$ACCEPT_LANGUAGE$CR
 Accept-Encoding:$ACCEPT_ENCODING$CR
 Connection:close$CR
 $CR
-${PAYLOAD:-`cat`}$CR
+${PAYLOAD:-$(cat)}$CR
 $CR
 EOF
 }
@@ -40,7 +40,7 @@ http()
 {
 	local CR=$'\r'
 	local REQUEST=${REQUEST:-http_request_get}
-	local AGENT=${AGENT:-"bash/$BASH_VERSION (`uname -sm`)"}
+	local AGENT=${AGENT:-"bash/$BASH_VERSION ($(uname -sm))"}
 	local ACCEPT=${ACCEPT:-'text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1'}
 	local ACCEPT_LANGUAGE=${ACCEPT_LANGUAGE:-'en'}
 	local ACCEPT_ENCODING=${ACCEPT_ENCODING:-'gzip, deflate'}
@@ -51,7 +51,7 @@ http()
 		HOST=${HOST%%/*}
 	}
 
-	exec 6<>/dev/tcp/$HOST/${2:-80}
+	exec 6<>/dev/tcp/"$HOST"/"${2:-80}"
 
 	$REQUEST && cat <&6
 
@@ -61,5 +61,5 @@ http()
 
 if [ "$BASH_SOURCE" == "$0" ]
 then
-	http $@
+	http "$@"
 fi

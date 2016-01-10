@@ -18,7 +18,7 @@ IGNORE=${IGNORE:-ChangeLog NEWS}
 SRC=${SRC:-configure}
 
 [ "$VERSION" ] || [ -r "$SRC" ] && {
-	VERSION=`grep 'VERSION=' "$SRC"`
+	VERSION=$(grep 'VERSION=' "$SRC")
 	VERSION=${VERSION##*=}
 }
 
@@ -28,7 +28,7 @@ SRC=${SRC:-configure}
 }
 
 # trim string
-VERSION=`echo $VERSION`
+VERSION=$(echo $VERSION)
 
 [[ $VERSION == [0-9]*\.[0-9]*\.[0-9]* ]] || {
 	echo "error: unsupported version format, expected x.x.x" >&2
@@ -75,7 +75,7 @@ echo "updating $VERSION to $NEW"
 VERSION=${VERSION//\./\\.}
 
 # use find because grep on OSX/BSD doesn't know --recursive
-for FILE in `find . -type f -exec grep -l "$VERSION" {} \;`
+for FILE in $(find . -type f -exec grep -l "$VERSION" {} \;)
 do
 	# alternatively, use --exclude= with GNU grep if available
 	[[ $IGNORE == *${FILE##*/}* ]] && continue
@@ -83,12 +83,12 @@ do
 	# ignore hidden files and directories
 	[[ $FILE == */\.* ]] && continue
 
-	TMP=`mktemp $FILE.XXXXXXXXXX`
+	TMP=$(mktemp "$FILE.XXXXXXXXXX")
 
-	if sed -e "s_${VERSION}_${NEW}_g" < $FILE > $TMP &&
-		mv $TMP $FILE
+	if sed -e "s_${VERSION}_${NEW}_g" < "$FILE" > "$TMP" &&
+		mv "$TMP" "$FILE"
 	then
-		echo $FILE
+		echo "$FILE"
 	else
 		echo "error: cannot process $FILE" >&2
 	fi

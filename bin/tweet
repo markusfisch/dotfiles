@@ -10,7 +10,7 @@ tweet()
 	# @param ... - request arguments
 	request()
 	{
-		curl -sL3 -b $CF -c $CF "$@"
+		curl -sL3 -b "$CF" -c "$CF" "$@"
 	}
 
 	# Extract and echo OAuth token from given URL
@@ -18,30 +18,31 @@ tweet()
 	# @param 1 - URL to retrieve token from
 	token()
 	{
-		local D=`request $1`
+		local D
+		D=$(request "$1")
 		D=${D##*authenticity_token}
 		D=${D#*value=\"}
-		echo ${D%%\"*}
+		echo "${D%%\"*}"
 	}
 
-	local CF URL='https://mobile.twitter.com' T=${@:-`cat`} RV=1
-	CF=`mktemp -t .${0##*/}-XXXX` || return 1
+	local CF URL='https://mobile.twitter.com' T=${*:-$(cat)} RV=1
+	CF=$(mktemp -t ".${0##*/}-XXXX") || return 1
 
 	# oauth requests
 	{
 		request \
-			-d "authenticity_token=`token $URL/session/new`&username=$TWITTER_USERNAME&password=$TWITTER_PASSWORD" \
+			-d "authenticity_token=$(token "$URL/session/new")&username=$TWITTER_USERNAME&password=$TWITTER_PASSWORD" \
 			$URL/session &&
 		request \
-			-d "authenticity_token=`token $URL/compose/tweet`&tweet[text]=${T// /+}&tweet[display_coordinates]=false" \
+			-d "authenticity_token=$(token "$URL/compose/tweet")&tweet[text]=${T// /+}&tweet[display_coordinates]=false" \
 			$URL &&
 		request \
-			-d "authenticity_token=`token $URL/account`" \
+			-d "authenticity_token=$(token "$URL/account")" \
 			$URL/session/destroy &&
 		RV=0
 	} &>/dev/null
 
-	rm -f $CF
+	rm -f "$CF"
 
 	return $RV
 }
@@ -51,7 +52,7 @@ tweet()
 # @param ... - text to cut (optional)
 snip()
 {
-	local TEXT=$@ LIMIT=${LIMIT:-140} GLUE=${GLUE:-'..'}
+	local TEXT=$* LIMIT=${LIMIT:-140} GLUE=${GLUE:-'..'}
 
 	(( LIMIT -= ${#GLUE} ))
 
@@ -63,10 +64,10 @@ snip()
 		(( N > 0 )) && echo -n "$GLUE"
 		if [ "$U" ]
 		then
-			echo -n $U
+			echo -n "$U"
 			TEXT=${TEXT:${#U}}
 		else
-			echo -n $S
+			echo -n "$S"
 			TEXT=${TEXT:$LIMIT}
 		fi
 		echo "$GLUE"
@@ -74,7 +75,7 @@ snip()
 	done
 
 	(( N > 0 )) && echo -n "$GLUE"
-	echo $TEXT
+	echo "$TEXT"
 }
 
 # Send message in one or more tweets
@@ -82,9 +83,9 @@ snip()
 # @param ... - message (optional)
 smart_tweet()
 {
-	snip "${@:-`cat`}" | while read
+	snip "${@:-$(cat)}" | while read -r
 	do
-		tweet $REPLY || break
+		tweet "$REPLY" || break
 	done
 }
 
@@ -95,16 +96,16 @@ then
 	# @param 1 - prompt
 	gets()
 	{
-		read -p $1': ' && echo $REPLY
+		read -r -p "$1: " && echo "$REPLY"
 	}
 
 	if (( $# ))
 	then
-		TWITTER_USERNAME=${TWITTER_USERNAME:-`gets 'user'`}
-		TWITTER_PASSWORD=${TWITTER_PASSWORD:-`gets 'pass'`}
+		TWITTER_USERNAME=${TWITTER_USERNAME:-$(gets 'user')}
+		TWITTER_PASSWORD=${TWITTER_PASSWORD:-$(gets 'pass')}
 	fi
 
-	if [ -z $TWITTER_USERNAME ] || [ -z $TWITTER_PASSWORD ]
+	if [ -z "$TWITTER_USERNAME" ] || [ -z "$TWITTER_PASSWORD" ]
 	then
 		echo 'error: you need to set a user name and a password'
 		exit 1

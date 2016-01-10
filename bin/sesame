@@ -9,7 +9,7 @@ open()
 	for A in "${@:-$ARCHIVE}"
 	do
 		stat "$A" && \
-			openssl enc -d $CIPHER < "$A" | \
+			openssl enc -d "$CIPHER" < "$A" | \
 			tar xjv && \
 			rm "$A"
 	done
@@ -23,14 +23,14 @@ close()
 {
 	local A=${1:-$ARCHIVE}
 	shift
-	local F=${@:-'.sesame'}
-	stat $F && \
-		tar cjv $F | \
-		openssl enc -e $CIPHER > $A && \
-		${UNLINK:-rm -rf} $F
+	local F=${*:-'.sesame'}
+	stat "$F" && \
+		tar cjv "$F" | \
+		openssl enc -e "$CIPHER" > "$A" && \
+		"${UNLINK:-rm -rf}" "$F"
 }
 
 readonly ARCHIVE=${ARCHIVE:-'.mnt'}
 readonly CIPHER=${CIPHER:-'-bf'}
 set -o pipefail
-$@ &>/dev/null
+"$@" &>/dev/null

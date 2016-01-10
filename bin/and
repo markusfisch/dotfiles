@@ -5,7 +5,7 @@
 # @param ... - patterns to find in order
 manifest()
 {
-	while read
+	while read -r
 	do
 		for (( ;; ))
 		do
@@ -15,7 +15,7 @@ manifest()
 					shift
 					(( $# > 0 )) && continue
 					REPLY=${REPLY%%\"*}
-					echo ${REPLY#.}
+					echo "${REPLY#.}"
 					return
 					;;
 			esac
@@ -48,7 +48,7 @@ clean()
 # @param ... - additional build arguments
 build()
 {
-	ant ${TARGET:-debug} $@
+	ant "${TARGET:-debug}" "$@"
 }
 
 # Build & install
@@ -62,7 +62,7 @@ install()
 # @param ... - package name (optional)
 uninstall()
 {
-	adb uninstall ${@:-`package`}
+	adb uninstall "${@:-$(package)}"
 }
 
 # Stress test given application
@@ -71,7 +71,7 @@ uninstall()
 # @param 2 - package name of application to test (optional)
 stress()
 {
-	adb shell monkey -p ${2:-`package`} -v ${1:-1000}
+	adb shell monkey -p "${2:-$(package)}" -v "${1:-1000}"
 }
 
 # Start given activity
@@ -79,7 +79,7 @@ stress()
 # @param 1 - full package and activity name (optional)
 start()
 {
-	adb shell "am start -n ${1:-`package`/.`activity`}"
+	adb shell "am start -n ${1:-$(package)/.$(activity)}"
 }
 
 # Build, install & run
@@ -87,22 +87,22 @@ run()
 {
 	local PACKAGE
 
-	PACKAGE=`package` &&
+	PACKAGE=$(package) &&
 		[ "$PACKAGE" ] &&
 		install &&
-		start "${PACKAGE}/.`activity`"
+		start "${PACKAGE}/.$(activity)"
 }
 
 # Run release, needs key.store & key.name to be set in ant.properties
 release()
 {
-	TARGET=release ${@:-run}
+	TARGET=release "${@:-run}"
 }
 
 # Run debug
 debug()
 {
-	TARGET=debug ${@:-run}
+	TARGET=debug "${@:-run}"
 }
 
 # List available emulators or only the requested one
@@ -121,10 +121,10 @@ emus()
 
 		if (( !I ))
 		then
-			printf "%3d %s\n" $N $AVD
+			printf "%3d %s\n" "$N" "$AVD"
 		elif (( N == I ))
 		then
-			echo $AVD
+			echo "$AVD"
 			break
 		fi
 
@@ -137,11 +137,12 @@ emus()
 # @param 1 - name or number of avd (optional)
 emu()
 {
-	local AVD=${1:-`ls -t ~/.android/avd/ | head -n 1`}
+	local AVD
+	AVD=${1:-$(ls -t ~/.android/avd/ | head -n 1)}
 
-	(( $AVD > 0 )) &>/dev/null && AVD=`emus $AVD`
+	(( AVD > 0 )) &>/dev/null && AVD=$(emus "$AVD")
 
-	emulator -avd ${AVD%.avd} &
+	emulator -avd "${AVD%.avd}" &
 }
 
 # Set up a debugging session for a Android Wear device
@@ -156,7 +157,7 @@ wearable()
 # @param 1 - package name (optional)
 mem()
 {
-	adb shell dumpsys meminfo ${1:-`package`}
+	adb shell dumpsys meminfo "${1:-$(package)}"
 }
 
 # Print process statistics (starting with Android 4.4)
@@ -164,7 +165,7 @@ mem()
 # @param 1 - package name (optional)
 stats()
 {
-	adb shell dumpsys procstats ${1:-`package`}
+	adb shell dumpsys procstats "${1:-$(package)}"
 }
 
 # Broadcast action
@@ -172,7 +173,7 @@ stats()
 # @param 1 - full action name
 broadcast()
 {
-	adb shell am broadcast -a $1
+	adb shell am broadcast -a "$1"
 }
 
 # Broadcast new battery status
@@ -180,7 +181,8 @@ broadcast()
 # @param 1 - "low" or "okay"
 battery()
 {
-	broadcast android.intent.action.BATTERY_`echo $1 | tr a-z A-Z`
+	broadcast "android.intent.action.BATTERY_$(echo "$1" |
+		tr '[:lower:]' '[:upper:]')"
 }
 
 # Broadcast new power status
@@ -188,7 +190,8 @@ battery()
 # @param 1 - "connected" or "disconnected"
 power()
 {
-	broadcast android.intent.action.ACTION_POWER_`echo $1 | tr a-z A-Z`
+	broadcast "android.intent.action.ACTION_POWER_$(echo "$1" |
+		tr '[:lower:]' '[:upper:]')"
 }
 
 # Make a screen capture and fetch image file
@@ -196,7 +199,8 @@ power()
 # @param 1 - file name of output image (optional)
 screencap()
 {
-	local FILE="/sdcard/${1:-screencap-`date +%Y%m%d%H%M%S`.png}"
+	local FILE
+	FILE="/sdcard/${1:-screencap-$(date +%Y%m%d%H%M%S).png}"
 
 	adb shell screencap -p "$FILE" &&
 		adb pull "$FILE" &&
@@ -208,7 +212,8 @@ screencap()
 # @param 1 - file name of output video (optional)
 screenrecord()
 {
-	local FILE="/sdcard/${1:-screenrecord-`date +%Y%m%d%H%M%S`.mp4}"
+	local FILE
+	FILE="/sdcard/${1:-screenrecord-$(date +%Y%m%d%H%M%S).mp4}"
 
 	fetch_screenrecord()
 	{
@@ -229,9 +234,10 @@ screenrecord()
 # @param 1 - package name (optional)
 services()
 {
-	local PACKAGE=${1:-`package`} FOUND=
+	local PACKAGE FOUND=''
+	PACKAGE=${1:-$(package)}
 
-	adb shell dumpsys activity services | while read
+	adb shell dumpsys activity services | while read -r
 	do
 		if [ $FOUND ]
 		then
@@ -269,7 +275,7 @@ update()
 			mv default.properties project.properties
 		else
 			cat <<EOF > project.properties
-target=`latest_target`
+target=$(latest_target)
 EOF
 		fi
 
@@ -300,9 +306,9 @@ create()
 	fi
 
 	android create project \
-		--target ${2:-`latest_target`} \
-		--package $P \
-		--activity $A \
+		--target "${2:-$(latest_target)}" \
+		--package "$P" \
+		--activity "$A" \
 		--path .
 }
 
@@ -321,9 +327,9 @@ view()
 # @param 1 - name of command
 help()
 {
-	local DESC= NAME=
+	local DESC='' NAME=''
 
-	while read
+	while read -r
 	do
 		case $REPLY in
 			'')
@@ -332,7 +338,7 @@ help()
 			\#\ *)
 				if [ "$DESC" ]
 				then
-					[ $1 ] && DESC=$DESC${DESC:+$'\n'}$'    '${REPLY#*# @param }
+					[ "$1" ] && DESC=$DESC${DESC:+$'\n'}$'    '${REPLY#*# @param }
 				else
 					DESC=${REPLY#*# }
 				fi
@@ -340,15 +346,15 @@ help()
 			*\(\))
 				[ "$DESC" ] || continue
 				NAME=${REPLY%(*}
-				[ $1 ] && [ "$NAME" != "$1" ] && continue
-				echo $NAME '-' "$DESC"
+				[ "$1" ] && [ "$NAME" != "$1" ] && continue
+				echo "$NAME - $DESC"
 				DESC=
 				;;
 		esac
-	done < $0
+	done < "$0"
 }
 
-if [ "$BASH_SOURCE" == $0 ]
+if [ "$BASH_SOURCE" == "$0" ]
 then
-	${@:-debug}
+	"${@:-debug}"
 fi

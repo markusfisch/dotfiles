@@ -9,12 +9,12 @@ enum()
 {
 	same()
 	{
-		diff -rq $SRC $DST
+		diff -rq "$SRC" "$DST"
 	}
 
 	wire()
 	{
-		rm -rf $DST && ln -s $SRC $DST
+		rm -rf "$DST" && ln -s "$SRC" "$DST"
 	}
 
 	unwire()
@@ -22,39 +22,40 @@ enum()
 		local F
 		for F in $IGNORE
 		do
-			[ $DST == $F ] && return
+			[ "$DST" == "$F" ] && return
 		done
-		same && rm -rf $DST
+		same && rm -rf "$DST"
 	}
 
 	include()
 	{
-		. $SRC
+		# shellcheck source=/dev/null
+		. "$SRC"
 	}
 
 	symlink()
 	{
 		local DST=${SRC##*/}
-		DST=~/.${DST%.*}
-		$@
+		DST="$HOME/.${DST%.*}"
+		"$@"
 	}
 
 	sh()
 	{
-		$@
+		"$@"
 	}
 
 	local D SRC
 	for D in $DOTFILES/*
 	do
-		[ -d $D ] || continue
+		[ -d "$D" ] || continue
 
 		# process only files whose parent directory is also a valid command
-		type ${D##*/} &>/dev/null || continue
+		type "${D##*/}" &>/dev/null || continue
 
 		for SRC in $D/*.$1
 		do
-			[ -r $SRC ] && $@
+			[ -r "$SRC" ] && "$@"
 		done
 	done
 
@@ -71,7 +72,7 @@ enum()
 # @param 1 - action to perform (optional)
 update()
 {
-	[ -d $DOTFILES ] || return 1
+	[ -d "$DOTFILES" ] || return 1
 
 	invocation()
 	{
@@ -85,7 +86,7 @@ EOF
 	show()
 	{
 		enum symlink same
-		invocation | diff -q $DOTFILE_INIT -
+		invocation | diff -q "$DOTFILE_INIT" -
 	}
 
 	pull()
@@ -93,12 +94,12 @@ EOF
 		IGNORE=~/.gitconfig enum symlink unwire &>/dev/null
 
 		type git &>/dev/null &&
-			cd $DOTFILES &&
+			cd "$DOTFILES" &&
 			git fetch &&
 			git merge origin
 
 		enum symlink wire
-		invocation > $DOTFILE_INIT
+		invocation > "$DOTFILE_INIT"
 	}
 
 	local DOTFILE_INIT=${DOTFILE_INIT:-~/.bash_aliases}
@@ -122,17 +123,17 @@ initialize()
 	# make sure target command is available
 	alias()
 	{
-		local C ALIAS=${1%%=*} CMD=${@#*=}
+		local C ALIAS=${1%%=*} CMD=${*#*=}
 		for C in $CMD
 		do
-			case $C in
+			case "$C" in
 				sudo|*=*)
 					continue
 					;;
 			esac
 
 			command -v "$C" &>/dev/null &&
-				command alias $ALIAS="$CMD"
+				command alias "$ALIAS"="$CMD"
 
 			break
 		done
@@ -142,6 +143,6 @@ initialize()
 	unset alias
 }
 
-readonly DOTFILES=${DOTFILES:-`cd ${0%/*} && echo ${PWD%/*}`}
+readonly DOTFILES=${DOTFILES:-$(cd "${0%/*}" && echo "${PWD%/*}")}
 
-${@:-check}
+"${@:-check}"

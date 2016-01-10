@@ -16,7 +16,7 @@ makep()
 	make "$@"
 }
 
-if [ "$BASH_SOURCE" == $0 ]
+if [ "$BASH_SOURCE" == "$0" ]
 then
 	makep "$@"
 fi

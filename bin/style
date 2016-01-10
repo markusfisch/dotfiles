@@ -41,12 +41,12 @@ Where STYLE can be one of the following:
 EOF
 
 		DESC=
-		while read
+		while read -r
 		do
 			case $REPLY in
 				*\(\))
 					[ "$DESC" ] || continue
-					echo ${REPLY%(*} '-' $DESC
+					echo "${REPLY%(*} - $DESC"
 					DESC=
 					;;
 				\#\ *)
@@ -54,7 +54,7 @@ EOF
 					DESC=${REPLY#*#}
 					;;
 			esac
-		done < $0
+		done < "$0"
 
 		exit 1
 	else

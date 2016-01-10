@@ -10,8 +10,8 @@ resample_inkscape()
 	"$INKSCAPE" \
 		"$1" \
 		-e "$2" \
-		-w $3 \
-		-h $3
+		-w "$3" \
+		-h "$3"
 }
 
 # Use convert to resample
@@ -24,7 +24,7 @@ resample_convert()
 	convert \
 		-background none \
 		"$1" \
-		-thumbnail $3 \
+		-thumbnail "$3" \
 		-strip \
 		"$2"
 }
@@ -56,14 +56,14 @@ resample()
 
 	for SIZE in ${@:-128 64 32}
 	do
-		$RESAMPLE "$SRC" "$DST-$SIZE.png" $SIZE || {
+		$RESAMPLE "$SRC" "$DST-$SIZE.png" "$SIZE" || {
 			echo "error: failed to convert $SRC to $SIZE" >&2
 			return 1
 		}
 	done
 }
 
-INKSCAPE=`which inkscape` ||
+INKSCAPE=$(which inkscape) ||
 	INKSCAPE='/Applications/Inkscape.app/Contents/Resources/bin/inkscape'
 
 if [ "$BASH_SOURCE" == "$0" ]

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 [ -x /usr/bin/say ] || {
-	/usr/bin/say $@
+	/usr/bin/say "$@"
 	return $?
 }
 
@@ -26,9 +26,9 @@ which wget &>/dev/null || {
 	}
 }
 
-ARGS=${*:-`cat`}
+ARGS=${*:-$(cat)}
 TEXT=${ARGS// /+}
-FILE="`echo "$TEXT" | md5sum`"
+FILE="$(echo "$TEXT" | md5sum)"
 FILE=${FILE%% *}
 FILE="${STOCK}/${LNG}/${FILE}"
 

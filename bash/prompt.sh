@@ -25,7 +25,7 @@ smart_prompt()
 		PS1=$COLOR_NONE
 	fi
 
-	if type jobs &>/dev/null && (( `jobs -p | wc -l` > 0 ))
+	if type jobs &>/dev/null && (( $(jobs -p | wc -l) > 0 ))
 	then
 		PS1=${PS1}$PROMPT_PS1_JOBS
 	else

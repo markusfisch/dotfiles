@@ -10,10 +10,10 @@ atlas_patch()
 		return 1
 	}
 
-	while read
+	while read -r
 	do
 		case $REPLY in
-			*:{*)
+			*':{'*)
 				;;
 			*)
 				continue
@@ -30,7 +30,7 @@ atlas_patch()
 		local SRC
 		for SRC
 		do
-			sed -e "$PATCH" < $SRC > $TMP && mv $TMP $SRC
+			sed -e "$PATCH" < "$SRC" > "$TMP" && mv "$TMP" "$SRC"
 		done
 	done
 }

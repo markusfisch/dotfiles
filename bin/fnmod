@@ -46,7 +46,7 @@ fix_extensions()
 # Convert to lower case
 lower_case()
 {
-	[[ $N == *[ABCDEFGHIJKLMNOPQRSTUVWXYZ]* ]] || continue
+	[[ $N == *[ABCDEFGHIJKLMNOPQRSTUVWXYZ]* ]] || return $?
 	mv_to "$P/${N,,}"
 }
 
@@ -73,17 +73,17 @@ strip_filename()
 # @param ... - flags and paths
 process()
 {
-	local ARG ACTIONS= DEPTH='-maxdepth 1' DIRS=
+	local ARG ACTIONS='' DEPTH='-maxdepth 1' DIRS=''
 
 	# if the last argument isn't a path, add CWD
 	for ARG; do true; done
-	[ -d "$ARG" ] || set -- $@ '.'
+	[ -d "$ARG" ] || set -- "$@" '.'
 
 	for ARG
 	do
 		if [[ $ARG == -* ]]
 		then
-			while read -n 1
+			while read -r -n 1
 			do
 				[ "$REPLY" ] || continue
 				case "$REPLY" in
@@ -129,13 +129,13 @@ process()
 		local T F P N A
 		for T in $DIRS f
 		do
-			find "$ARG" $DEPTH -type $T | while read F
+			find "$ARG" "$DEPTH" -type "$T" | while read -r F
 			do
 				strip_filename
 
 				for A in $ACTIONS
 				do
-					$A "$F"
+					"$A" "$F"
 				done
 			done
 		done

@@ -5,7 +5,7 @@
 # @param ... - text to cut (optional)
 snip()
 {
-	local TEXT=${@:-`cat`} LIMIT=${LIMIT:-140} GLUE=${GLUE:-'..'}
+	local TEXT=${*:-$(cat)} LIMIT=${LIMIT:-140} GLUE=${GLUE:-'..'}
 
 	(( LIMIT -= ${#GLUE} ))
 
@@ -17,10 +17,10 @@ snip()
 		(( N > 0 )) && echo -n "$GLUE"
 		if [ "$U" ]
 		then
-			echo -n $U
+			echo -n "$U"
 			TEXT=${TEXT:${#U}}
 		else
-			echo -n $S
+			echo -n "$S"
 			TEXT=${TEXT:$LIMIT}
 		fi
 		echo "$GLUE"
@@ -28,7 +28,7 @@ snip()
 	done
 
 	(( N > 0 )) && echo -n "$GLUE"
-	echo $TEXT
+	echo "$TEXT"
 }
 
 if [ "$BASH_SOURCE" == "$0" ]

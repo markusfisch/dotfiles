@@ -10,7 +10,7 @@ EOF
 		<a href="#slide$(( N-2 ))" class="Prev">&#9664;</a>
 EOF
 
-	[ $1 ] || cat <<EOF
+	[ "$1" ] || cat <<EOF
 		<a href="#slide$(( N ))" class="Next">&#9654;</a>
 	</li>
 EOF
@@ -29,7 +29,7 @@ EOF
 # Open a new slide, close the previous one
 slide_new()
 {
-	(( $N > 1 )) && slide_close
+	(( N > 1 )) && slide_close
 
 	slide_open
 	(( ++N ))
@@ -42,7 +42,7 @@ html_to_slides()
 {
 	local N=1 ECHO=0
 
-	while read
+	while read -r
 	do
 		case $REPLY in
 			*\</pre\>*|*\</ul\>*)
@@ -64,7 +64,7 @@ html_to_slides()
 		esac
 	done
 
-	(( $N > 1 )) && slide_close true
+	(( N > 1 )) && slide_close true
 }
 
 # Print HTML frame
@@ -197,7 +197,7 @@ img
 </head>
 <body class="Content">
 <ul class="Slides">
-`html_to_slides`
+$(html_to_slides)
 </ul>
 </body>
 </html>
@@ -225,11 +225,11 @@ generate()
 			continue
 		}
 
-		markdown $FILE
+		markdown "$FILE"
 	done | html
 }
 
-if [ $BASH_SOURCE == $0 ]
+if [ "$BASH_SOURCE" == "$0" ]
 then
 	if (( $# > 1 ))
 	then

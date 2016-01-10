@@ -11,9 +11,9 @@ add()
 
 	[ "$NAME" ] || return $?
 
-	git remote add $NAME $1 &&
-		git fetch --no-tags $NAME &&
-		git read-tree --prefix=$2$NAME/ -u $NAME/master
+	git remote add "$NAME" "$1" &&
+		git fetch --no-tags "$NAME" &&
+		git read-tree --prefix="$2$NAME/" -u "$NAME/master"
 }
 
 # Update subtree
@@ -23,8 +23,8 @@ update()
 {
 	[ "$1" ] || return $?
 
-	git fetch --no-tags $1 &&
-		git merge -s subtree --squash $1/master
+	git fetch --no-tags "$1" &&
+		git merge -s subtree --squash "$1/master"
 }
 
 # Print help
@@ -38,5 +38,5 @@ EOF
 
 if [ "$0" == "$BASH_SOURCE" ]
 then
-	${@:-help}
+	"${@:-help}"
 fi

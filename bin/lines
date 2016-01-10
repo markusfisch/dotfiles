@@ -6,7 +6,7 @@
 lines()
 {
 	local F
-	for F in ${@:-*}
+	for F in "${@:-*}"
 	do
 		if [ -f "$F" ]
 		then

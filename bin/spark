@@ -81,5 +81,5 @@ EOF
 		exit 0
 	fi
 
-	spark ${@:-`cat`}
+	spark "${@:-$(cat)}"
 fi

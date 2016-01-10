@@ -6,12 +6,12 @@
 function unpack()
 {
 	local ARCHIVE=$1
-	local TMP=.unpack-$USER-$$
+	local TMP=".unpack-$USER-$$"
 	local NAME=${ARCHIVE##*/}
 	NAME=${NAME%%.*}
 
 	# make path absolute
-	[ ${ARCHIVE:0:1} != '/' ] &&
+	[ "${ARCHIVE:0:1}" != '/' ] &&
 		ARCHIVE="$PWD/$ARCHIVE"
 
 	[ -f "$ARCHIVE" ] || {
@@ -31,12 +31,12 @@ function unpack()
 		done
 	}
 
-	mkdir $TMP || {
+	mkdir "$TMP" || {
 		echo 'error: cannot create temporary directory' >&2
 		return 1
 	}
 
-	cd $TMP || {
+	cd "$TMP" || {
 		echo 'error: cannot change into temporary directory' >&2
 		return 1
 	}
@@ -82,13 +82,13 @@ function unpack()
 
 		if (( FILES == 0 ))
 		then
-			rmdir $TMP
+			rmdir "$TMP"
 		elif (( FILES == 1 ))
 		then
-			mv -i $TMP/* .
-			rmdir $TMP
+			mv -i "$TMP/"* .
+			rmdir "$TMP"
 		else
-			mv -i $TMP "$NAME"
+			mv -i "$TMP" "$NAME"
 		fi
 	}
 

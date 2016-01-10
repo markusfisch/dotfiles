@@ -3,15 +3,17 @@
 # Compose images into atlas
 atlas_cache_compose()
 {
-	local W=`< $CACHE/width` H=`< $CACHE/height`
+	local W H
+	W=$(< "$CACHE/width")
+	H=$(< "$CACHE/height")
 
 	(( W < MIN_SIZE )) && W=$MIN_SIZE
 	(( H < MIN_SIZE )) && H=$MIN_SIZE
 
-	[ -f $CACHE/args ] && convert \
+	[ -f "$CACHE/args" ] && convert \
 		-size "${W}x${H}" \
 		xc:transparent \
-		`< $CACHE/args` \
+		$(< "$CACHE/args") \
 		-strip \
 		"${ATLAS:-atlas.png}"
 }
@@ -21,12 +23,12 @@ atlas_cache_summarize()
 {
 	echo "var atlas={"
 
-	find $CACHE -type f -name image | while read
+	find "$CACHE" -type f -name image | while read -r
 	do
 		local X Y W H FILE
-		read X Y W H FILE < $REPLY
+		read -r X Y W H FILE < "$REPLY"
 
-		echo "$FILE -geometry +$X+$Y -composite" >> $CACHE/args
+		echo "$FILE -geometry +$X+$Y -composite" >> "$CACHE/args"
 
 		if (( MARGIN > 0 ))
 		then
@@ -51,25 +53,25 @@ atlas_cache_summarize()
 # @param 3 - image file
 atlas_cache_insert()
 {
-	[ -f $CACHE/candidates ] || return 1
+	[ -f "$CACHE/candidates" ] || return 1
 
 	local INDEX TARGET
-	while read INDEX TARGET
+	while read -r INDEX TARGET
 	do
 		break
-	done <<< "`sort $CACHE/candidates`"
+	done <<< "$(sort "$CACHE/candidates")"
 
-	[ -f $TARGET/rect ] || return 1
+	[ -f "$TARGET/rect" ] || return 1
 
 	local X Y W H
-	read X Y W H < $TARGET/rect
+	read -r X Y W H < "$TARGET/rect"
 
 	if (( W < $1 )) || (( H < $2 ))
 	then
 		return 1
 	fi
 
-	mkdir $TARGET/child0 $TARGET/child1 || return $?
+	mkdir "$TARGET/child0" "$TARGET/child1" || return $?
 
 	local RW=$(( W-$1 ))
 	local RH=$(( H-$2 ))
@@ -83,8 +85,8 @@ atlas_cache_insert()
 		# |   b   |   |
 		# |       |   |
 		# +-------+---+
-		echo $(( X+$1 )) $Y $RW $H > $TARGET/child0/rect
-		echo $X $(( Y+$2 )) $1 $RH > $TARGET/child1/rect
+		echo $(( X+$1 )) "$Y" "$RW" "$H" > "$TARGET/child0/rect"
+		echo "$X" $(( Y+$2 )) "$1" "$RH" > "$TARGET/child1/rect"
 	else
 		# +-------+---+
 		# | image | r |
@@ -93,17 +95,17 @@ atlas_cache_insert()
 		# |     b     |
 		# |           |
 		# +-----------+
-		echo $(( X+$1 )) $Y $RW $2 > $TARGET/child0/rect
-		echo $X $(( Y+$2 )) $W $RH > $TARGET/child1/rect
+		echo $(( X+$1 )) "$Y" "$RW" "$2" > "$TARGET/child0/rect"
+		echo "$X" $(( Y+$2 )) "$W" "$RH" > "$TARGET/child1/rect"
 	fi
 
 	local RIGHT=$(( X+$1 ))
-	(( $RIGHT > `< $CACHE/width` )) && echo $RIGHT > $CACHE/width
+	(( RIGHT > $(< "$CACHE/width") )) && echo "$RIGHT" > "$CACHE/width"
 
 	local BOTTOM=$(( Y+$2 ))
-	(( $BOTTOM > `< $CACHE/height` )) && echo $BOTTOM > $CACHE/height
+	(( BOTTOM > $(< "$CACHE/height") )) && echo "$BOTTOM" > "$CACHE/height"
 
-	echo $X $Y $1 $2 $3 > $TARGET/image
+	echo "$X" "$Y" "$1" "$2" "$3" > "$TARGET/image"
 }
 
 # Find possible candidates and give them a sort index
@@ -115,24 +117,26 @@ atlas_cache_find_nodes()
 {
 	if [ -d "$NODE/child0" ]
 	then
-		NODE=$NODE/child0 atlas_cache_find_nodes $1 $2 $3
-		NODE=$NODE/child1 atlas_cache_find_nodes $1 $2 $3
+		NODE="$NODE/child0" atlas_cache_find_nodes "$1" "$2" "$3"
+		NODE="$NODE/child1" atlas_cache_find_nodes "$1" "$2" "$3"
 
 		return
 	fi
 
-	[ -f $NODE/rect ] || return 1
+	[ -f "$NODE/rect" ] || return 1
 
 	local X Y W H
-	read X Y W H < $NODE/rect
+	read -r X Y W H < "$NODE/rect"
 
 	if (( W < $1 )) || (( H < $2 ))
 	then
 		return
 	fi
 
-	local MAX_WIDTH=`< $CACHE/width`
-	local MAX_HEIGHT=`< $CACHE/height`
+	local MAX_WIDTH
+	MAX_WIDTH=$(< "$CACHE/width")
+	local MAX_HEIGHT
+	MAX_HEIGHT=$(< "$CACHE/height")
 	local RIGHT=$(( X+$1 ))
 	local BOTTOM=$(( Y+$2 ))
 
@@ -141,7 +145,7 @@ atlas_cache_find_nodes()
 
 	printf '%08d %s\n' \
 		$(( MAX_WIDTH+MAX_HEIGHT )) \
-		$NODE >> $CACHE/candidates
+		"$NODE" >> "$CACHE/candidates"
 }
 
 # Sort files and insert them into the atlas
@@ -150,19 +154,19 @@ atlas_cache_compile()
 	local NODE=$CACHE
 	local W H FILE
 
-	while read W H FILE
+	while read -r W H FILE
 	do
 		[ "$FILE" ] || continue
 
-		printf '%08d %d %d %s\n' $(( W+H )) $W $H $FILE
-	done | sort -r | while read MAX W H FILE
+		printf '%08d %d %d %s\n' $(( W+H )) "$W" "$H" "$FILE"
+	done | sort -r | while read -r MAX W H FILE
 	do
-		rm -f $CACHE/candidates
+		rm -f "$CACHE/candidates"
 
-		if ! atlas_cache_find_nodes $W $H $FILE ||
-			! atlas_cache_insert $W $H $FILE
+		if ! atlas_cache_find_nodes "$W" "$H" "$FILE" ||
+			! atlas_cache_insert "$W" "$H" "$FILE"
 		then
-			echo 'error: cannot insert' $FILE >&2
+			echo "error: cannot insert $FILE" >&2
 			return 1
 		fi
 	done
@@ -172,19 +176,19 @@ atlas_cache_compile()
 atlas_create_from_list()
 {
 	local CACHE
-	CACHE=`mktemp -d ${0##*/}.XXXXXXXXXX` || return $?
+	CACHE=$(mktemp -d "${0##*/}.XXXXXXXXXX") || return $?
 
 	local MAX_SIZE=${MAX_SIZE:-2048}
-	echo 0 0 $MAX_SIZE $MAX_SIZE > $CACHE/rect
+	echo 0 0 "$MAX_SIZE" "$MAX_SIZE" > "$CACHE/rect"
 
-	echo 0 > $CACHE/width
-	echo 0 > $CACHE/height
+	echo 0 > "$CACHE/width"
+	echo 0 > "$CACHE/height"
 
 	atlas_cache_compile &&
 		atlas_cache_summarize &&
 		atlas_cache_compose
 
-	rm -rf $CACHE
+	rm -rf "$CACHE"
 }
 
 # Create texture atlas from given image files
@@ -192,9 +196,9 @@ atlas_create_from_list()
 # @param ... - image files
 atlas_create()
 {
-	local INKSCAPE=${INKSCAPE:-`which inkscape`}
+	local INKSCAPE=${INKSCAPE:-$(which inkscape)}
 	local TMPDIR
-	TMPDIR=`mktemp -d ${0##*/}.XXXXXXXXXX` || return $?
+	TMPDIR=$(mktemp -d "${0##*/}.XXXXXXXXXX") || return $?
 
 	# prepare source files
 	local SRC
@@ -218,7 +222,8 @@ atlas_create()
 		then
 			if [[ ${SRC##*/} == ${EXPAND:-tile_*} ]]
 			then
-				local W=`identify -format '%w,%h' "$SRC"`
+				local W
+				W=$(identify -format '%w,%h' "$SRC")
 				H=$(( MARGIN*2+${W#*,} ))
 				W=$(( MARGIN*2+${W%,*} ))
 				BORDER="-set option:distort:viewport \
@@ -241,8 +246,8 @@ atlas_create()
 			"$COPY"
 	done
 
-	identify -format '%w %h %d/%f\n' "$TMPDIR/*" | atlas_create_from_list
-	rm -rf $TMPDIR
+	identify -format '%w %h %d/%f\n' "$TMPDIR/"* | atlas_create_from_list
+	rm -rf "$TMPDIR"
 }
 
 readonly MARGIN=${MARGIN:-0}

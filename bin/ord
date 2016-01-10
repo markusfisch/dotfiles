@@ -19,5 +19,5 @@ ord()
 
 if [ "$BASH_SOURCE" == "$0" ]
 then
-	ord $@
+	ord "$@"
 fi

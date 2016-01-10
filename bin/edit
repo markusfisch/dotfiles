@@ -24,7 +24,7 @@ cd_until_content()
 			break
 		fi
 
-		cd $FILE
+		cd "$FILE" || exit $?
 	done
 }
 
@@ -36,7 +36,7 @@ edit()
 	if [ -d "$1" ] && (( $# < 2 ))
 	then
 		(cd_until_content "$1" &&
-			$EDITOR `find . -type f | sort`)
+			$EDITOR $(find . -type f | sort))
 	else
 		$EDITOR "$@"
 	fi

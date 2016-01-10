@@ -9,7 +9,7 @@ put()
 	for FILE
 	do
 		rsync \
-			$RSYNC_OPTIONS \
+			"$RSYNC_OPTIONS" \
 			"${FILE%/}" \
 			"${CACHE%/}/"
 	done
@@ -24,7 +24,7 @@ get()
 	for FILE
 	do
 		rsync \
-			$RSYNC_OPTIONS \
+			"$RSYNC_OPTIONS" \
 			"${CACHE%/}/${FILE%/}" \
 			.
 	done
@@ -35,7 +35,7 @@ get()
 # @param ... - files/directories (optional)
 ls()
 {
-	ssh ${CACHE%:*} "ls ${CACHE#*:}/$1"
+	ssh "${CACHE%:*}" "ls ${CACHE#*:}/$1"
 }
 
 # Remove a file/directory
@@ -46,7 +46,7 @@ remove()
 	local FILE
 	for FILE
 	do
-		ssh ${CACHE%:*} "rm -rf ${CACHE#*:}/${FILE%/}"
+		ssh "${CACHE%:*}" "rm -rf ${CACHE#*:}/${FILE%/}"
 	done
 }
 
@@ -55,25 +55,25 @@ remove()
 # @param ... - command with arguments
 dry()
 {
-	RSYNC_OPTIONS="--dry-run $RSYNC_OPTIONS" $@
+	RSYNC_OPTIONS="--dry-run $RSYNC_OPTIONS" "$@"
 }
 
 # Print help; use "help NAME" to show details
 help()
 {
 	(( $# > 0 )) && {
-		type $@
+		type "$@"
 		return $?
 	}
 
 	local DESC=
 
-	while read
+	while read -r
 	do
 		case $REPLY in
 			*\(\))
 				[ "$DESC" ] || continue
-				echo ${REPLY%(*} '-' $DESC
+				echo "${REPLY%(*} - $DESC"
 				DESC=
 				;;
 			\#\ *)
@@ -81,7 +81,7 @@ help()
 				DESC=${REPLY#*#}
 				;;
 		esac
-	done < $0
+	done < "$0"
 }
 
 CACHE=${CACHE:-'hhsw.de@ssh.strato.de:cache'}
@@ -97,5 +97,5 @@ RSYNC_OPTIONS=${RSYNC_OPTIONS:-'
 
 if [ "$BASH_SOURCE" == "$0" ]
 then
-	${@:-help}
+	"${@:-help}"
 fi

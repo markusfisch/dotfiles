@@ -20,7 +20,7 @@ refactor()
 	local TYPE REFACTORED
 	for TYPE in d f
 	do
-		find "$DIR" -type $TYPE -name "*$PATTERN*" | while read
+		find "$DIR" -type "$TYPE" -name "*$PATTERN*" | while read -r
 		do
 			REFACTORED=${REPLY//$PATTERN/$REPLACEMENT}
 			echo "renaming $REPLY to $REFACTORED"
@@ -29,13 +29,13 @@ refactor()
 	done
 
 	local TMP=".tmp-${0##*/}-$$"
-	grep -rl "$PATTERN" "$DIR"/* | while read
+	grep -rl "$PATTERN" "$DIR"/* | while read -r
 	do
 		echo "replacing pattern in $REPLY"
-		sed -e "s/$PATTERN/$REPLACEMENT/g" < "$REPLY" > $TMP &&
-			cat $TMP > "$REPLY"
+		sed -e "s/$PATTERN/$REPLACEMENT/g" < "$REPLY" > "$TMP" &&
+			cat "$TMP" > "$REPLY"
 
-		rm -f $TMP
+		rm -f "$TMP"
 	done
 }
 

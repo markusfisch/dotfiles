@@ -24,7 +24,8 @@ $s =~ s/[ ]+([\)\}])/\1/g;
 
 print $s . "\n";'
 	else
-		local D=`cat`
+		local D
+		D=$(cat)
 
 		# remove comments
 		while [[ $D == */\** ]]
@@ -36,7 +37,7 @@ print $s . "\n";'
 		D=${D//[$'\n'$'\r'$'\t']/}
 
 		# compress blanks and tabs
-		D=`echo $D`
+		D=$(echo $D)
 
 		# remove unnecessary blanks
 		D=${D//: /:}
@@ -55,7 +56,7 @@ print $s . "\n";'
 # extension of source files and archive
 readonly TYPE=${TYPE:-css}
 # htdocs base directory
-readonly HTDOCS=${HTDOCS:-`H=htdocs; [ -d $H ] || H=; echo ${H:-.}`}
+readonly HTDOCS=${HTDOCS:-$(H=htdocs; [ -d "$H" ] || H=; echo "${H:-.}")}
 # input directory, where to find source files
 readonly IN=${IN:-$HTDOCS/$TYPE/src}
 # output directory, where to put the archive
@@ -72,20 +73,20 @@ readonly COMPRESSOR=${COMPRESSOR:-compress}
 	exit 1
 }
 
-[ -d "$OUT" ] || mkdir -p $OUT || {
+[ -d "$OUT" ] || mkdir -p "$OUT" || {
 	echo "error: cannot create output directory $OUT"
 	exit 1
 }
 
-OBJECTS=$@
+OBJECTS=$*
 
 # when no input files are given, simply process all files in input directory
 [ "$OBJECTS" ] || OBJECTS=$IN/*
 
 # create archive only if it doesn't exist or if there are newer files
 # in directories to check
-[ -r $ARCHIVE ] &&
-	[ -z "`find $WATCH${WATCH:+ }$IN/ -newer $ARCHIVE`" ] &&
+[ -r "$ARCHIVE" ] &&
+	[ -z "$(find "$WATCH${WATCH:+ }$IN/" -newer "$ARCHIVE")" ] &&
 	exit
 
 for F in $OBJECTS
@@ -96,5 +97,5 @@ do
 	# assume input directory for objects without a slash
 	[[ $F != */* ]] && F=$IN/$F
 
-	cat $F
-done | $COMPRESSOR > $ARCHIVE
+	cat "$F"
+done | "$COMPRESSOR" > "$ARCHIVE"

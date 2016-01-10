@@ -5,9 +5,9 @@
 # @param 1 - KEY of memo to edit
 edit()
 {
-	if [ $KEY == $1 ]
+	if [ "$KEY" == "$1" ]
 	then
-		$ACTION $MEMO
+		"$ACTION" "$MEMO"
 		return 1
 	fi
 }
@@ -15,7 +15,7 @@ edit()
 # Print memo KEY and title
 print()
 {
-	read -n $COLS < $MEMO &&
+	read -r -n "$COLS" < "$MEMO" &&
 		echo "[$KEY] $REPLY"
 }
 
@@ -24,19 +24,18 @@ print()
 # @param ... - function to invoke on every file (optional)
 memos()
 {
-	local COLS=${COLS:-$(( `tput cols`-4 ))}
+	local COLS=${COLS:-$(( $(tput cols)-4 ))}
 	local KEYS='0123456789abcdefghijklmnopqrstuvwxyz'
-	local KEYS_SIZE=${#KEYS}
 	local KEY
 	local N=0
 	local MEMO
 
 	for MEMO in ${MEMOS}/*
 	do
-		[ -r ${MEMO} ] || continue
+		[ -r "$MEMO" ] || continue
 
 		KEY=${KEYS:$(( N++ )):1}
-		${@:-print} || break
+		"${@:-print}" || break
 	done
 }
 
@@ -45,7 +44,7 @@ memos()
 # @param ... - memo text
 add()
 {
-	echo "$@" >> $MEMOS/`date +%Y-%m-%d-%H%M%S`
+	echo "$@" >> "$MEMOS/$(date +%Y-%m-%d-%H%M%S)"
 }
 
 # Read and execute user input
@@ -65,7 +64,7 @@ shell()
 
 	reset && for ((;;))
 	do
-		read -s -p $'\r'"$PROMPT " -n 1 || return $?
+		read -r -s -p $'\r'"$PROMPT " -n 1 || return $?
 
 		case $REPLY in
 			$'\E'|'')
@@ -77,13 +76,13 @@ shell()
 				PROMPT='-'
 				;;
 			'+')
-				read -p $'\r''+ ' || return $?
+				read -r -p $'\r''+ ' || return $?
 				add "$REPLY"
 				memos print
 				;;
 			*)
-				echo $REPLY
-				memos edit $REPLY
+				echo "$REPLY"
+				memos edit "$REPLY"
 				reset
 				memos print
 				;;
@@ -95,9 +94,9 @@ shell()
 
 readonly MEMOS=${MEMOS:-$HOME/.memos}
 
-[ -d ${MEMOS} ] || mkdir ${MEMOS} || exit $?
+[ -d "$MEMOS" ] || mkdir "$MEMOS" || exit $?
 
-if [ $BASH_SOURCE == $0 ]
+if [ "$BASH_SOURCE" == "$0" ]
 then
 	if (( $# ))
 	then

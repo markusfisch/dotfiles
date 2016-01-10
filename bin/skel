@@ -3,23 +3,41 @@
 # List available skeletons
 list()
 {
-	local SKELETON
+	local SKELETON N=0
 	for SKELETON in ${SKELETONS}/*
 	do
 		[ -d "$SKELETON" ] || continue
-		echo ${SKELETON##*/}
+		printf "%2d %s\n" $(( ++N )) "${SKELETON##*/}"
 	done
 }
 
 # Create a new project from a skeleton
 #
-# @param 1 - skeleton name
+# @param 1 - skeleton name or number
 # @param 2 - name of new project
 new()
 {
 	(( $# < 2 )) && return 1
 
-	cp -ri "$SKELETONS/$1" "$2" || return $?
+	local SKELETON=$1
+	if (( SKELETON > 0 ))
+	then
+		local N=$SKELETON
+		for SKELETON in ${SKELETONS}/*
+		do
+			[ -d "$SKELETON" ] || continue
+			(( --N )) || break
+		done
+		SKELETON=${SKELETON##*/}
+	fi
+
+	if [ -r "$2" ]
+	then
+		echo "error: $2 already exists" >&2
+		return $?
+	fi
+
+	cp -ri "$SKELETONS/$SKELETON" "$2" || return $?
 
 	# preserve working directory when sourced
 	(
@@ -34,7 +52,7 @@ new()
 	)
 }
 
-# Create initialization script
+# Create an init script for a new skeleton
 init()
 {
 	cat << EOF > ${BASH_SOURCE##*/}.sh
@@ -82,27 +100,7 @@ refactor()
 EOF
 }
 
-# Add a new skeleton from a git repository
-#
-# @param 1 - repository
-# @param 2 - skeleton name, when deviating (optional)
-add()
-{
-	(( $# < 1 )) && return 1
-
-	[ -d "$SKELETONS" ] || mkdir -p "$SKELETONS" || return $?
-
-	# preserve working directory when sourced
-	(
-		cd "$SKELETONS" &&
-			git clone $@ &&
-			init
-	)
-}
-
 # Print help
-#
-# @param ... - name of a command (optional)
 help()
 {
 	cat << EOF
@@ -126,7 +124,7 @@ EOF
 
 	local DESC=
 
-	while read
+	while read -r
 	do
 		case $REPLY in
 			''|refactor*)
@@ -138,16 +136,16 @@ EOF
 				;;
 			*\(\))
 				[ "$DESC" ] || continue
-				echo ${REPLY%(*} '-' $DESC
+				echo "${REPLY%(*} - $DESC"
 				DESC=
 				;;
 		esac
-	done < $BASH_SOURCE
+	done < "$BASH_SOURCE"
 }
 
 readonly SKELETONS=${SKELETONS:-$HOME/src/${BASH_SOURCE##*/}}
 
 if [ "$BASH_SOURCE" == "$0" ]
 then
-	${@:-help}
+	"${@:-list}"
 fi

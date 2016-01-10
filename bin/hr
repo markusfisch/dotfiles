@@ -26,7 +26,7 @@
 # @param 1 - word to make the ruler from
 hr()
 {
-	local COLS=${COLUMNS:-`tput cols`}
+	local COLS=${COLUMNS:-$(tput cols)}
 	local WORD=$1
 	local HR=
 

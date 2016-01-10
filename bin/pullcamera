@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-for CAMERA in ${@:-sdcard/DCIM/Camera}
+for CAMERA in "${@:-sdcard/DCIM/Camera}"
 do
-	adb shell ls $CAMERA | while read
+	adb shell ls "$CAMERA" | while read -r
 	do
 		FILE=${REPLY%$'\r'*}
 

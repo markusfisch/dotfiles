@@ -5,24 +5,25 @@
 # @param ... - name(s) of processes (optional)
 monitor()
 {
-	local PROCESS PID PIDS= IFS=' ' DELAY="-d ${DELAY:-1}"
+	local PROCESS PID PIDS='' IFS=' ' DELAY="-d ${DELAY:-1}"
 
 	for PROCESS
 	do
-		while read PID
+		while read -r PID
 		do
-			[ -z $PID ] && {
+			[ -z "$PID" ] && {
 				echo "error: $PROCESS not running!"
 				return
 			}
 
 			PIDS="$PIDS -p $PID"
-		done <<< `pgrep $PROCESS`
+		done <<< "$(pgrep "$PROCESS")"
 	done
 
 	for (( N=2; N--; ))
 	do
-		top $DELAY $PIDS 2>/dev/null && break
+		# don't quote $PIDS to avoid giving an empty argument
+		top "$DELAY" $PIDS 2>/dev/null && break
 		DELAY='-i 1'
 		PIDS=${PIDS//-p/-pid}
 	done
