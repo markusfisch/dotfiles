@@ -7,7 +7,7 @@ pull_all()
 {
 	local D
 
-	for D in "${@:-*}"
+	for D in ${@:-*}
 	do
 		D=${D%/}
 
