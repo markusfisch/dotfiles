@@ -23,6 +23,7 @@ monitor()
 	for (( N=2; N--; ))
 	do
 		# don't quote $PIDS to avoid giving an empty argument
+		# shellcheck disable=SC2086
 		top "$DELAY" $PIDS 2>/dev/null && break
 		DELAY='-i 1'
 		PIDS=${PIDS//-p/-pid}

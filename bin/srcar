@@ -37,6 +37,8 @@ print $s . "\n";'
 		D=${D//[$'\n'$'\r'$'\t']/}
 
 		# compress blanks and tabs
+		# shellcheck disable=SC2116
+		# shellcheck disable=SC2086
 		D=$(echo $D)
 
 		# remove unnecessary blanks
@@ -81,6 +83,7 @@ readonly COMPRESSOR=${COMPRESSOR:-compress}
 OBJECTS=$*
 
 # when no input files are given, simply process all files in input directory
+# shellcheck disable=SC2125
 [ "$OBJECTS" ] || OBJECTS=$IN/*
 
 # create archive only if it doesn't exist or if there are newer files

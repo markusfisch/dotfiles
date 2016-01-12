@@ -10,7 +10,11 @@
 		for SCRIPT in $DOTFILES/bin/*
 		do
 			NAME=${SCRIPT##*/}
-			alias $NAME="bash $DOTFILES/bin/$NAME"
+			# NAME should expand on definition and there
+			# are no quotes to escape
+			# shellcheck disable=SC2139
+			# shellcheck disable=SC2140
+			alias "$NAME"="bash $DOTFILES/bin/$NAME"
 		done
 	}
 

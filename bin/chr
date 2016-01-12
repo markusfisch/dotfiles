@@ -8,7 +8,8 @@ chr()
 	local N
 	for N
 	do
-		printf \\$(printf '%03o' "$N")
+		# shellcheck disable=SC2059
+		printf "\\$(printf '%03o' "$N")"
 	done
 	echo
 }

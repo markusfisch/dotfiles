@@ -54,6 +54,9 @@ resample()
 
 	shift
 
+	# don't quote @ because it will make the default values
+	# into one argument
+	# shellcheck disable=SC2068
 	for SIZE in ${@:-128 64 32}
 	do
 		$RESAMPLE "$SRC" "$DST-$SIZE.png" "$SIZE" || {

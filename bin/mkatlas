@@ -7,9 +7,14 @@ atlas_cache_compose()
 	W=$(< "$CACHE/width")
 	H=$(< "$CACHE/height")
 
+	# MIN_SIZE is not a misspelling
+	# shellcheck disable=SC2153
 	(( W < MIN_SIZE )) && W=$MIN_SIZE
+	# shellcheck disable=SC2153
 	(( H < MIN_SIZE )) && H=$MIN_SIZE
 
+	# don't quote $CACHE/args because this should be word splitted
+	# shellcheck disable=SC2046
 	[ -f "$CACHE/args" ] && convert \
 		-size "${W}x${H}" \
 		xc:transparent \
@@ -56,6 +61,8 @@ atlas_cache_insert()
 	[ -f "$CACHE/candidates" ] || return 1
 
 	local INDEX TARGET
+	# INDEX is unused but required to consume the first argument
+	# shellcheck disable=SC2034
 	while read -r INDEX TARGET
 	do
 		break
@@ -154,6 +161,8 @@ atlas_cache_compile()
 	local NODE=$CACHE
 	local W H FILE
 
+	# MAX is unused but required to consume the sorting index
+	# shellcheck disable=SC2034
 	while read -r W H FILE
 	do
 		[ "$FILE" ] || continue
@@ -220,6 +229,8 @@ atlas_create()
 
 		if (( MARGIN > 0 ))
 		then
+			# title_* should do glob matching
+			# shellcheck disable=SC2053
 			if [[ ${SRC##*/} == ${EXPAND:-tile_*} ]]
 			then
 				local W
@@ -237,6 +248,9 @@ atlas_create()
 			fi
 		fi
 
+		# BORDER cannot be quoted because it will result in an
+		# empty argument which makes convert stall
+		# shellcheck disable=SC2086
 		convert \
 			-background none \
 			"$SRC" \

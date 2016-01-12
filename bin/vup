@@ -28,6 +28,8 @@ SRC=${SRC:-configure}
 }
 
 # trim string
+# shellcheck disable=SC2116
+# shellcheck disable=SC2086
 VERSION=$(echo $VERSION)
 
 [[ $VERSION == [0-9]*\.[0-9]*\.[0-9]* ]] || {
@@ -75,21 +77,21 @@ echo "updating $VERSION to $NEW"
 VERSION=${VERSION//\./\\.}
 
 # use find because grep on OSX/BSD doesn't know --recursive
-for FILE in $(find . -type f -exec grep -l "$VERSION" {} \;)
+find . -type f -exec grep -l "$VERSION" {} \; | while read -r
 do
 	# alternatively, use --exclude= with GNU grep if available
-	[[ $IGNORE == *${FILE##*/}* ]] && continue
+	[[ $IGNORE == *${REPLY##*/}* ]] && continue
 
 	# ignore hidden files and directories
-	[[ $FILE == */\.* ]] && continue
+	[[ $REPLY == */\.* ]] && continue
 
-	TMP=$(mktemp "$FILE.XXXXXXXXXX")
+	TMP=$(mktemp "$REPLY.XXXXXXXXXX")
 
-	if sed -e "s_${VERSION}_${NEW}_g" < "$FILE" > "$TMP" &&
-		mv "$TMP" "$FILE"
+	if sed -e "s_${VERSION}_${NEW}_g" < "$REPLY" > "$TMP" &&
+		mv "$TMP" "$REPLY"
 	then
-		echo "$FILE"
+		echo "$REPLY"
 	else
-		echo "error: cannot process $FILE" >&2
+		echo "error: cannot process $REPLY" >&2
 	fi
 done

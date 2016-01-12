@@ -138,6 +138,8 @@ emus()
 emu()
 {
 	local AVD
+	# because it's robust enough to use ls here
+	# shellcheck disable=SC2012
 	AVD=${1:-$(ls -t ~/.android/avd/ | head -n 1)}
 
 	(( AVD > 0 )) &>/dev/null && AVD=$(emus "$AVD")

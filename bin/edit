@@ -35,6 +35,8 @@ edit()
 {
 	if [ -d "$1" ] && (( $# < 2 ))
 	then
+		# arguments should be word splitted
+		# shellcheck disable=SC2046
 		(cd_until_content "$1" &&
 			$EDITOR $(find . -type f | sort))
 	else

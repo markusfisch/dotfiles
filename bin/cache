@@ -35,6 +35,8 @@ get()
 # @param ... - files/directories (optional)
 ls()
 {
+	# because this should expand on the client side
+	# shellcheck disable=SC2029
 	ssh "${CACHE%:*}" "ls ${CACHE#*:}/$1"
 }
 
@@ -46,6 +48,8 @@ remove()
 	local FILE
 	for FILE
 	do
+		# because this should expand on the client side
+		# shellcheck disable=SC2029
 		ssh "${CACHE%:*}" "rm -rf ${CACHE#*:}/${FILE%/}"
 	done
 }

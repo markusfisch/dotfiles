@@ -17,6 +17,8 @@ spark()
 	# find min/max values
 	local MIN=${MIN:-0xffffffff} MAX=${MAX:-0}
 
+	# @ should expand to more words
+	# shellcheck disable=SC2068
 	for N in ${@//,/ }
 	do
 		# On Linux (with bash4) we could use `printf %.0f $n`
@@ -34,12 +36,12 @@ spark()
 	# print ticks
 	local TICKS=(▁ ▂ ▃ ▄ ▅ ▆ ▇ █)
 
-	local F=$(( (($MAX-$MIN)<<8)/(${#TICKS[@]}-1) ))
+	local F=$(( ((MAX-MIN)<<8)/(${#TICKS[@]}-1) ))
 	(( F < 1 )) && F=1
 
 	for N in $NUMBERS
 	do
-		printf ${TICKS[$(( ((($N-$MIN)<<8)/$F) ))]}
+		printf '%s' "${TICKS[$(( (((N-MIN)<<8)/F) ))]}"
 	done
 	printf "\n"
 }
