@@ -89,7 +89,7 @@ smart_tweet()
 	done
 }
 
-if [ "$BASH_SOURCE" == "$0" ]
+if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
 	# Get string form stdin
 	#

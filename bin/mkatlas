@@ -266,7 +266,7 @@ atlas_create()
 
 readonly MARGIN=${MARGIN:-0}
 
-if [ "$BASH_SOURCE" == "$0" ]
+if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
 	atlas_create "$@"
 fi

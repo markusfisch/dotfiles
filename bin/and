@@ -356,7 +356,7 @@ help()
 	done < "$0"
 }
 
-if [ "$BASH_SOURCE" == "$0" ]
+if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
 	"${@:-debug}"
 fi

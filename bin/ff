@@ -12,7 +12,7 @@ multi_find()
 	done
 }
 
-if [ "$BASH_SOURCE" == "$0" ]
+if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
 	multi_find "$@"
 fi

@@ -43,7 +43,7 @@ new()
 	(
 		cd "$2" || return $?
 
-		local INIT=${BASH_SOURCE##*/}.sh
+		local INIT="${0##*/}.sh"
 		if [ -f "$INIT" ]
 		then
 			bash "$INIT" || return $?
@@ -55,7 +55,7 @@ new()
 # Create an init script for a new skeleton
 init()
 {
-	cat << EOF > ${BASH_SOURCE##*/}.sh
+	cat << EOF > "${0##*/}.sh"
 #!/usr/bin/env bash
 # Run this script to initialize the template or use skel to do it for you:
 # https://gist.github.com/markusfisch/5e73a372241231a3a7c8
@@ -140,12 +140,12 @@ EOF
 				DESC=
 				;;
 		esac
-	done < "$BASH_SOURCE"
+	done < "$0"
 }
 
 readonly SKELETONS=${SKELETONS:-$HOME/src/${BASH_SOURCE##*/}}
 
-if [ "$BASH_SOURCE" == "$0" ]
+if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
 	"${@:-list}"
 fi

@@ -69,7 +69,7 @@ resample()
 INKSCAPE=$(which inkscape) ||
 	INKSCAPE='/Applications/Inkscape.app/Contents/Resources/bin/inkscape'
 
-if [ "$BASH_SOURCE" == "$0" ]
+if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
 	if (( ${#@} < 2 ))
 	then

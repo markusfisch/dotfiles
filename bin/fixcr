@@ -58,7 +58,7 @@ fix_cr()
 	done
 }
 
-if [ "$BASH_SOURCE" == "$0" ] && (( $# > 0 ))
+if [ "${BASH_SOURCE[0]}" == "$0" ] && (( $# > 0 ))
 then
 	fix_cr "$@"
 fi

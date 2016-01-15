@@ -47,7 +47,7 @@ spark()
 }
 
 # if this file is sourced, don't worry about such things
-if [ "$BASH_SOURCE" == "$0" ]
+if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
 	# Prints the help text
 	help()

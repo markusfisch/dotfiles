@@ -96,7 +96,7 @@ readonly MEMOS=${MEMOS:-$HOME/.memos}
 
 [ -d "$MEMOS" ] || mkdir "$MEMOS" || exit $?
 
-if [ "$BASH_SOURCE" == "$0" ]
+if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
 	if (( $# ))
 	then

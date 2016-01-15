@@ -99,7 +99,7 @@ RSYNC_OPTIONS=${RSYNC_OPTIONS:-'
 	--times
 	--compress'}
 
-if [ "$BASH_SOURCE" == "$0" ]
+if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
 	"${@:-help}"
 fi

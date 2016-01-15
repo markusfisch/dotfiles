@@ -281,7 +281,7 @@ label()
 # Make string lower case
 #
 # @param 1 - some string
-if [ "$BASH_VERSINFO" ] && (( BASH_VERSINFO[0] > 3 ))
+if [ "${BASH_VERSINFO[0]}" ] && (( BASH_VERSINFO[0] > 3 ))
 then
 lower()
 {

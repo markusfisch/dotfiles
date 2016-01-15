@@ -8,7 +8,7 @@ find_greatest()
 	find "${@:-.}" -type f -exec du -hk {} \; | sort -n
 }
 
-if [ "$BASH_SOURCE" == "$0" ]
+if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
 	find_greatest "$@"
 fi

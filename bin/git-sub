@@ -36,7 +36,7 @@ usage: git sub add    <repository> <prefix>
 EOF
 }
 
-if [ "$0" == "$BASH_SOURCE" ]
+if [ "$0" == "${BASH_SOURCE[0]}" ]
 then
 	"${@:-help}"
 fi
