@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
+# Convert decimal value(s) to its ASCII representation
+#
+# @param ... - values to convert
+chr()
+{
+	local N
+	for N
+	do
+		# shellcheck disable=SC2059
+		printf "\\$(printf '%03o' "$N")"
+	done
+	echo
+}
+
 # Convert ASCII character to its decimal value
 #
 # @param ... - characters to convert
@@ -19,5 +33,5 @@ ord()
 
 if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
-	ord "$@"
+	"$@"
 fi
