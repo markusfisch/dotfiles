@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-[ -x /usr/bin/say ] || {
+[ -x /usr/bin/say ] && {
 	/usr/bin/say "$@"
-	return $?
+	exit $?
 }
 
 readonly LNG=${LNG:=en}
