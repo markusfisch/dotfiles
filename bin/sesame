@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Open crypted archive(s)
+# Decrypt archive(s)
 #
 # @param ... - archive file(s) to open (optional)
 open()
@@ -15,7 +15,7 @@ open()
 	done
 }
 
-# Close files into a crypted archive
+# Encrypt a directory into an archive
 #
 # @param 1 - archive file (optional)
 # @param ... - files to close into the archive (optional)
@@ -33,4 +33,4 @@ close()
 readonly ARCHIVE=${ARCHIVE:-'.mnt'}
 readonly CIPHER=${CIPHER:-'-bf'}
 set -o pipefail
-"$@" &>/dev/null
+"$@"
