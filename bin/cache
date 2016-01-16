@@ -33,7 +33,7 @@ get()
 # List files
 #
 # @param ... - files/directories (optional)
-ls()
+list()
 {
 	# because this should expand on the client side
 	# shellcheck disable=SC2029
