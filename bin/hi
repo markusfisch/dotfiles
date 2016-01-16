@@ -11,4 +11,7 @@ declare -a WORDS=(
 	'H 2 O K O P F'
 	'Pommbaer');
 
-LNG=de say "${WORDS[$RANDOM % ${#WORDS[*]}]}"
+for (( N=${1:-1}; N--; ))
+do
+	LNG=de say "${WORDS[$RANDOM % ${#WORDS[*]}]}"
+done
