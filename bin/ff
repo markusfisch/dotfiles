@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 
-# Find file(s) in the current directory
+# Find files whose names contain at least one of the given fragments
 #
-# @param ... - patterns to find in file names
-multi_find()
+# @param ... - fragments
+find_name()
 {
-	local FILE
-	for FILE
+	local NAME
+	for NAME
 	do
-		find . -iname "*${FILE}*"
+		find . -iname "*${NAME}*"
 	done
 }
 
 if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
-	multi_find "$@"
+	find_name "$@"
 fi
