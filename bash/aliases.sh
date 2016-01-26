@@ -65,3 +65,7 @@ type adb &>/dev/null && {
 # Make
 alias m='makep'
 alias mc='m clean'
+
+# Prettify JSON
+type python &>/dev/null &&
+	alias jsonprettify='python -m json.tool'
