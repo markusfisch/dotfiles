@@ -8,8 +8,10 @@ put()
 	local FILE
 	for FILE
 	do
+		# RSYNC_OPTIONS should be expanded
+		# shellcheck disable=SC2086
 		rsync \
-			"$RSYNC_OPTIONS" \
+			$RSYNC_OPTIONS \
 			"${FILE%/}" \
 			"${CACHE%/}/"
 	done
@@ -23,8 +25,10 @@ get()
 	local FILE
 	for FILE
 	do
+		# RSYNC_OPTIONS should be expanded
+		# shellcheck disable=SC2086
 		rsync \
-			"$RSYNC_OPTIONS" \
+			$RSYNC_OPTIONS \
 			"${CACHE%/}/${FILE%/}" \
 			.
 	done
