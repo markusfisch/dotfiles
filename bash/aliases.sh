@@ -14,6 +14,7 @@ alias j='jobs'
 
 # Grep
 alias grl='grep -rl'
+alias fgrl='fgrep -rl'
 
 # Editing
 alias e='edit'
