@@ -1,7 +1,7 @@
-# Create aliases for scripts to be run with bash because
-# /usr/bin/env isn't available within TerminalIDE
-[[ $SHELL == *spartacuside* ]] && {
-	terminal_ide_aliases()
+# Create aliases for scripts to be run with bash when
+# /usr/bin/env isn't available (for Termux or TerminalIDE)
+[[ -x /usr/bin/env ]] || {
+	alias_scripts()
 	{
 		local SCRIPT NAME
 
@@ -18,6 +18,6 @@
 		done
 	}
 
-	terminal_ide_aliases
-	unset terminal_ide_aliases
+	alias_scripts
+	unset alias_scripts
 }
