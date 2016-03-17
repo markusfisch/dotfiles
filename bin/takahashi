@@ -52,7 +52,7 @@ html_to_slides()
 				ECHO=1
 				slide_new
 				;;
-			*\<h[123]\>*)
+			*\<h[123]\>*|*\<video*|*\<img*\>*)
 				slide_new
 				;;
 			'')
@@ -180,7 +180,8 @@ pre
 	text-align: left;
 }
 
-img
+img,
+video
 {
 	max-width: 100%;
 }
