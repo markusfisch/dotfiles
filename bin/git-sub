@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 
-# Add a subtree from a repository
+# Update subtree from remote name
+#
+# @param 1 - name of remote
+update()
+{
+	[ "$1" ] || return $?
+
+	git fetch --no-tags "$1" &&
+		git merge -s subtree --squash "$1/master"
+}
+
+# Add (or update) a subtree from a repository URL
 #
 # @param 1 - URL of repository
 # @param 2 - prefix for repository directory (optional)
@@ -11,20 +22,14 @@ add()
 
 	[ "$NAME" ] || return $?
 
-	git remote add "$NAME" "$1" &&
-		git fetch --no-tags "$NAME" &&
-		git read-tree --prefix="$2$NAME/" -u "$NAME/master"
-}
-
-# Update subtree
-#
-# @param 1 - name of remote repository
-update()
-{
-	[ "$1" ] || return $?
-
-	git fetch --no-tags "$1" &&
-		git merge -s subtree --squash "$1/master"
+	if git remote | fgrep "$NAME" &>/dev/null
+	then
+		update "$NAME"
+	else
+		git remote add "$NAME" "$1" &&
+			git fetch --no-tags "$NAME" &&
+			git read-tree --prefix="$2$NAME/" -u "$NAME/master"
+	fi
 }
 
 # Print help
