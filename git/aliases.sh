@@ -15,3 +15,13 @@ alias gs='git status'
 alias gsh='git show'
 alias gt='git tag'
 alias gundo='git reset --soft HEAD~1'
+
+# Remove a commit
+#
+# @param 1 - commit to remove
+grm()
+{
+	local COMMIT=$1
+	shift
+	git rebase --onto "${COMMIT}^" "${COMMIT}" "$@"
+}
