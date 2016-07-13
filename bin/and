@@ -212,6 +212,7 @@ screencap()
 # Record screen and fetch video file
 #
 # @param 1 - file name of output video (optional)
+# @param 2 - wait time in seconds before pull (optional)
 screenrecord()
 {
 	local FILE
@@ -220,7 +221,7 @@ screenrecord()
 	fetch_screenrecord()
 	{
 		echo "Fetching $FILE"
-		sleep 1
+		sleep ${2:-1}
 		adb pull "$FILE" && adb shell rm "$FILE"
 	}
 
