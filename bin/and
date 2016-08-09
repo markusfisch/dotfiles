@@ -325,6 +325,17 @@ view()
 		-d "${1:-http://www.google.com}"
 }
 
+# Get APK from a device
+#
+# @param 1 - application id
+apk()
+{
+	local APK_PATH=$(adb shell pm path "$1")
+	APK_PATH=${APK_PATH#*:}
+	APK_PATH=${APK_PATH%$'\r'}
+	adb pull "$APK_PATH"
+}
+
 # Print help
 #
 # @param 1 - name of command
