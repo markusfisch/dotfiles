@@ -23,14 +23,15 @@ type emerge &>/dev/null && {
 	exit $?
 }
 
-type apt-get &>/dev/null && {
-	sudo apt-get update && sudo apt-get upgrade && sudo apt-get autoclean &&
-		dpkg-query -l | backup_package_list
-	exit $?
-}
-
+# check apt before apt-get because Termux also knows apt-get
 type apt &>/dev/null && {
 	apt update && apt upgrade && apt autoclean &&
 		apt list | backup_package_list
+	exit $?
+}
+
+type apt-get &>/dev/null && {
+	sudo apt-get update && sudo apt-get upgrade && sudo apt-get autoclean &&
+		dpkg-query -l | backup_package_list
 	exit $?
 }
