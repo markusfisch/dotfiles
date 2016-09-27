@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 backup_package_list() {
+	[ "$BACKUP_HOME" ] || return 0
 	local NAME
 	NAME=$(uname -mns)
 	NAME=${NAME// /_}
