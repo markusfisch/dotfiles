@@ -24,8 +24,7 @@ type emerge &>/dev/null && {
 	exit $?
 }
 
-# check apt before apt-get because Termux also knows apt-get
-type apt &>/dev/null && {
+[[ $SHELL == *termux* ]] && {
 	apt update && apt upgrade && apt autoclean &&
 		apt list | backup_package_list
 	exit $?
