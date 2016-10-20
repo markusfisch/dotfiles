@@ -1,36 +1,32 @@
 #!/usr/bin/env bash
 
-# Decrypt archive(s)
+# Decrypt (and if successful unlink) archive(s)
 #
-# @param ... - archive file(s) to open (optional)
+# @param ... - archive file(s) to open
 open()
 {
 	local A
-	for A in "${@:-$ARCHIVE}"
+	for A in "${@}"
 	do
-		stat "$A" && \
-			openssl enc -d "$CIPHER" < "$A" | \
-			tar xjv && \
-			rm "$A"
+		openssl enc -d "$CIPHER" < "$A" | tar xjv && rm "$A"
 	done
 }
 
-# Encrypt a directory into an archive
+# Encrypt a directory and (if successful) unlink it
 #
-# @param 1 - archive file (optional)
-# @param ... - files to close into the archive (optional)
+# @param 1 - archive file
+# @param ... - files to close into the archive
 close()
 {
-	local A=${1:-$ARCHIVE}
+	local A=$1
 	shift
-	local F=${*:-'.sesame'}
-	stat "$F" && \
-		tar cjv "$F" | \
-		openssl enc -e "$CIPHER" > "$A" && \
-		"${UNLINK:-rm -rf}" "$F"
+	tar cjv "$*" 2>/dev/null | openssl enc -e "$CIPHER" > "$A" && rm -rf "$*"
 }
 
-readonly ARCHIVE=${ARCHIVE:-'.mnt'}
-readonly CIPHER=${CIPHER:-'-bf'}
+readonly CIPHER=${CIPHER:-'-aes-256-cbc'}
 set -o pipefail
-"$@"
+
+if [ "${BASH_SOURCE[0]}" == "$0" ]
+then
+	"${@}"
+fi
