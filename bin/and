@@ -135,16 +135,18 @@ emus()
 # Fire up given (or last used) emulator
 #
 # @param 1 - name or number of avd (optional)
+# @param ... - arguments for emulator (optional)
 emu()
 {
-	local AVD
-	# because it's robust enough to use ls here
-	# shellcheck disable=SC2012
-	AVD=${1:-$(ls -t ~/.android/avd/ | head -n 1)}
+	local AVD=$1
 
-	(( AVD > 0 )) &>/dev/null && AVD=$(emus "$AVD")
+	if [ -z "$AVD" ] || (( AVD > 0 )) &>/dev/null
+	then
+		AVD=$(emus "${AVD:-1}" | head -n 1)
+	fi
 
-	emulator -avd "${AVD%.avd}" &
+	shift
+	emulator -avd "${AVD%.avd}" "$@" &
 }
 
 # Set up a debugging session for a Android Wear device
@@ -221,7 +223,7 @@ screenrecord()
 	fetch_screenrecord()
 	{
 		echo "Fetching $FILE"
-		sleep ${2:-1}
+		sleep "${2:-1}"
 		adb pull "$FILE" && adb shell rm "$FILE"
 	}
 
@@ -330,7 +332,8 @@ view()
 # @param 1 - application id
 apk()
 {
-	local APK_PATH=$(adb shell pm path "$1")
+	local APK_PATH
+	APK_PATH=$(adb shell pm path "$1")
 	APK_PATH=${APK_PATH#*:}
 	APK_PATH=${APK_PATH%$'\r'}
 	adb pull "$APK_PATH"
