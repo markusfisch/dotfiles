@@ -12,7 +12,7 @@ wake_on_lan()
 		return 1
 	}
 
-	cat <<EOF > ${CLASS}.java && javac ${CLASS}.java && java $CLASS "$@" && rm ${CLASS}.*
+	cat <<EOF > "${CLASS}.java" && javac "${CLASS}.java" && java "$CLASS" "$@" && rm "${CLASS}.*"
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
