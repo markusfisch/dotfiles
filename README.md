@@ -21,6 +21,8 @@ change into the new directory and run:
 
 	$ bin/dotfiles update
 
+Then log out and in again.
+
 Make it your own
 ----------------
 
