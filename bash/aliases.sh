@@ -7,7 +7,8 @@ alias ......='cd ../../../../..'
 alias l='ls'
 alias ll='ls -l'
 alias la='ls -la'
-alias lth='ls -t | head'
+alias lt='ls -t'
+alias lth='ls -t | less'
 alias h='history'
 alias hc='history -c'
 alias j='jobs'
@@ -38,8 +39,6 @@ type ssh &>/dev/null &&
 	alias ssh='TERM=xterm ssh'
 type whois &>/dev/null &&
 	alias whois='whois -h whois-servers.net'
-type python &>/dev/null &&
-	alias htd='python -m SimpleHTTPServer'
 
 # Map BSD/OSX to GNU names
 alias md5sum='md5'
@@ -53,30 +52,3 @@ type iconv &>/dev/null && {
 	alias iso2utf='iconv -f iso_8859-15 -t utf8'
 }
 alias rot13='tr a-zA-Z n-za-mN-ZA-M'
-alias sag='LNG=de say'
-
-# Android
-type adb &>/dev/null && {
-	alias ad='adb devices'
-	alias a='and'
-	alias ab='a build'
-	alias ac='a clean'
-}
-
-# Make
-alias m='makep'
-alias mc='m clean'
-alias ml='m lint'
-alias mf='m findbugs'
-alias mlf='m lint findbugs'
-alias mclf='m clean lint findbugs'
-alias mi='m install'
-alias mu='m uninstall'
-alias ms='m start'
-alias mis='m install start'
-alias mui='m uninstall install'
-alias muis='m uninstall install start'
-
-# Prettify JSON
-type python &>/dev/null &&
-	alias jsonprettify='python -m json.tool'
