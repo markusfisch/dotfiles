@@ -28,11 +28,14 @@ color android
 set display+=lastline
 
 " Change matching parenthesis style
-:hi MatchParen cterm=bold ctermbg=none ctermfg=none
+hi MatchParen cterm=bold ctermbg=none ctermfg=none
 
 " Always move cursor up/down by visual line instead of text line
 noremap j gj
 noremap k gk
+
+" Break marker
+set colorcolumn=81
 
 " Highlight search matches
 set hlsearch
