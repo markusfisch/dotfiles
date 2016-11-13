@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# '*' should be expanded
+# shellcheck disable=SC2068
+for D in ${@:-*}
+do
+	[ -d "$D" ] && (
+		cd "$D" && [ -d '.git' ] && git status | {
+			fgrep clean &>/dev/null || echo "$D"
+		}
+	)
+done
