@@ -5,7 +5,7 @@ open_urls()
 {
 	local BROWSER=$BROWSER
 
-	for BROWSER in "$BROWSER" open xdg-open
+	for BROWSER in "$BROWSER" xdg-open open
 	do
 		type "$BROWSER" &>/dev/null && break
 	done
