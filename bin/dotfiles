@@ -29,7 +29,6 @@ enum()
 
 	include()
 	{
-		# shellcheck source=/dev/null
 		. "$SRC"
 	}
 

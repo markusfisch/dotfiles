@@ -350,7 +350,6 @@ realize()
 	local CACHE="$WORK/${1//[\/ ]/-}"
 
 	[ -r "$CACHE" ] && {
-		# shellcheck source=/dev/null
 		. "$CACHE"
 		return
 	}
@@ -416,7 +415,6 @@ customize()
 
 		for F in $D/*
 		do
-			# shellcheck source=/dev/null
 			[ -r "$F" ] && . "$F"
 		done
 	done

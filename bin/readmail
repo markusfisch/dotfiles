@@ -1316,7 +1316,6 @@ readonly CACHE="$HOME/.${BIN}cache"
 readonly CR=$'\r'
 
 # read configuration
-# shellcheck source=/dev/null
 [ -r "$CONFIG" ] && . "$CONFIG"
 
 POP_PORT=${POP_PORT:-110}
