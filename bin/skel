@@ -43,7 +43,7 @@ new()
 	(
 		cd "$2" || return $?
 
-		local INIT="${0##*/}.sh"
+		local INIT=${0##*/}.sh
 		if [ -f "$INIT" ]
 		then
 			bash "$INIT" || return $?
@@ -55,7 +55,7 @@ new()
 # Create an init script for a new skeleton
 init()
 {
-	cat << EOF > "${0##*/}.sh"
+	cat << EOF > ${0##*/}.sh
 #!/usr/bin/env bash
 # Run this script to initialize the template or use skel to do it for you:
 # https://gist.github.com/markusfisch/5e73a372241231a3a7c8
@@ -77,22 +77,23 @@ refactor()
 	local TYPE
 	for TYPE in d f
 	do
-		find "\$DIR" -type \$TYPE -name "*\$PATTERN*" | while read
+		find "\$DIR" -type "\$TYPE" -name "*\$PATTERN*" | while read -r
 		do
 			mv "\$REPLY" "\${REPLY//\$PATTERN/\$REPLACEMENT}"
 		done
 	done
 
-	local BASH_SOURCE_FILE=\${BASH_SOURCE##*/}
-	local TMP=".tmp-\$BASH_SOURCE_FILE-$$"
-	grep -rl "\$PATTERN" "\$DIR"/* | while read
+	local BASH_SOURCE_FILE=\${0##*/}
+	local TMP="\$0-\$\$"
+	grep -rl "\$PATTERN" "\$DIR"/* | while read -r
 	do
-		[ \${REPLY##*/} == \$BASH_SOURCE_FILE ] && continue
+		[ "\${REPLY##*/}" == "\$BASH_SOURCE_FILE" ] && continue
+		[ "\$REPLY" == "\$0" ] && continue
 
-		sed -e "s/\$PATTERN/\$REPLACEMENT/g" < "\$REPLY" > \$TMP &&
-			cat \$TMP > "\$REPLY"
+		sed -e "s/\$PATTERN/\$REPLACEMENT/g" < "\$REPLY" > "\$TMP" &&
+			cat "\$TMP" > "\$REPLY"
 
-		rm -f \$TMP
+		rm -f "\$TMP"
 	done
 }
 
@@ -116,7 +117,7 @@ help()
       |  .-- o --.  |    ()\.-- o --./()
       |  .-- o --.  |    |  .-- o --.  |
 
-usage: ${BASH_SOURCE##*/} COMMAND [ARGUMENT...]
+usage: ${0##*/} COMMAND [ARGUMENT...]
 
 COMMAND may be one of:
 
@@ -143,7 +144,7 @@ EOF
 	done < "$0"
 }
 
-readonly SKELETONS=${SKELETONS:-$HOME/src/${BASH_SOURCE##*/}}
+readonly SKELETONS=${SKELETONS:-$HOME/src/${0##*/}}
 
 if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
