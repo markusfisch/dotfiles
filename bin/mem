@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if ps --version &>/dev/null
+then
+	# GNU ps
+	ps ax -o pid,rss,cmd --sort -rss
+else
+	# BSD ps
+	ps ax -o pid,rss,comm -m
+fi | less -S

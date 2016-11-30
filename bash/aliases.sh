@@ -27,11 +27,6 @@ type diff &>/dev/null && {
 	alias dify='diff --suppress-common-lines -wry'
 }
 
-# Show memory for each process
-type ps &>/dev/null && {
-	alias mem='ps ax -o pid,rss,cmd --sort -rss | less -S'
-}
-
 # Media playback/viewing
 type feh &>/dev/null && {
 	alias feh='feh --magick-timeout -1'
