@@ -44,6 +44,7 @@ set hlsearch
 au FileType html,tex,markdown set wrap
 
 " Additional file types
+au BufNewFile,BufRead *.dart set filetype=dart
 au BufNewFile,BufRead *.glsl set filetype=glsl
 au BufNewFile,BufRead *.go set filetype=go
 au BufNewFile,BufRead *.hx set filetype=haxe
