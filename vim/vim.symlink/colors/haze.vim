@@ -5,13 +5,13 @@ if exists("syntax on")
 	syntax reset
 endif
 
-let g:colors_name = "android"
+let g:colors_name = "haze"
 
 hi Normal ctermfg=251 ctermbg=235
 
-hi Comment ctermfg=81 ctermbg=NONE
+hi Comment ctermfg=169 ctermbg=NONE
 
-hi Constant ctermfg=149 ctermbg=NONE
+hi Constant ctermfg=141 ctermbg=NONE
 hi link String Constant
 hi link Character Constant
 hi link Number Constant
@@ -47,7 +47,7 @@ hi link Delimiter Special
 hi link SpecialComment Special
 hi link Debug Special
 
-hi Underlined ctermbg=149
+hi Underlined ctermbg=141
 hi Error ctermbg=206
 hi Todo ctermfg=254 ctermbg=NONE
 
@@ -57,16 +57,16 @@ hi Directory ctermfg=254
 hi ErrorMsg ctermbg=206
 hi Folded ctermfg=243 ctermbg=NONE
 hi FoldColumn ctermfg=251 ctermbg=235
-hi HtmlLink ctermfg=149 ctermbg=NONE
+hi HtmlLink ctermfg=141 ctermbg=NONE
 hi LineNr ctermfg=238 ctermbg=NONE
-hi MatchParen ctermfg=235 ctermbg=149
-hi ModeMsg ctermfg=149
-hi MoreMsg ctermfg=149
+hi MatchParen ctermfg=235 ctermbg=141
+hi ModeMsg ctermfg=141
+hi MoreMsg ctermfg=141
 hi NonText ctermfg=239 ctermbg=NONE
 hi Pmenu ctermfg=251 ctermbg=237
 hi PmenuSel ctermfg=253 ctermbg=242
-hi Question ctermfg=149
-hi Search ctermfg=232 ctermbg=149
+hi Question ctermfg=141
+hi Search ctermfg=232 ctermbg=141
 hi StatusLine ctermfg=234 ctermbg=243
 hi StatusLineNC ctermfg=234 ctermbg=238
 hi Title ctermfg=254 ctermbg=NONE
