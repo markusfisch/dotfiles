@@ -14,6 +14,9 @@ syntax on
 " Begin syntax synchronisation always from the start
 autocmd BufEnter * :syntax sync fromstart
 
+" Use kotlin colorscheme for Kotlin sources
+autocmd BufEnter *.kt colorscheme kotlin
+
 " Remove trailing white space before saving
 autocmd BufWritePre * :%s/\s\+$//e
 
