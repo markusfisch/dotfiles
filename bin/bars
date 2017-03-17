@@ -4,7 +4,7 @@
 bars()
 {
 	local VALUES=() LABELS=()
-	local EOL=${EOL:-$'\n'} MAX=${BARMAX:-0} VMAX=0 LMAX=0
+	local EOL=${EOL:-$'\n'} MAX=${BARMAX:-0} VMAX=${VMAX:-0} LMAX=${LMAX:-0}
 	local N=0 V L LN
 
 	while read -r V L
