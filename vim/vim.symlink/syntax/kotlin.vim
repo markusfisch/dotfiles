@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language: Kotlin
 " Maintainer: Alexander Udalov
-" Latest Revision: 1 October 2015
+" Latest Revision: 29 December 2016
 
 if exists("b:current_syntax")
     finish
@@ -13,23 +13,25 @@ syn keyword ktStatement break continue return
 syn keyword ktConditional if else when
 syn keyword ktRepeat do for while
 syn keyword ktOperator as in is by
-syn keyword ktKeyword get set out super this This where
+syn keyword ktKeyword get set out super this where
 syn keyword ktException try catch finally throw
 
 syn keyword ktInclude import package
 
 syn keyword ktType Any Boolean Byte Char Double Float Int Long Nothing Short Unit
-syn keyword ktModifier annotation companion enum inner internal private protected public abstract final open override sealed vararg dynamic
-syn keyword ktStructure class object interface fun val var constructor init
-syn keyword ktTypedef typealias
+syn keyword ktModifier annotation companion enum inner internal private protected public abstract final open override sealed vararg dynamic header impl
+syn keyword ktStructure class object interface typealias fun val var constructor init
+
+syn keyword ktReservedKeyword typeof
 
 syn keyword ktBoolean true false
 syn keyword ktConstant null
 
-syn keyword ktModifier data tailrec lateinit reified external inline noinline crossinline const operator infix
+syn keyword ktModifier data tailrec lateinit reified external inline noinline crossinline const operator infix suspend
 
 syn keyword ktTodo TODO FIXME XXX contained
-syn match ktLineComment "//.*$" contains=ktTodo,@Spell
+syn match ktShebang "\v^#!.*$"
+syn match ktLineComment "\v//.*$" contains=ktTodo,@Spell
 syn region ktComment matchgroup=ktCommentMatchGroup start="/\*" end="\*/" contains=ktComment,ktTodo,@Spell
 
 syn match ktSpecialCharError "\v\\." contained
@@ -65,6 +67,7 @@ hi link ktRepeat Repeat
 hi link ktOperator Operator
 hi link ktKeyword Keyword
 hi link ktException Exception
+hi link ktReservedKeyword Error
 
 hi link ktInclude Include
 
@@ -77,6 +80,7 @@ hi link ktBoolean Boolean
 hi link ktConstant Constant
 
 hi link ktTodo Todo
+hi link ktShebang Comment
 hi link ktLineComment Comment
 hi link ktComment Comment
 hi link ktCommentMatchGroup Comment
