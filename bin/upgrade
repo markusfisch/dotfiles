@@ -1,37 +1,24 @@
 #!/usr/bin/env bash
 
-backup_package_list() {
-	[ "$BACKUP_HOME" ] || return 0
-	local NAME
-	NAME=$(uname -mns)
-	NAME=${NAME// /_}
-	local TMP="${0##*/}-$$.tmp"
-	cat > "$TMP"
-	scp "$TMP" "${BACKUP_HOME}sets/$NAME"
-	rm -f "$TMP"
+type brew &>/dev/null && {
+	brew update && brew upgrade && brew cleanup
 }
 
-type brew &>/dev/null && {
-	brew update && brew upgrade && brew cleanup &&
-		brew list | backup_package_list
-	exit $?
+type softwareupdate &>/dev/null && {
+	softwareupdate --install --all
 }
 
 type emerge &>/dev/null && {
 	emerge --sync && emerge -uDU --with-bdeps=y @world &&
-		emerge -av --depclean && revdep-rebuild && eclean-dist &&
-		equery list | backup_package_list
-	exit $?
+		emerge -av --depclean && revdep-rebuild && eclean-dist
 }
 
 [[ $SHELL == *termux* ]] && {
-	apt update && apt upgrade && apt autoclean &&
-		apt list | backup_package_list
+	apt update && apt upgrade && apt autoclean
+	# exit because apt-get is also available in termux
 	exit $?
 }
 
 type apt-get &>/dev/null && {
-	sudo apt-get update && sudo apt-get upgrade && sudo apt-get autoclean &&
-		dpkg-query -l | backup_package_list
-	exit $?
+	sudo apt-get update && sudo apt-get upgrade && sudo apt-get autoclean
 }
