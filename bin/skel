@@ -55,7 +55,7 @@ new()
 # Create an init script for a new skeleton
 init()
 {
-	cat << EOF > ${0##*/}.sh
+	cat << EOF > "${0##*/}.sh"
 #!/usr/bin/env bash
 # Run this script to initialize the template or use skel to do it for you:
 # https://gist.github.com/markusfisch/5e73a372241231a3a7c8
