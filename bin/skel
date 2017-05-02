@@ -137,7 +137,7 @@ EOF
 				;;
 			*\(\))
 				[ "$DESC" ] || continue
-				echo "${REPLY%(*} - $DESC"
+				echo "${REPLY%(*} -$DESC"
 				DESC=
 				;;
 		esac
