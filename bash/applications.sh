@@ -1,7 +1,6 @@
 # aliases for running OS X apps from the command line
 [ -d /Applications ] && {
-	alias_applications()
-	{
+	alias_applications() {
 		local D A
 		for D in /Applications/*
 		do

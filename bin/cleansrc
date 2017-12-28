@@ -3,8 +3,7 @@
 # Recursively clean source directories
 #
 # @param 1 - root directory
-clean_sources()
-{
+clean_sources() {
 	local F D=${1:-.}
 
 	for F in "$D"/*

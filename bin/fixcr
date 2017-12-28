@@ -3,8 +3,7 @@
 readonly CR=$'\r'
 
 # Add CR to given stream
-add_cr()
-{
+add_cr() {
 	while read -r
 	do
 		echo "$REPLY"$CR
@@ -12,8 +11,7 @@ add_cr()
 }
 
 # Remove CR from given stream
-rm_cr()
-{
+rm_cr() {
 	while read -r
 	do
 		echo "${REPLY%$CR}"
@@ -21,16 +19,14 @@ rm_cr()
 }
 
 # Returns true if the first line ends with a CR
-has_cr()
-{
+has_cr() {
 	read -r && [[ $REPLY == *$CR ]]
 }
 
 # Fix CR for given files
 #
 # @param ... - files to process
-fix_cr()
-{
+fix_cr() {
 	local F T=".${0##*/}-$$" LOCK=${LOCK:-auto}
 
 	while [ -e "$T" ]

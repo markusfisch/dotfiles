@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 # Close slide
-slide_close()
-{
+slide_close() {
 	cat <<EOF
 		</div>
 EOF
@@ -17,8 +16,7 @@ EOF
 }
 
 # Open slide
-slide_open()
-{
+slide_open() {
 	cat <<EOF
 	<li class="Slide">
 		<a name="slide$N" class="Anchor">&nbsp;</a>
@@ -27,8 +25,7 @@ EOF
 }
 
 # Open a new slide, close the previous one
-slide_new()
-{
+slide_new() {
 	(( N > 1 )) && slide_close
 
 	slide_open
@@ -38,8 +35,7 @@ slide_new()
 }
 
 # Generate slides from HTML
-html_to_slides()
-{
+html_to_slides() {
 	local N=1 ECHO=0
 
 	while read -r
@@ -68,8 +64,7 @@ html_to_slides()
 }
 
 # Print HTML frame
-html()
-{
+html() {
 	cat <<EOF
 <!doctype html>
 <html class="Background">
@@ -209,8 +204,7 @@ EOF
 # Generate a HTML5 presentation
 #
 # @param ... - Markdown files to convert into slides
-generate()
-{
+generate() {
 	local FILE TITLE=$TITLE
 
 	if [ -z "$TITLE" ]

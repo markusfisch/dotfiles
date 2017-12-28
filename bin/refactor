@@ -5,8 +5,7 @@
 # @param 1 - case-sensitive pattern to replace
 # @param 2 - replacement string
 # @param 3 - working directory (optional)
-refactor()
-{
+refactor() {
 	local PATTERN=$1
 	local REPLACEMENT=$2
 	local DIR=${3:-.}

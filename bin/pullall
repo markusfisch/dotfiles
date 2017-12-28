@@ -3,8 +3,7 @@
 # Pull all respositories in all direct subdirectories
 #
 # @param ... - directories to pull (optional)
-pull_all()
-{
+pull_all() {
 	local D
 
 	# don't quote @ because it will prevent globbing

@@ -1,8 +1,7 @@
 # Auto-complete BSD/OSX find to behave like GNU find
 #
 # @param ... - find params
-find --version &>/dev/null || find()
-{
+find --version &>/dev/null || find() {
 	local P=
 	[ -d "$1" ] || P=.
 	command find $P "$@"
@@ -14,13 +13,11 @@ find --version &>/dev/null || find()
 #
 # @param ... - argument to cp
 cp --version &>/dev/null || {
-	fix_cp_mv()
-	{
+	fix_cp_mv() {
 		local C
 		for C in cp mv
 		do
-			eval "$C()
-{
+			eval "$C() {
 	local A ARGS=()
 	for A in \"\$@\"
 	do

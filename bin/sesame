@@ -3,8 +3,7 @@
 # Decrypt (and if successful unlink) archive(s)
 #
 # @param ... - archive file(s) to open
-open()
-{
+open() {
 	local A
 	for A in "${@}"
 	do
@@ -16,8 +15,7 @@ open()
 #
 # @param 1 - archive file
 # @param ... - files to close into the archive
-close()
-{
+close() {
 	local A=$1
 	shift
 	tar cjv "$*" 2>/dev/null | openssl enc -e "$CIPHER" > "$A" && rm -rf "$*"

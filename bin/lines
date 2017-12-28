@@ -3,8 +3,7 @@
 # Show a stat of lines per file
 #
 # @param ... - files (optional)
-lines()
-{
+lines() {
 	local F
 	for F in "${@:-*}"
 	do

@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 # Make a HTTP POST request
-http_request_post()
-{
+http_request_post() {
 	cat <<EOF >&6
 POST $QUERY HTTP/1.1$CR
 User-Agent:$AGENT$CR
@@ -18,8 +17,7 @@ EOF
 }
 
 # Make a HTTP GET request
-http_request_get()
-{
+http_request_get() {
 	cat <<EOF >&6
 GET $QUERY HTTP/1.1$CR
 User-Agent:$AGENT$CR
@@ -36,8 +34,7 @@ EOF
 #
 # @param 1 - URL
 # @param 2 - port (optional)
-http()
-{
+http() {
 	local CR=$'\r'
 	local REQUEST=${REQUEST:-http_request_get}
 	local AGENT=${AGENT:-"bash/$BASH_VERSION ($(uname -sm))"}

@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 # List available skeletons
-list()
-{
+list() {
 	local SKELETON N=0
 	for SKELETON in ${SKELETONS}/*
 	do
@@ -15,8 +14,7 @@ list()
 #
 # @param 1 - skeleton name or number
 # @param 2 - name of new project
-new()
-{
+new() {
 	(( $# < 2 )) && return 1
 
 	local SKELETON=$1
@@ -53,8 +51,7 @@ new()
 }
 
 # Create an init script for a new skeleton
-init()
-{
+init() {
 	cat << EOF > "${0##*/}.sh"
 #!/usr/bin/env bash
 # Run this script to initialize the template or use skel to do it for you:
@@ -102,8 +99,7 @@ EOF
 }
 
 # Print help
-help()
-{
+help() {
 	cat << EOF
             ___
           ´     \`             ___

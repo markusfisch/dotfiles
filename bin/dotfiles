@@ -5,20 +5,16 @@
 #
 # @param 1 - extension of files to enumerate
 # @param ... - functions to call in order for every matching file
-enum()
-{
-	same()
-	{
+enum() {
+	same() {
 		diff -rq "$SRC" "$DST"
 	}
 
-	wire()
-	{
+	wire() {
 		rm -rf "$DST" && ln -s "$SRC" "$DST"
 	}
 
-	unwire()
-	{
+	unwire() {
 		local F
 		for F in $IGNORE
 		do
@@ -27,20 +23,17 @@ enum()
 		same && rm -rf "$DST"
 	}
 
-	include()
-	{
+	include() {
 		. "$SRC"
 	}
 
-	symlink()
-	{
+	symlink() {
 		local DST=${SRC##*/}
 		DST="$HOME/.${DST%.*}"
 		"$@"
 	}
 
-	sh()
-	{
+	sh() {
 		"$@"
 	}
 
@@ -69,12 +62,10 @@ enum()
 # Install/update dot file repository
 #
 # @param 1 - action to perform (optional)
-update()
-{
+update() {
 	[ -d "$DOTFILES" ] || return 1
 
-	invocation()
-	{
+	invocation() {
 		cat << EOF
 export DOTFILES=$DOTFILES
 export PATH=\$DOTFILES/bin:\$PATH
@@ -82,14 +73,12 @@ export PATH=\$DOTFILES/bin:\$PATH
 EOF
 	}
 
-	show()
-	{
+	show() {
 		enum symlink same
 		invocation | diff -q "$DOTFILE_INIT" -
 	}
 
-	pull()
-	{
+	pull() {
 		IGNORE=~/.gitconfig enum symlink unwire &>/dev/null
 
 		type git &>/dev/null &&
@@ -111,17 +100,14 @@ EOF
 }
 
 # Print differences between dot file repository and current setup
-check()
-{
+check() {
 	update show
 }
 
 # Source all shell files within $DOTFILES
-initialize()
-{
+initialize() {
 	# make sure target command is available
-	alias()
-	{
+	alias() {
 		local C ALIAS=${1%%=*} CMD=${*#*=}
 		for C in $CMD
 		do

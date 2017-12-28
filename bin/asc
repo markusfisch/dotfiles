@@ -3,8 +3,7 @@
 # Convert decimal value(s) to its ASCII representation
 #
 # @param ... - values to convert
-chr()
-{
+chr() {
 	local N
 	for N
 	do
@@ -17,8 +16,7 @@ chr()
 # Convert ASCII character to its decimal value
 #
 # @param ... - characters to convert
-ord()
-{
+ord() {
 	local S L N
 	for S
 	do

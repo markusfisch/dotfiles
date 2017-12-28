@@ -5,8 +5,7 @@
 # common directory node
 #
 # @param 1 - path
-cd_until_content()
-{
+cd_until_content() {
 	cd "$1" && while true
 	do
 		local FILE
@@ -31,8 +30,7 @@ cd_until_content()
 # Open editor for given files
 #
 # @param ... - files or directories
-edit()
-{
+edit() {
 	if [ -d "$1" ] && (( $# < 2 ))
 	then
 		# arguments should be word splitted

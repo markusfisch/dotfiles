@@ -16,8 +16,7 @@ readonly COLOR_WHITE="\[\033[1;37m\]"
 readonly COLOR_NONE="\[\e[0m\]"
 
 # Build smart prompt
-smart_prompt()
-{
+smart_prompt() {
 	if (( $? ))
 	then
 		PS1=$COLOR_RED

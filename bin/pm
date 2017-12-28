@@ -3,8 +3,7 @@
 # Monitor process(es)
 #
 # @param ... - name(s) of processes (optional)
-monitor()
-{
+monitor() {
 	local PROCESS PID PIDS='' IFS=' ' DELAY="-d ${DELAY:-1}"
 
 	for PROCESS

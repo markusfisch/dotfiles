@@ -4,8 +4,7 @@
 #
 # @param 1 - root directory
 # @param 2 - level
-tree()
-{
+tree() {
 	local F N=0 L='|' D=${1:-.}
 
 	for F in "$D"/*

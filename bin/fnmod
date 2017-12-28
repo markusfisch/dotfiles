@@ -1,29 +1,25 @@
 #!/usr/bin/env bash
 
 # Remove blanks
-remove_blanks()
-{
+remove_blanks() {
 	[[ $N == *[' ']* ]] || return
 	mv_to "$P/${N// /}"
 }
 
 # Convert hypens to underscores
-convert_hyphens()
-{
+convert_hyphens() {
 	[[ $F == *['-']* ]] || return
 	mv_to "$P/${N//-/_}"
 }
 
 # Convert underscores to hypens
-convert_underscores()
-{
+convert_underscores() {
 	[[ $F == *['_']* ]] || return
 	mv_to "$P/${N//_/-}"
 }
 
 # Make extensions all lower case and fix annoying alternatives
-fix_extensions()
-{
+fix_extensions() {
 	[[ $N == *.* ]] || return
 
 	local E=${N##*.}
@@ -44,8 +40,7 @@ fix_extensions()
 }
 
 # Convert to lower case
-lower_case()
-{
+lower_case() {
 	[[ $N == *[ABCDEFGHIJKLMNOPQRSTUVWXYZ]* ]] || return $?
 	mv_to "$P/${N,,}"
 }
@@ -53,8 +48,7 @@ lower_case()
 # Rename $F to given name
 #
 # @param 1 - full path with new file name
-mv_to()
-{
+mv_to() {
 	[ "$F" == "$1" ] && return
 	mv -i "$F" "$1"
 	F=$1
@@ -62,8 +56,7 @@ mv_to()
 }
 
 # Strip path and name
-strip_filename()
-{
+strip_filename() {
 	P=${F%/*}
 	N=${F##*/}
 }
@@ -71,8 +64,7 @@ strip_filename()
 # Process directories recursively
 #
 # @param ... - flags and paths
-process()
-{
+process() {
 	local ARG ACTIONS='' DEPTH='-maxdepth 1' DIRS=''
 
 	# if the last argument isn't a path, add CWD

@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 # Generate a bar chart by reading value/label pairs from stdin
-bars()
-{
+bars() {
 	local VALUES=() LABELS=()
 	local EOL=${EOL:-$'\n'} MAX=${BARMAX:-0} VMAX=${VMAX:-0} LMAX=${LMAX:-0}
 	local N=0 V L LN

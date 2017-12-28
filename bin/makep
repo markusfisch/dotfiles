@@ -3,8 +3,7 @@
 # Find a Makefile in a parent directory and run it
 #
 # @param ... - make arguments (optional)
-makep()
-{
+makep() {
 	local LEVELS=${LEVELS:-3}
 
 	while (( LEVELS-- ))

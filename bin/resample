@@ -5,8 +5,7 @@
 # @param 1 - input file
 # @param 2 - output file
 # @param 3 - size
-resample_inkscape()
-{
+resample_inkscape() {
 	"$INKSCAPE" \
 		"$1" \
 		-e "$2" \
@@ -19,8 +18,7 @@ resample_inkscape()
 # @param 1 - input file
 # @param 2 - output file
 # @param 3 - size
-resample_convert()
-{
+resample_convert() {
 	convert \
 		-background none \
 		"$1" \
@@ -33,8 +31,7 @@ resample_convert()
 #
 # @param 1 - source image
 # @param ... - sizes
-resample()
-{
+resample() {
 	local SRC=$1 RESAMPLE=resample_convert
 
 	if ! [ -r "$SRC" ]

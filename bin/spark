@@ -10,8 +10,7 @@
 # alias fspark="awk '{ for(i = 1; i <= NF; ++i) print \$i*1000 }' | spark"
 #
 # @param ... - (optionally comma-separated) list of data
-spark()
-{
+spark() {
 	local N NUMBERS=
 
 	# find min/max values
@@ -50,8 +49,7 @@ spark()
 if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
 	# Prints the help text
-	help()
-	{
+	help() {
 		local SPARK=${0##*/}
 
 		cat <<EOF

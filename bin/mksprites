@@ -3,8 +3,7 @@
 # Cut sprites from atlas
 #
 # @param 1 - atlas file
-sprites()
-{
+sprites() {
 	local PREFIX=${PREFIX:-${1%.*}}
 	local WIDTH=${WIDTH:-16}
 	local HEIGHT=${HEIGHT:-$WIDTH}

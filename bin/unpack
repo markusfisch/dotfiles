@@ -3,8 +3,7 @@
 # Unpack archive safely (means always in its own directory
 #
 # @param 1 - name and path of archive to extract
-function unpack()
-{
+function unpack() {
 	local ARCHIVE=$1
 	local TMP=".unpack-$USER-$$"
 	local NAME=${ARCHIVE##*/}

@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 
+# Edit a file
+#
+# @param 1 - file to edit
+edit() {
+	vim "scp://${CACHE/:/\//}/$1"
+}
+
 # Put a file/directory
 #
 # @param ... - files/directories
-put()
-{
+put() {
 	local FILE
 	for FILE
 	do
@@ -20,8 +26,7 @@ put()
 # Get a file/directory
 #
 # @param ... - files/directories
-get()
-{
+get() {
 	local FILE
 	for FILE
 	do
@@ -37,8 +42,7 @@ get()
 # List files
 #
 # @param ... - files/directories (optional)
-list()
-{
+list() {
 	# because this should expand on the client side
 	# shellcheck disable=SC2029
 	ssh "${CACHE%:*}" "ls ${CACHE#*:}/$1"
@@ -47,8 +51,7 @@ list()
 # Remove a file/directory
 #
 # @param ... - files/directories
-remove()
-{
+remove() {
 	local FILE
 	for FILE
 	do
@@ -61,14 +64,12 @@ remove()
 # Just show what a given command would do
 #
 # @param ... - command with arguments
-dry()
-{
+dry() {
 	RSYNC_OPTIONS="--dry-run $RSYNC_OPTIONS" "$@"
 }
 
 # Print help; use "help NAME" to show details
-help()
-{
+help() {
 	(( $# > 0 )) && {
 		type "$@"
 		return $?
@@ -81,7 +82,7 @@ help()
 		case $REPLY in
 			*\(\))
 				[ "$DESC" ] || continue
-				echo "${REPLY%(*} - $DESC"
+				echo "${REPLY%(*} -$DESC"
 				DESC=
 				;;
 			\#\ *)

@@ -3,8 +3,7 @@
 # Remove temporary files
 #
 # @param 1 - root path (optional)
-clean_temp()
-{
+clean_temp() {
 	local F R=${1:-.}
 
 	for F in \

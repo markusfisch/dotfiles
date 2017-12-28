@@ -3,8 +3,7 @@
 # Parse manifest for given patterns and print first argument value
 #
 # @param ... - patterns to find in order
-manifest()
-{
+manifest() {
 	while read -r
 	do
 		for (( ;; ))
@@ -26,42 +25,36 @@ manifest()
 }
 
 # Print package
-package()
-{
+package() {
 	manifest 'package=\"'
 }
 
 # Print first activity
-activity()
-{
+activity() {
 	manifest '<activity' 'android:name=\"'
 }
 
 # Clean builds & resources
-clean()
-{
+clean() {
 	ant clean
 }
 
 # Build
 #
 # @param ... - additional build arguments
-build()
-{
+build() {
 	ant "${TARGET:-debug}" "$@"
 }
 
 # Build & install
-install()
-{
+install() {
 	build install
 }
 
 # Uninstall package
 #
 # @param ... - package name (optional)
-uninstall()
-{
+uninstall() {
 	adb uninstall "${@:-$(package)}"
 }
 
@@ -69,22 +62,19 @@ uninstall()
 #
 # @param 1 - number of pseudo-random events to send (optional)
 # @param 2 - package name of application to test (optional)
-stress()
-{
+stress() {
 	adb shell monkey -p "${2:-$(package)}" -v "${1:-1000}"
 }
 
 # Start given activity
 #
 # @param 1 - full package and activity name (optional)
-start()
-{
+start() {
 	adb shell "am start -n ${1:-$(package)/.$(activity)}"
 }
 
 # Build, install & run
-run()
-{
+run() {
 	local PACKAGE
 
 	PACKAGE=$(package) &&
@@ -94,22 +84,19 @@ run()
 }
 
 # Run release, needs key.store & key.name to be set in ant.properties
-release()
-{
+release() {
 	TARGET=release "${@:-run}"
 }
 
 # Run debug
-debug()
-{
+debug() {
 	TARGET=debug "${@:-run}"
 }
 
 # List available emulators or only the requested one
 #
 # @param 1 - index of emulator to echo (optional)
-emus()
-{
+emus() {
 	local AVD N=1 I=${1:-0}
 
 	for AVD in ~/.android/avd/*.ini
@@ -136,8 +123,7 @@ emus()
 #
 # @param 1 - name or number of avd (optional)
 # @param ... - arguments for emulator (optional)
-emu()
-{
+emu() {
 	local AVD=$1
 
 	if [ -z "$AVD" ] || (( AVD > 0 )) &>/dev/null
@@ -150,8 +136,7 @@ emu()
 }
 
 # Set up a debugging session for a Android Wear device
-wearable()
-{
+wearable() {
 	adb forward tcp:4444 localabstract:/adb-hub
 	adb connect localhost:4444
 }
@@ -159,32 +144,28 @@ wearable()
 # Print memory info
 #
 # @param 1 - package name (optional)
-mem()
-{
+mem() {
 	adb shell dumpsys meminfo "${1:-$(package)}"
 }
 
 # Print process statistics (starting with Android 4.4)
 #
 # @param 1 - package name (optional)
-stats()
-{
+stats() {
 	adb shell dumpsys procstats "${1:-$(package)}"
 }
 
 # Broadcast action
 #
 # @param 1 - full action name
-broadcast()
-{
+broadcast() {
 	adb shell am broadcast -a "$1"
 }
 
 # Broadcast new battery status
 #
 # @param 1 - "low" or "okay"
-battery()
-{
+battery() {
 	broadcast "android.intent.action.BATTERY_$(echo "$1" |
 		tr '[:lower:]' '[:upper:]')"
 }
@@ -192,8 +173,7 @@ battery()
 # Broadcast new power status
 #
 # @param 1 - "connected" or "disconnected"
-power()
-{
+power() {
 	broadcast "android.intent.action.ACTION_POWER_$(echo "$1" |
 		tr '[:lower:]' '[:upper:]')"
 }
@@ -201,8 +181,7 @@ power()
 # Make a screen capture and fetch image file
 #
 # @param 1 - file name of output image (optional)
-screencap()
-{
+screencap() {
 	local FILE
 	FILE="/sdcard/${1:-screencap-$(date +%Y%m%d%H%M%S).png}"
 
@@ -215,8 +194,7 @@ screencap()
 #
 # @param 1 - file name of output video (optional)
 # @param 2 - wait time in seconds before pull (optional)
-screenrecord()
-{
+screenrecord() {
 	local FILE
 	FILE="/sdcard/${1:-screenrecord-$(date +%Y%m%d%H%M%S).mp4}"
 
@@ -237,8 +215,7 @@ screenrecord()
 # Dump services of given package
 #
 # @param 1 - package name (optional)
-services()
-{
+services() {
 	local PACKAGE FOUND=''
 	PACKAGE=${1:-$(package)}
 
@@ -266,14 +243,12 @@ services()
 }
 
 # Echo latest target identifier
-latest_target()
-{
+latest_target() {
 	android list target -c | grep android | tail -n 1
 }
 
 # Update existing sources with a build.xml file
-update()
-{
+update() {
 	[ -r project.properties ] ||
 		if [ -r default.properties ]
 		then
@@ -291,8 +266,7 @@ EOF
 #
 # @param 1 - full namespace with default activity
 # @param 2 - SDK target version (optional)
-create()
-{
+create() {
 	local P=${1%.} A=
 
 	if (( $# < 1 )) || [[ $P != *.* ]]
@@ -320,8 +294,7 @@ create()
 # Start intent to view given data
 #
 # @param 1 - data
-view()
-{
+view() {
 	adb shell am start \
 		-a android.intent.action.VIEW \
 		-d "${1:-http://www.google.com}"
@@ -330,8 +303,7 @@ view()
 # Get APK from a device
 #
 # @param 1 - application id
-apk()
-{
+apk() {
 	local APK_PATH
 	APK_PATH=$(adb shell pm path "$1")
 	APK_PATH=${APK_PATH#*:}
@@ -342,8 +314,7 @@ apk()
 # Print help
 #
 # @param 1 - name of command
-help()
-{
+help() {
 	local DESC='' NAME=''
 
 	while read -r

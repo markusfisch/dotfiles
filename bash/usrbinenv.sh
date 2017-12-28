@@ -1,8 +1,7 @@
 # Create aliases for scripts to be run with bash when
 # /usr/bin/env isn't available (for Termux or TerminalIDE)
 [[ -x /usr/bin/env ]] || {
-	alias_scripts()
-	{
+	alias_scripts() {
 		local SCRIPT NAME
 
 		[ -d "$DOTFILES" ] || return 1

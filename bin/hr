@@ -24,8 +24,7 @@
 # Echo a horziontal ruler
 #
 # @param 1 - word to make the ruler from
-hr()
-{
+hr() {
 	local COLS=${COLUMNS:-$(tput cols)}
 	local WORD=$1
 	local HR=
@@ -41,8 +40,7 @@ hr()
 # Echo a horziontal ruler for each argument
 #
 # @param ... - words to make rulers from (optional)
-hrs()
-{
+hrs() {
 	local WORD
 
 	for WORD in "${@:--}"

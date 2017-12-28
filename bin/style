@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 # Format in Android style but use tabs
-android()
-{
+android() {
 	astyle \
 		--suffix=none \
 		--style=java \
@@ -19,8 +18,7 @@ android()
 # Format in Markus Fisch' style
 #
 # @param ... - source files
-markusfisch()
-{
+markusfisch() {
 	astyle \
 		--suffix=none \
 		--style=allman \

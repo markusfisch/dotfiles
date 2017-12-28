@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 # Compose images into atlas
-atlas_cache_compose()
-{
+atlas_cache_compose() {
 	local W H
 	W=$(< "$CACHE/width")
 	H=$(< "$CACHE/height")
@@ -24,8 +23,7 @@ atlas_cache_compose()
 }
 
 # Print JSON and build arguments for convert
-atlas_cache_summarize()
-{
+atlas_cache_summarize() {
 	echo "var atlas={"
 
 	find "$CACHE" -type f -name image | while read -r
@@ -56,8 +54,7 @@ atlas_cache_summarize()
 # @param 1 - image width
 # @param 2 - image height
 # @param 3 - image file
-atlas_cache_insert()
-{
+atlas_cache_insert() {
 	[ -f "$CACHE/candidates" ] || return 1
 
 	local INDEX TARGET
@@ -120,8 +117,7 @@ atlas_cache_insert()
 # @param 1 - image width
 # @param 2 - image height
 # @param 3 - image file
-atlas_cache_find_nodes()
-{
+atlas_cache_find_nodes() {
 	if [ -d "$NODE/child0" ]
 	then
 		NODE="$NODE/child0" atlas_cache_find_nodes "$1" "$2" "$3"
@@ -156,8 +152,7 @@ atlas_cache_find_nodes()
 }
 
 # Sort files and insert them into the atlas
-atlas_cache_compile()
-{
+atlas_cache_compile() {
 	local NODE=$CACHE
 	local W H FILE
 
@@ -182,8 +177,7 @@ atlas_cache_compile()
 }
 
 # Read 'width height file' from standard input and create atlas
-atlas_create_from_list()
-{
+atlas_create_from_list() {
 	local CACHE
 	CACHE=$(mktemp -d "${0##*/}.XXXXXXXXXX") || return $?
 
@@ -203,8 +197,7 @@ atlas_create_from_list()
 # Create texture atlas from given image files
 #
 # @param ... - image files
-atlas_create()
-{
+atlas_create() {
 	local INKSCAPE=${INKSCAPE:-$(which inkscape)}
 	local TMPDIR
 	TMPDIR=$(mktemp -d "${0##*/}.XXXXXXXXXX") || return $?

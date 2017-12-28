@@ -3,8 +3,7 @@
 # Find files whose names contain at least one of the given fragments
 #
 # @param ... - fragments
-find_name()
-{
+find_name() {
 	local NAME
 	for NAME
 	do

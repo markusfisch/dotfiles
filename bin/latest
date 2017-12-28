@@ -5,13 +5,11 @@
 # @param ... - paths (optional)
 if find --version &>/dev/null
 then
-find_latest()
-{
+find_latest() {
 	find "${@:-.}" -type f -printf "%TY-%Tm-%Td %TH:%TM %h/%f\n" | sort
 }
 else
-find_latest()
-{
+find_latest() {
 	find "${@:-.}" -type f \
 		-exec stat -t '%Y-%m-%d %H:%M:%S' -f '%Sm %N' {} \; | sort
 }

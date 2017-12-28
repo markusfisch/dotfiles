@@ -3,8 +3,7 @@
 # Patch given JavaScript files with JSON read from stdin
 #
 # @param ... - JavaScript files to patch
-atlas_patch()
-{
+atlas_patch() {
 	(( $# < 1 )) && {
 		echo "usage: ${0##*/} FILE..."
 		return 1
