@@ -24,7 +24,7 @@ atlas_patch() {
 		[ "$NAME" ] || continue
 
 		local FRAME=${REPLY#*\{}
-		local PATCH="s^{/\*${NAME}\*/[\"xywh:0-9,]*}^{/*${NAME}*/${FRAME%,}^g"
+		local PATCH="s^{/\\*${NAME}\\*/[\"xywh:0-9,]*}^{/*${NAME}*/${FRAME%,}^g"
 		local TMP=".${0##*/}-$$.tmp"
 		local SRC
 		for SRC

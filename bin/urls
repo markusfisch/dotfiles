@@ -23,7 +23,7 @@ open_urls_from() {
 	local FILE
 	for FILE
 	do
-		open_urls < $FILE
+		open_urls < "$FILE"
 	done
 }
 

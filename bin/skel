@@ -6,7 +6,7 @@ list() {
 	for SKELETON in ${SKELETONS}/*
 	do
 		[ -d "$SKELETON" ] || continue
-		printf "%2d %s\n" $(( ++N )) "${SKELETON##*/}"
+		printf "%2d %s\\n" $(( ++N )) "${SKELETON##*/}"
 	done
 }
 
@@ -109,8 +109,8 @@ help() {
            \`---´             |===|
              o               \`---´
        _--.--o--.--_            o
-      ()\.-- o --./()     _--.--o--.--_
-      |  .-- o --.  |    ()\.-- o --./()
+      ()\\.-- o --./()     _--.--o--.--_
+      |  .-- o --.  |    ()\\.-- o --./()
       |  .-- o --.  |    |  .-- o --.  |
 
 usage: ${0##*/} COMMAND [ARGUMENT...]
@@ -131,7 +131,7 @@ EOF
 				[ "$DESC" ] && continue
 				DESC=${REPLY#*#}
 				;;
-			*\(\))
+			*\(\)*\{)
 				[ "$DESC" ] || continue
 				echo "${REPLY%(*} -$DESC"
 				DESC=

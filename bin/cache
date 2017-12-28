@@ -80,7 +80,7 @@ help() {
 	while read -r
 	do
 		case $REPLY in
-			*\(\))
+			*\(\)*\{)
 				[ "$DESC" ] || continue
 				echo "${REPLY%(*} -$DESC"
 				DESC=

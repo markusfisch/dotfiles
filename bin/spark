@@ -42,7 +42,7 @@ spark() {
 	do
 		printf '%s' "${TICKS[$(( (((N-MIN)<<8)/F) ))]}"
 	done
-	printf "\n"
+	printf "\\n"
 }
 
 # if this file is sourced, don't worry about such things

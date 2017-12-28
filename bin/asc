@@ -24,7 +24,7 @@ ord() {
 
 		for (( N = 0; N < L; ++N ))
 		do
-			printf "%d\n" "'${S:$N:1}"
+			printf "%d\\n" "'${S:$N:1}"
 		done
 	done
 }

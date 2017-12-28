@@ -108,7 +108,7 @@ emus() {
 
 		if (( !I ))
 		then
-			printf "%3d %s\n" "$N" "$AVD"
+			printf "%3d %s\\n" "$N" "$AVD"
 		elif (( N == I ))
 		then
 			echo "$AVD"
@@ -331,7 +331,7 @@ help() {
 					DESC=${REPLY#*# }
 				fi
 				;;
-			*\(\))
+			*\(\)*\{)
 				[ "$DESC" ] || continue
 				NAME=${REPLY%(*}
 				[ "$1" ] && [ "$NAME" != "$1" ] && continue

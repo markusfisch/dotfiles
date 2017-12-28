@@ -6,7 +6,7 @@ for D in ${@:-*}
 do
 	[ -d "$D" ] && (
 		cd "$D" && [ -d '.git' ] && git status | {
-			fgrep clean &>/dev/null || echo "$D"
+			grep -F clean &>/dev/null || echo "$D"
 		}
 	)
 done

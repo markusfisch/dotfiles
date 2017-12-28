@@ -3,10 +3,11 @@
 # Print files sorted by time, the latest file's last
 #
 # @param ... - paths (optional)
+# shellcheck disable=SC2185
 if find --version &>/dev/null
 then
 find_latest() {
-	find "${@:-.}" -type f -printf "%TY-%Tm-%Td %TH:%TM %h/%f\n" | sort
+	find "${@:-.}" -type f -printf "%TY-%Tm-%Td %TH:%TM %h/%f\\n" | sort
 }
 else
 find_latest() {
