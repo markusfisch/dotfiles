@@ -17,3 +17,6 @@
 
 [color]
 	ui = auto
+
+[merge]
+	renameLimit = 999999
