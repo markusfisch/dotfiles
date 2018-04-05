@@ -4,6 +4,8 @@ set sw=4
 set ls=0
 set nowrap
 set noruler
+set breakindent
+set breakindentopt=shift:4
 set linebreak
 set autoindent
 set viminfo^=h
