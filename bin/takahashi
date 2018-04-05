@@ -74,8 +74,7 @@ html() {
 <title>${TITLE}</title>
 <style>
 
-.Background
-{
+.Background {
 	background: #fff;
 	height: 100%;
 	margin: 0; padding: 0;
@@ -86,19 +85,16 @@ html() {
 	line-height: 150%;
 }
 
-.Content
-{
+.Content {
 	margin: 0; padding: 0;
 }
 
-.Slides
-{
+.Slides {
 	margin: 0; padding: 0;
 	list-style: none;
 }
 
-.Slide
-{
+.Slide {
 	position: relative;
 	margin: 0; padding: 0;
 	height: 100vh;
@@ -106,8 +102,7 @@ html() {
 	transform-style: preserve-3d;
 }
 
-.SlideContent
-{
+.SlideContent {
 	position: absolute;
 	top: 50%;
 	left: 0; right: 0;
@@ -120,8 +115,7 @@ html() {
 }
 
 .Prev,
-.Next
-{
+.Next {
 	display: block;
 	position: absolute;
 	bottom: 0;
@@ -131,61 +125,50 @@ html() {
 	font-weight: bolder;
 }
 
-.Prev
-{
+.Prev {
 	left: 0;
 }
 
-.Next
-{
+.Next {
 	right: 0;
 }
 
-.Anchor
-{
+.Anchor {
 	display: block;
 	position: absolute;
 	left: 0; top: 0;
 }
 
-h1
-{
+h1 {
 	margin-top: 0;
 }
 
-h1, h2, h3
-{
+h1, h2, h3 {
 	line-height: 150%;
 }
 
-a
-{
+a {
 	color: #4080ff;
 }
 
-ul
-{
+ul {
 	list-style: none;
 }
 
-pre
-{
-	font: 12pt monospace;
+pre {
+	font: 16pt monospace;
 	letter-spacing: normal;
 	text-align: left;
 }
 
 img,
-video
-{
+video {
 	max-width: 100%;
 	max-height: 80vh;
 }
 
-@media screen and (max-width: 400px), screen and (max-height: 400px)
-{
-	.Background
-	{
+@media screen and (max-width: 400px), screen and (max-height: 400px) {
+	.Background {
 		font-size: 8pt;
 	}
 }
