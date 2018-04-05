@@ -41,7 +41,7 @@ function unpack() {
 	}
 
 	case "$ARCHIVE" in
-		*.[Zz][Ii][Pp])
+		*.[Zz][Ii][Pp]|*.[Jj][Aa][Rr])
 			unzip "$ARCHIVE"
 			;;
 		*.[Rr][Aa][Rr])
