@@ -10,6 +10,7 @@ set linebreak
 set autoindent
 set viminfo^=h
 set modelines=1
+set cm=blowfish2
 
 syntax on
 
