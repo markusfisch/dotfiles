@@ -56,6 +56,7 @@ au BufNewFile,BufRead *.go set filetype=go
 au BufNewFile,BufRead *.hx set filetype=haxe
 au BufNewFile,BufRead *.kt set filetype=kotlin
 au BufNewFile,BufRead *.md set filetype=markdown
+au BufNewFile,BufRead *.nim set filetype=nim
 
 " Set a default file type
 au BufNewFile,BufRead * setf markdown
