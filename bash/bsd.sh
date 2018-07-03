@@ -1,6 +1,8 @@
 # Auto-complete BSD/OSX find to behave like GNU find
 #
 # @param ... - find params
+# just the version, shellcheck, just the version
+# shellcheck disable=SC2185
 find --version &>/dev/null || find() {
 	local P=
 	[ -d "$1" ] || P=.

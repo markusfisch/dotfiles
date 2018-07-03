@@ -40,14 +40,14 @@ enum() {
 	}
 
 	local D SRC
-	for D in $DOTFILES/*
+	for D in "$DOTFILES/"*
 	do
 		[ -d "$D" ] || continue
 
 		# process only files whose parent directory is also a valid command
 		type "${D##*/}" &>/dev/null || continue
 
-		for SRC in $D/*.$1
+		for SRC in "$D/"*".$1"
 		do
 			[ -r "$SRC" ] && "$@"
 		done

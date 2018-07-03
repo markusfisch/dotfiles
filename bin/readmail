@@ -162,11 +162,11 @@ decode_encoded_word() {
 	done
 }
 
-which iconv &>/dev/null || iconv() {
+command -v iconv &>/dev/null || iconv() {
 	cat
 }
 
-if which base64 &>/dev/null
+if command -v base64 &>/dev/null
 then
 	# GNU and BSD base64 command line flags are incompatible
 	if base64 --version 2>&1 | grep GNU &>/dev/null
@@ -999,17 +999,22 @@ answer_message() {
 # @param 1 - name of the setting
 # @param 2 - question phrase
 config_prompt() {
-	local REPLY='' PRESET='' DEFAULT=''
+	local REPLY=
+	local PRESET=
+	local DEFAULT=
+	local SILENT_FLAG=
 
 	eval "DEFAULT=\$$1"
 
 	[ "$DEFAULT" ] && PRESET=" [$DEFAULT]"
 	[ "$OPTIONAL" ] && PRESET="$PRESET (optional)"
-	[ "$PASSWORD" ] && PASSWORD='-s'
+	[ "$PASSWORD" ] && SILENT_FLAG='-s'
 
 	while [ -z "$REPLY" ]
 	do
-		read -r $PASSWORD -p "$2$PRESET: " -e || break
+		# SILENT_FLAG contains an additional flag
+		# shellcheck disable=SC2229
+		read -r "$SILENT_FLAG" -p "$2$PRESET: " -e || break
 
 		[ "$REPLY" ] || {
 			[ "$OPTIONAL" ] && break

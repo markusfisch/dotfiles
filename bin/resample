@@ -63,7 +63,7 @@ resample() {
 	done
 }
 
-INKSCAPE=$(which inkscape) ||
+INKSCAPE=$(command -v inkscape) ||
 	INKSCAPE='/Applications/Inkscape.app/Contents/Resources/bin/inkscape'
 
 if [ "${BASH_SOURCE[0]}" == "$0" ]

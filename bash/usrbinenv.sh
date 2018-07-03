@@ -6,7 +6,7 @@
 
 		[ -d "$DOTFILES" ] || return 1
 
-		for SCRIPT in $DOTFILES/bin/*
+		for SCRIPT in "$DOTFILES/bin/"*
 		do
 			NAME=${SCRIPT##*/}
 			# NAME should expand on definition and there

@@ -3,7 +3,7 @@
 # List available skeletons
 list() {
 	local SKELETON N=0
-	for SKELETON in ${SKELETONS}/*
+	for SKELETON in "${SKELETONS}/"*
 	do
 		[ -d "$SKELETON" ] || continue
 		printf "%2d %s\\n" $(( ++N )) "${SKELETON##*/}"
@@ -21,7 +21,7 @@ new() {
 	if (( SKELETON > 0 ))
 	then
 		local N=$SKELETON
-		for SKELETON in ${SKELETONS}/*
+		for SKELETON in "${SKELETONS}/"*
 		do
 			[ -d "$SKELETON" ] || continue
 			(( --N )) || break

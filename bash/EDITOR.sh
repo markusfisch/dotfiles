@@ -1,4 +1,4 @@
-for EDITOR in $EDITOR vim vi nano
+for EDITOR in "$EDITOR" vim vi nano
 do
 	type "$EDITOR" &>/dev/null && break
 done

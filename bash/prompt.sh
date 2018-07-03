@@ -1,3 +1,5 @@
+# those backslashes ARE escaping
+# shellcheck disable=SC1117
 readonly COLOR_BLACK="\[\033[0;30m\]"
 readonly COLOR_RED="\[\033[0;31m\]"
 readonly COLOR_GREEN="\[\033[0;32m\]"
@@ -17,6 +19,8 @@ readonly COLOR_NONE="\[\e[0m\]"
 
 # Build smart prompt
 smart_prompt() {
+	# needs to be checked indirectly, of course
+	# shellcheck disable=SC2181
 	if (( $? ))
 	then
 		PS1=$COLOR_RED

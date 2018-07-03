@@ -198,7 +198,7 @@ atlas_create_from_list() {
 #
 # @param ... - image files
 atlas_create() {
-	local INKSCAPE=${INKSCAPE:-$(which inkscape)}
+	local INKSCAPE=${INKSCAPE:-$(command -v inkscape)}
 	local TMPDIR
 	TMPDIR=$(mktemp -d "${0##*/}.XXXXXXXXXX") || return $?
 
