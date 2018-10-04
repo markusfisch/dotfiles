@@ -54,6 +54,7 @@ au BufNewFile,BufRead *.dart set filetype=dart
 au BufNewFile,BufRead *.glsl set filetype=glsl
 au BufNewFile,BufRead *.go set filetype=go
 au BufNewFile,BufRead *.hx set filetype=haxe
+au BufNewFile,BufRead *.jl set filetype=julia
 au BufNewFile,BufRead *.kt set filetype=kotlin
 au BufNewFile,BufRead *.md set filetype=markdown
 au BufNewFile,BufRead *.nim set filetype=nim
