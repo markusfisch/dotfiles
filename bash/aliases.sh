@@ -11,6 +11,7 @@ alias lt='ls -t'
 alias lth='ls -t | head'
 alias h='history'
 alias hc='history -c'
+alias k='fc -s'
 alias j='jobs'
 
 # editing
