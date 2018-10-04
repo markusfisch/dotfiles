@@ -206,7 +206,7 @@ atlas_create() {
 	local SRC
 	for SRC
 	do
-		local COPY="$TMPDIR/${SRC##*/}" BORDER=
+		local COPY="$TMPDIR/${SRC##*/}" ARGS='-trim'
 
 		case ${SRC##*.} in
 			svg)
@@ -230,26 +230,22 @@ atlas_create() {
 				W=$(identify -format '%w,%h' "$SRC")
 				H=$(( MARGIN*2+${W#*,} ))
 				W=$(( MARGIN*2+${W%,*} ))
-				BORDER="-set option:distort:viewport \
+				ARGS="$ARGS -set option:distort:viewport \
 					${W}x${H}-${MARGIN}-${MARGIN} \
 					-virtual-pixel Mirror \
 					-filter point \
 					-distort SRT 0 \
 					+repage"
 			else
-				BORDER="-border $MARGIN"
+				ARGS="$ARGS -border $MARGIN"
 			fi
 		fi
 
-		# BORDER cannot be quoted because it will result in an
-		# empty argument which makes convert stall
-		# shellcheck disable=SC2086
 		convert \
 			-background none \
 			"$SRC" \
 			-bordercolor none -border 3x3 \
-			-trim \
-			$BORDER \
+			"$ARGS" \
 			"$COPY"
 	done
 
