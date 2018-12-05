@@ -14,14 +14,15 @@ pull_all() {
 
 		[ -d "$D/.git" ] || continue
 
-		echo "pulling $D"
 		(cd "$D" &&
-			git checkout master &&
-			git pull origin master) || [ "$FORCE" ] || {
-			read -r -p 'Continue? (y/n) ' -n 1
-			echo
-			[ "$REPLY" != 'y' ] && break
-		}
+			[ "$(git rev-parse --abbrev-ref HEAD)" == 'master' ] &&
+			echo "pulling $D" && {
+				git pull origin master || {
+					read -r -p 'Continue? (y/n) ' -n 1
+					echo
+					[ "$REPLY" != 'y' ] && break
+				}
+			})
 	done
 }
 
