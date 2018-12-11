@@ -311,6 +311,16 @@ apk() {
 	adb pull "$APK_PATH"
 }
 
+# Show SDK version of connected device
+sdk() {
+	adb shell getprop ro.build.version.sdk
+}
+
+# Show ABI listing of command device
+abilist() {
+	adb shell getprop ro.product.cpu.abilist
+}
+
 # Print help
 #
 # @param 1 - name of command
