@@ -242,28 +242,31 @@ annual_report() {
 		do
 			DIRECTORY=${DIRECTORY%/.git}
 
-			# $AUTHOR_TAGS must be expanded and cannot be quoted
+			# $AUTHOR_TAGS and *_EXTRA_ARGS are expanded and cannot be quoted
 			# shellcheck disable=SC2086
 			(cd "$DIRECTORY" && [ -d '.git' ] &&
 				git log \
 					--branches \
 					--since="$SINCE" \
 					--until="$UNTIL" \
+					--format='tformat:%aD' \
 					$AUTHOR_TAGS \
-					--format='tformat:%aD' > "$CACHE_PROJECT" &&
+					$PROJECTS_EXTRA_ARGS > "$CACHE_PROJECT" &&
 				git log -c \
 					--numstat \
 					--branches \
 					--since="$SINCE" \
 					--until="$UNTIL" \
+					--format='tformat:%aD' \
 					$AUTHOR_TAGS \
-					--format='tformat:%aD' >> "$CACHE_LOC"
+					$LOC_EXTRA_ARGS >> "$CACHE_LOC" &&
 				git log \
 					--branches \
 					--since="$SINCE" \
 					--until="$UNTIL" \
+					--format='tformat:%B' \
 					$AUTHOR_TAGS \
-					--format='tformat:%B' >> "$CACHE_MESSAGES") || continue
+					$MESSAGES_EXTRA_ARGS >> "$CACHE_MESSAGES") || continue
 
 			local N
 			N=$(wc -l < "$CACHE_PROJECT")
