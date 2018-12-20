@@ -11,29 +11,29 @@ chart() {
 		echo "$NAME" "$VALUE"
 	done > "$TMP"
 	local COLS=${COLS:-$(tput cols)}
-	(( COLS -= 21 ))
+	((COLS -= 21))
 	local PBAR=${POSITIVES:-'*'} NBAR=${NEGATIVES:-'-'} BLANK=' '
-	while (( ${#PBAR} < COLS ))
+	while ((${#PBAR} < COLS))
 	do
 		PBAR=$PBAR$PBAR
 		NBAR=$NBAR$NBAR
 		BLANK=$BLANK$BLANK
 	done
-	(( MIN < 0 )) && {
-		(( MAX -= MIN ))
-		(( MIN = -MIN ))
+	((MIN < 0)) && {
+		((MAX -= MIN))
+		((MIN = -MIN))
 	}
-	local F=$(( (MAX << 16) / COLS )) BAR
-	(( F < 1 )) && F=1
+	local F=$(((MAX << 16) / COLS)) BAR
+	((F < 1)) && F=1
 	while read -r NAME VALUE
 	do
-		if (( VALUE > 0 ))
+		if ((VALUE > 0))
 		then
-			BAR=${BLANK:0:$(( (MIN << 16) / F ))}
-			BAR=$BAR${PBAR:0:$(( (VALUE << 16) / F ))}
+			BAR=${BLANK:0:$(((MIN << 16) / F))}
+			BAR=$BAR${PBAR:0:$(((VALUE << 16) / F))}
 		else
-			BAR=${BLANK:0:$(( ((MIN + VALUE) << 16) / F ))}
-			BAR=$BAR${NBAR:0:$(( (-VALUE << 16) / F ))}
+			BAR=${BLANK:0:$((((MIN + VALUE) << 16) / F))}
+			BAR=$BAR${NBAR:0:$(((-VALUE << 16) / F))}
 		fi
 		printf '%10s %7s %s\n' \
 			"$NAME" \
@@ -43,19 +43,45 @@ chart() {
 	rm -rf "$TMP"
 }
 
+# Calculate average length of commit messages
+commit_message_length() {
+	local MESSAGE='' MESSAGES=0 LENGTH=0
+	while read -r
+	do
+		[ -z "$MESSAGE" ] && {
+			if [[ "$REPLY" == "{{{"* ]]
+			then
+				REPLY=${REPLY#* }
+			else
+				continue
+			fi
+		}
+		MESSAGE=$MESSAGE${REPLY%'}}}'}
+		[[ "$REPLY" == *'}}}' ]] && {
+			((++MESSAGES))
+			((LENGTH += ${#MESSAGE}))
+			MESSAGE=
+		}
+	done
+	if ((MESSAGES > 0))
+	then
+		echo "The average length of a commit message was $((LENGTH / MESSAGES)) characters."
+	fi
+}
+
 # Filter commits into days of the week
 commits_per_weeday() {
 	local MON=0 TUE=0 WED=0 THU=0 FRI=0 SAT=0 SUN=0
 	while read -r DAY REST
 	do
 		case "$DAY" in
-			Mon*) (( ++MON )) ;;
-			Tue*) (( ++TUE )) ;;
-			Wed*) (( ++WED )) ;;
-			Thu*) (( ++THU )) ;;
-			Fri*) (( ++FRI )) ;;
-			Sat*) (( ++SAT )) ;;
-			Sun*) (( ++SUN )) ;;
+			Mon*) ((++MON));;
+			Tue*) ((++TUE));;
+			Wed*) ((++WED));;
+			Thu*) ((++THU));;
+			Fri*) ((++FRI));;
+			Sat*) ((++SAT));;
+			Sun*) ((++SUN));;
 		esac
 	done
 	cat << EOF
@@ -76,18 +102,18 @@ commits_per_month() {
 	while read -r _ _ MONTH _
 	do
 		case "$MONTH" in
-			Jan*) (( ++JAN )) ;;
-			Feb*) (( ++FEB )) ;;
-			Mar*) (( ++MAR )) ;;
-			Apr*) (( ++APR )) ;;
-			May*) (( ++MAY )) ;;
-			Jun*) (( ++JUN )) ;;
-			Jul*) (( ++JUL )) ;;
-			Aug*) (( ++AUG )) ;;
-			Sep*) (( ++SEP )) ;;
-			Oct*) (( ++OCT )) ;;
-			Nov*) (( ++NOV )) ;;
-			Dec*) (( ++DEC )) ;;
+			Jan*) ((++JAN));;
+			Feb*) ((++FEB));;
+			Mar*) ((++MAR));;
+			Apr*) ((++APR));;
+			May*) ((++MAY));;
+			Jun*) ((++JUN));;
+			Jul*) ((++JUL));;
+			Aug*) ((++AUG));;
+			Sep*) ((++SEP));;
+			Oct*) ((++OCT));;
+			Nov*) ((++NOV));;
+			Dec*) ((++DEC));;
 		esac
 	done
 	cat << EOF
@@ -114,9 +140,9 @@ loc_per_weeday() {
 		case "$FIRST" in
 			'-') ;;
 			[0-9]*)
-				(( DAY > 6 )) && continue
-				(( FIRST > 0 )) && (( INSERTS[DAY] += FIRST ))
-				(( SECOND > 0 )) && (( DELETIONS[DAY] += SECOND ))
+				((DAY > 6)) && continue
+				((FIRST > 0)) && ((INSERTS[DAY] += FIRST))
+				((SECOND > 0)) && ((DELETIONS[DAY] += SECOND))
 				;;
 			Mon*) DAY=0;;
 			Tue*) DAY=1;;
@@ -128,13 +154,13 @@ loc_per_weeday() {
 		esac
 	done
 	cat << EOF
-Monday $(( INSERTS[0] - DELETIONS[0] ))
-Tuesday $(( INSERTS[1] - DELETIONS[1] ))
-Wednesday $(( INSERTS[2] - DELETIONS[2] ))
-Thursday $(( INSERTS[3] - DELETIONS[3] ))
-Friday $(( INSERTS[4] - DELETIONS[4] ))
-Saturday $(( INSERTS[5] - DELETIONS[5] ))
-Sunday $(( INSERTS[6] - DELETIONS[6] ))
+Monday $((INSERTS[0] - DELETIONS[0]))
+Tuesday $((INSERTS[1] - DELETIONS[1]))
+Wednesday $((INSERTS[2] - DELETIONS[2]))
+Thursday $((INSERTS[3] - DELETIONS[3]))
+Friday $((INSERTS[4] - DELETIONS[4]))
+Saturday $((INSERTS[5] - DELETIONS[5]))
+Sunday $((INSERTS[6] - DELETIONS[6]))
 EOF
 }
 
@@ -146,9 +172,9 @@ loc_per_month() {
 		case "$FIRST" in
 			'-') ;;
 			[0-9]*)
-				(( MONTH > 11 )) && continue
-				(( FIRST > 0 )) && (( INSERTS[MONTH] += FIRST ))
-				(( SECOND > 0 )) && (( DELETIONS[MONTH] += SECOND ))
+				((MONTH > 11)) && continue
+				((FIRST > 0)) && ((INSERTS[MONTH] += FIRST))
+				((SECOND > 0)) && ((DELETIONS[MONTH] += SECOND))
 				;;
 			*)
 				case "$REST" in
@@ -169,18 +195,18 @@ loc_per_month() {
 		esac
 	done
 	cat << EOF
-Jan $(( INSERTS[0] - DELETIONS[0] ))
-Feb $(( INSERTS[1] - DELETIONS[1] ))
-Mar $(( INSERTS[2] - DELETIONS[2] ))
-Apr $(( INSERTS[3] - DELETIONS[3] ))
-May $(( INSERTS[4] - DELETIONS[4] ))
-Jun $(( INSERTS[5] - DELETIONS[5] ))
-Jul $(( INSERTS[6] - DELETIONS[6] ))
-Aug $(( INSERTS[7] - DELETIONS[7] ))
-Sep $(( INSERTS[8] - DELETIONS[8] ))
-Oct $(( INSERTS[9] - DELETIONS[9] ))
-Nov $(( INSERTS[10] - DELETIONS[10] ))
-Dec $(( INSERTS[11] - DELETIONS[11] ))
+Jan $((INSERTS[0] - DELETIONS[0]))
+Feb $((INSERTS[1] - DELETIONS[1]))
+Mar $((INSERTS[2] - DELETIONS[2]))
+Apr $((INSERTS[3] - DELETIONS[3]))
+May $((INSERTS[4] - DELETIONS[4]))
+Jun $((INSERTS[5] - DELETIONS[5]))
+Jul $((INSERTS[6] - DELETIONS[6]))
+Aug $((INSERTS[7] - DELETIONS[7]))
+Sep $((INSERTS[8] - DELETIONS[8]))
+Oct $((INSERTS[9] - DELETIONS[9]))
+Nov $((INSERTS[10] - DELETIONS[10]))
+Dec $((INSERTS[11] - DELETIONS[11]))
 EOF
 }
 
@@ -203,7 +229,7 @@ annual_report() {
 	local SINCE UNTIL
 	YEAR=${YEAR:-$(date +%Y)}
 	SINCE="${YEAR}-01-01"
-	UNTIL="$(( YEAR + 1 ))-01-01"
+	UNTIL="$((YEAR + 1))-01-01"
 
 	local AUTHOR AUTHOR_TAGS=''
 	for AUTHOR in ${AUTHORS:-$(git config user.email)}
@@ -215,7 +241,6 @@ annual_report() {
 	local COMMITS=0
 
 	local CACHE_PREFIX="$PWD/${0##*/}-$$"
-	local CACHE_PATHS="${CACHE_PREFIX}-paths"
 	local CACHE_ALL="${CACHE_PREFIX}-all"
 	local CACHE_PROJECT="${CACHE_PREFIX}-project"
 	local CACHE_LOC="${CACHE_PREFIX}-loc"
@@ -225,62 +250,55 @@ annual_report() {
 	}
 	rm_cache
 
-	local SRC
-	for SRC in "${@:-$HOME/src}"
+	local DIRECTORY
+	while read -r DIRECTORY
 	do
-		SRC=${SRC%/}
+		DIRECTORY=${DIRECTORY%/.git}
 
-		if [ -d "$SRC" ]
-		then
-			find "$SRC" -type d -name '.git' > "$CACHE_PATHS"
-		else
-			cat "$SRC" > "$CACHE_PATHS" || exit $?
-		fi
+		# $AUTHOR_TAGS and *_EXTRA_ARGS are expanded and cannot be quoted
+		# shellcheck disable=SC2086
+		(cd "$DIRECTORY" && [ -d '.git' ] &&
+			git log \
+				--branches \
+				--since="$SINCE" \
+				--until="$UNTIL" \
+				--format='tformat:%aD' \
+				$AUTHOR_TAGS \
+				$PROJECTS_EXTRA_ARGS > "$CACHE_PROJECT" &&
+			git log -c \
+				--numstat \
+				--branches \
+				--since="$SINCE" \
+				--until="$UNTIL" \
+				--format='tformat:%aD' \
+				$AUTHOR_TAGS \
+				$LOC_EXTRA_ARGS >> "$CACHE_LOC" &&
+			git log \
+				--branches \
+				--since="$SINCE" \
+				--until="$UNTIL" \
+				--format='tformat:{{{%B}}}' \
+				$AUTHOR_TAGS \
+				$MESSAGES_EXTRA_ARGS >> "$CACHE_MESSAGES"
+		) || {
+			echo "error: failed to process $DIRECTORY" >&2
+			continue
+		}
 
-		local DIRECTORY
-		while read -r DIRECTORY
-		do
-			DIRECTORY=${DIRECTORY%/.git}
-
-			# $AUTHOR_TAGS and *_EXTRA_ARGS are expanded and cannot be quoted
-			# shellcheck disable=SC2086
-			(cd "$DIRECTORY" && [ -d '.git' ] &&
-				git log \
-					--branches \
-					--since="$SINCE" \
-					--until="$UNTIL" \
-					--format='tformat:%aD' \
-					$AUTHOR_TAGS \
-					$PROJECTS_EXTRA_ARGS > "$CACHE_PROJECT" &&
-				git log -c \
-					--numstat \
-					--branches \
-					--since="$SINCE" \
-					--until="$UNTIL" \
-					--format='tformat:%aD' \
-					$AUTHOR_TAGS \
-					$LOC_EXTRA_ARGS >> "$CACHE_LOC" &&
-				git log \
-					--branches \
-					--since="$SINCE" \
-					--until="$UNTIL" \
-					--format='tformat:%B' \
-					$AUTHOR_TAGS \
-					$MESSAGES_EXTRA_ARGS >> "$CACHE_MESSAGES") || continue
-
-			local N
-			N=$(wc -l < "$CACHE_PROJECT")
-			(( N > 0 )) && {
-				cat "$CACHE_PROJECT" >> "$CACHE_ALL"
-				(( ++PROJECTS ))
-				(( COMMITS += N ))
-			}
-		done < "$CACHE_PATHS"
+		local N
+		N=$(wc -l < "$CACHE_PROJECT")
+		((N > 0)) && {
+			cat "$CACHE_PROJECT" >> "$CACHE_ALL"
+			((++PROJECTS))
+			((COMMITS += N))
+		}
 	done
 
 	echo "In $YEAR ${WHO:-you} made $COMMITS commits in $PROJECTS projects."
-	echo
-	(( COMMITS > 0 )) && {
+	((COMMITS > 0)) && {
+		commit_message_length < "$CACHE_MESSAGES"
+		echo
+
 		echo 'Commits per weekday'
 		commits_per_weeday < "$CACHE_ALL" | chart
 		echo
@@ -306,7 +324,25 @@ annual_report() {
 	unset rm_cache
 }
 
+# Create annual reports
+#
+# @param ... - list file of directories or parent directory
+process() {
+	local QUEUE="$PWD/${0##*/}-$$-queue"
+	for F
+	do
+		if [ -d "$F" ]
+		then
+			find "$F" -type d -name '.git' >> "$QUEUE"
+		else
+			cat "$F" >> "$QUEUE"
+		fi
+	done
+	annual_report < "$QUEUE"
+	rm -f "$QUEUE"
+}
+
 if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
-	annual_report "$@"
+	process "$@"
 fi
