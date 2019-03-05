@@ -73,3 +73,10 @@ type iconv &>/dev/null && {
 type tr  &>/dev/null && {
 	alias rot13='tr a-zA-Z n-za-mN-ZA-M'
 }
+
+# tree with less
+type less &>/dev/null && {
+	tl() {
+		tree "$@" | less -S
+	}
+}
