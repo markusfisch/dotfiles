@@ -6,5 +6,5 @@ then
 	ps ax -o pid,rss,cmd --sort -rss
 else
 	# BSD ps
-	ps ax -o pid,rss,comm -m | sort -n
+	ps ax -o rss,pid,comm -m | sort -n
 fi | less -S
