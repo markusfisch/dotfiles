@@ -62,6 +62,9 @@ function unpack() {
 		*.[Xx][Zz])
 			tar xf "$ARCHIVE"
 			;;
+		*.[7][Zz])
+			7z x "$ARCHIVE"
+			;;
 		*)
 			echo 'error: unknown archive' >&2
 			;;
