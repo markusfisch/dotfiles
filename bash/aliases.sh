@@ -13,6 +13,7 @@ alias h='history'
 alias hc='history -c'
 alias k='fc -s'
 alias j='jobs'
+alias t='tree'
 
 # editing
 alias e='edit'
