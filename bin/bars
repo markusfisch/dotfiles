@@ -8,51 +8,49 @@ bars() {
 
 	while read -r V L
 	do
-		(( V > MAX )) && MAX=$V
+		((V > MAX)) && MAX=$V
 
 		VALUES[$N]=$V
 		LABELS[$N]=$L
-		(( ++N ))
+		((++N))
 
 		LN=${#L}
-		(( LN > LMAX )) && LMAX=$LN
+		((LN > LMAX)) && LMAX=$LN
 
 		LN=${#V}
-		(( LN > VMAX )) && VMAX=$LN
+		((LN > VMAX)) && VMAX=$LN
 	done
 
 	local COUNT=$N COLUMNS=${COLUMNS:-$(tput cols)}
-	local HC=$(( COLUMNS/2 ))
-	(( LMAX > HC )) && LMAX=$(( HC ))
+	local HC=$((COLUMNS / 2))
+	((LMAX > HC)) && LMAX=$((HC))
 
 	local BARCHAR=${BARCHAR:-#}
-	local BMAX=$(( COLUMNS-LMAX-VMAX-1 ))
+	local BMAX=$((COLUMNS - LMAX - VMAX - 1))
 	local BAR='' LSPACE=''
 
-	if (( LMAX > 0 ))
+	if ((LMAX > 0))
 	then
-		(( --BMAX ))
+		((--BMAX))
 		LSPACE=' '
 	fi
 
-	while (( ${#BAR} < BMAX ))
-	do
-		BAR=$BAR${BAR:-$BARCHAR}
-	done
+	printf -v BAR "%${BMAX}s"
+	BAR=${BAR// /$BARCHAR}
 
-	local F=$(( (MAX<<16)/BMAX ))
-	(( F < 1 )) && F=1
+	local F=$(((MAX << 16) / BMAX))
+	((F < 1)) && F=1
 
-	for (( N = 0; N < COUNT; ++N ))
+	for ((N = 0; N < COUNT; ++N))
 	do
 		L=${LABELS[$N]}
-		(( ${#L} > LMAX )) && L='...'${L:$(( ${#L}-LMAX+3 ))}
+		((${#L} > LMAX)) && L='...'${L:$((${#L} - LMAX + 3))}
 
 		printf "%${VMAX}d %${LMAX}s%s%s$EOL" \
 			"${VALUES[$N]}" \
 			"$L" \
 			"$LSPACE" \
-			"${BAR:0:$(( (${VALUES[$N]}<<16)/F ))}"
+			"${BAR:0:$(((${VALUES[$N]} << 16) / F))}"
 	done
 }
 
