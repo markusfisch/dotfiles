@@ -71,7 +71,7 @@ type iconv &>/dev/null && {
 	alias utf2iso='iconv -f utf8 -t iso_8859-15'
 	alias iso2utf='iconv -f iso_8859-15 -t utf8'
 }
-type tr  &>/dev/null && {
+type tr &>/dev/null && {
 	alias rot13='tr a-zA-Z n-za-mN-ZA-M'
 }
 

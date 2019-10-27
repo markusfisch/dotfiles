@@ -1,39 +1,33 @@
-My dotfiles for OS X and Linux
-==============================
+# My dotfiles
 
-This repository contains my dotfiles for OS X and Linux.
-It's architecture is heavily inspired by
-[@holman's dotfiles](https://github.com/holman/dotfiles).
+Heavily inspired by [@holman's dotfiles](https://github.com/holman/dotfiles).
 
-How does it work?
------------------
+## How does it work?
 
-Just have a look at bin/dotfiles. Basically it links all *.symlink files to
+Have a look at [bin/dotfiles](bin/dotfiles).
+Basically it links all *.symlink files to
 their corresponding dotfiles in $HOME and sources all *.sh files in
-~/.bash_aliases (which should get sourced in your ~/.bashrc or
+~/.bash_aliases (what should get sourced in your ~/.bashrc or
 ~/.bash_profile by default).
 
-Usage
------
+## Usage
 
-Simply clone the repository somewhere into your home path (e.g. ~/.dotfiles),
+Clone the repository somewhere into your home path (e.g. `~/.dotfiles`),
 change into the new directory and run:
 
 	$ bin/dotfiles update
 
 Then log out and in again.
 
-Make it your own
-----------------
+## Make it your own
 
-This repository contains my setup. Chances are, you like it different.
-At least in git/gitconfig.symlink. So the only action that makes sense for
+This repository contains _my_ setup. Chances are you like it different.
+At least in `git/gitconfig.symlink`. So the only action that makes sense for
 someone else is probably to fork and adapt it.
 
-Warning
--------
+## Caution
 
-Since I wrote this for myself only, existing files will be __overwritten__
+Since I wrote this for myself, existing files will be __overwritten__
 without further notice. I'm a daredevil. However, you may run
 
 	$ bin/dotfiles

@@ -39,30 +39,20 @@ path "~/.piedock/applications" "~/.piedock/actions" "/usr/share/pixmaps"
 alias class "Opera" opera
 alias class "Firefox" firefox
 alias class "NEdit" nedit
-alias class "Eclipse" eclipse
 alias class "MPlayer" mplayer
 alias class "VirtualBox" virtualbox
 alias class "jetbrains-idea-ce" intellij
-alias class "xvim" xvim
 alias "urxvt" terminal
 alias "xterm" terminal
 alias "chromium-browser" chrome
 alias "chromium" chrome
 alias "google-chrome-stable" google-chrome
-alias "googleearth-bin" googleearth
 alias "Blender" blender
 alias "Blender:Render" blender
-alias "TeamViewer.exe" teamviewer
 
 menu
 	icon terminal xterm
-	icon opera
 	icon firefox "firefox-bin"
-	icon google-chrome "google-chrome-stable"
-	icon blender
-	icon gimp
-	icon inkscape
-	icon hibernate "glxinfo > /dev/null && sudo /usr/sbin/hibernate"
 	*
 end
 
