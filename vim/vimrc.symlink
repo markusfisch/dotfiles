@@ -50,7 +50,7 @@ set hlsearch
 au FileType html,tex,markdown set wrap
 
 " Additional file types
-au BufNewFile,BufRead *.dart set filetype=dart
+au BufNewFile,BufRead *.dart set filetype=dart ts=2 sw=2
 au BufNewFile,BufRead *.glsl set filetype=glsl
 au BufNewFile,BufRead *.go set filetype=go
 au BufNewFile,BufRead *.hx set filetype=haxe
@@ -116,9 +116,6 @@ function! UseTabs()
 endfunc
 nnoremap <F5> :call UseTabs()<CR>
 
-" Use tabs by default
-call UseTabs()
-
 " Use spaces
 function! UseSpaces()
 	" Highlight tabs
@@ -127,9 +124,14 @@ function! UseSpaces()
 endfunc
 nnoremap <F6> :call UseSpaces()<CR>
 
+" Use tabs by default
+call UseTabs()
+au BufNewFile,BufRead *.dart call UseSpaces()
+au BufNewFile,BufRead *.py call UseSpaces()
+
 " Toggle hex mode
 function! ToggleHexMode()
-	if !exists( "b:hexMode" ) || !b:hexMode
+	if !exists("b:hexMode") || !b:hexMode
 		let b:hexMode=1
 		%!xxd
 	else
