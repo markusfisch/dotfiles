@@ -1,1 +1,29 @@
-PROMPT='@ '
+export EDITOR=vim
+
+PROMPT='› '
+
+alias l=ls
+alias ll='ls -l'
+alias la='ls -a'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias gl='git log'
+alias gs='git status'
+alias gc='git commit'
+alias ga='git add'
+alias gaa='git add --all'
+alias gap='git add -p'
+alias gd='git diff'
+alias gdc='git diff --cached'
+alias gb='git branch --sort=-committerdate'
+alias gpo='git push origin'
+alias fgrl='fgrep -rl'
+alias e=edit
+alias m=makep
+alias mc='makep clean'
+alias mu='makep uninstall'
+alias j=jobs
+t() { tree "$@" | less -FX }
+
+set -o vi
