@@ -5,24 +5,16 @@
 # @param ... - directories to pull (optional)
 pull_all() {
 	local D
-
 	# don't quote @ because it will prevent globbing
 	# shellcheck disable=SC2068
 	for D in ${@:-*}
 	do
 		D=${D%/}
-
 		[ -d "$D/.git" ] || continue
-
-		(cd "$D" &&
-			[ "$(git rev-parse --abbrev-ref HEAD)" == 'master' ] &&
-			echo "pulling $D" && {
-				git pull origin master || {
-					read -r -p 'Continue? (y/n) ' -n 1
-					echo
-					[ "$REPLY" != 'y' ] && break
-				}
-			})
+		(cd "$D" && [ "$(git rev-parse --abbrev-ref HEAD)" == 'master' ] && {
+			echo "pulling $D"
+			git pull origin master || echo "FAILED to pull $D" >&2
+		})
 	done
 }
 

@@ -184,7 +184,7 @@ services() {
 
 	adb shell dumpsys activity services | while read -r
 	do
-		if [ $FOUND ]
+		if [ "$FOUND" ]
 		then
 			case "$REPLY" in
 				'  *'*)

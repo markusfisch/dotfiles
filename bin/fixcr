@@ -6,7 +6,7 @@ readonly CR=$'\r'
 add_cr() {
 	while read -r
 	do
-		echo "$REPLY"$CR
+		echo "$REPLY$CR"
 	done
 }
 

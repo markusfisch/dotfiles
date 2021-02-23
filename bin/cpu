@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Show a CPU load with a spinning stick
 LANG=C
-CHARS='|/-\'
+CHARS='\|/-'
 for ((I=0;; ++I))
 do
 	SUM=$(ps -A -o %cpu | awk '{sum += $1} END {print sum / 1600}')
 	printf '\r%c % 3d%%' \
 		"${CHARS:$((I % ${#CHARS})):1}" \
 		"$(awk "BEGIN {print int($SUM * 100)}")"
-	sleep $(awk "BEGIN {print 1 - $SUM}")
+	sleep "$(awk "BEGIN {print 1 - $SUM}")"
 done
