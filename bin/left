@@ -40,10 +40,8 @@ left() {
 	local REST=
 	local BAR=
 
-	while (( ${#BAR} < COLS ))
-	do
-		BAR=$BAR${BAR:-'.'}
-	done
+	BAR=$(printf "%${COLS}s")
+	BAR=${BAR// /.}
 	REST=${BAR//./|}
 	REST=${REST:0:$(( COLS - FULL ))}
 
