@@ -6,6 +6,6 @@ set -g mode-keys vi
 set -g status-bg colour234
 set -g status-fg colour243
 set -g status-left-length 11
-set-option -g status-left "%H:%M #(/Users/markus/.sesame/bin/battery) "
+set-option -g status-left "%H:%M #(/Users/markus/.dotfiles/bin/battery) "
 set-option -g status-right "%b %d"
 set-option -sa terminal-overrides ',xterm-256color:RGB'
