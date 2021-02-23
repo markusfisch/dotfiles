@@ -1,6 +1,6 @@
 export EDITOR=vim
 
-PROMPT='$ '
+PS1='$ '
 
 alias l=ls
 alias ll='ls -l'
@@ -23,4 +23,7 @@ alias m=makep
 alias mc='makep clean'
 alias mu='makep uninstall'
 alias j=jobs
-t() { tree "$@" | less -FX }
+
+t() {
+	tree "$@" | less -FX
+}
