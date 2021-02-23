@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+CWD=$(cd "${0%/*}" && pwd)
+for SYMLINK in "$CWD"/*/*.symlink
+do
+	DEST=${SYMLINK%.symlink}
+	CMD=${DEST%/*}
+	CMD=${CMD##*/}
+	DEST="$HOME/.${DEST##*/}"
+	rm -rf "$DEST"
+	(($# < 1)) && type "$CMD" &>/dev/null && ln -s "$SYMLINK" "$DEST"
+done

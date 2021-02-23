@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+readonly OUT=${OUT:-fastlane/metadata/android/en-US/changelogs}
+[ -d "$OUT" ] || mkdir -p "$OUT" || exit $?
+grep -E '^[#]{1,}[[:space:]][0-9]+\.[0-9]+\.[0-9]+' < CHANGELOG.md | while read -r
+do
+	TAG=${REPLY##* }
+	VERSION_CODE=$(git show "$TAG":./app/build.gradle |
+		grep -E 'versionCode[[:space:]][0-9]+')
+	VERSION_CODE=${VERSION_CODE##*Code}
+	VERSION_CODE=${VERSION_CODE##* }
+	OUTFILE="$OUT/${VERSION_CODE}.txt"
+	[ -r "$OUTFILE" ] || git show "$TAG":./CHANGELOG.md |
+		sed -n '/# '"$TAG"'/,/^$/p' |
+		grep -vE '^#' > "$OUTFILE"
+done

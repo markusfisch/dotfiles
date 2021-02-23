@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Open nethack in another tmux window while we're waiting for some process
+# to finish. Try `./hackwhile du -s ~` for example.
+[ "$TMUX" ] || exit $?
+LOG="/tmp/${0##*/}.$$"
+"$@" &> "$LOG" &
+PID=$!
+WINDOW=$(tmux lsw | grep -F nethack | cut -d ':' -f 1)
+if ((WINDOW))
+then
+	tmux selectw -t "$WINDOW"
+else
+	tmux neww nethack
+fi
+wait "$PID"
+tmux last
+cat "$LOG"
+rm -f "$LOG"

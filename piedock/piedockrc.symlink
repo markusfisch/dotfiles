@@ -8,56 +8,56 @@ font Sans 8.0
 
 ignore-mask Num_Lock
 
-trigger button 8
-trigger button-down Mod4 1
+trigger key Control space
 trigger button Shift 4
 trigger button Shift 5
-trigger menu window-list button Mod4 4
-trigger menu window-list button Mod4 5
-trigger menu window-list key Mod4 Tab
-trigger menu window-control button-down Mod4 3
-trigger menu window-control button-down Shift 3
-trigger menu windows-of-active key Mod4 less
+trigger menu window-control key Control less
 
 button 1 ShowNext
 button 2 ShowPrevious
 button 3 Launch
 
 key Escape Disappear
-key Return ShowNext
+key Return Launch
 key-up Super_L ShowNext
+key-up Shift_L ShowNext
+key-up Control_L ShowNext
+key space SpinPrevious
 key Up SpinNext
 key Down SpinPrevious
 key Tab SpinNext
 key less SpinNext
+key k SpinNext
+key j SpinPrevious
 
-active-indicator "~/.piedock/active-indicators/gnome-emblem-new-with-shadow.png" right bottom
-missing-icon "~/.piedock/applications/generic/PixelPressIcons/TheJollyRoger.png"
+active-indicator "~/.piedock/indicators/gnome-emblem-new.png" right bottom
 
 path "~/.piedock/applications" "~/.piedock/actions" "/usr/share/pixmaps"
 
-alias class "Opera" opera
+alias class "Gnome-terminal" terminal
 alias class "Firefox" firefox
-alias class "NEdit" nedit
 alias class "MPlayer" mplayer
 alias class "VirtualBox" virtualbox
-alias class "jetbrains-idea-ce" intellij
-alias "urxvt" terminal
 alias "xterm" terminal
 alias "chromium-browser" chrome
 alias "chromium" chrome
-alias "google-chrome-stable" google-chrome
 alias "Blender" blender
 alias "Blender:Render" blender
 
 menu
-	icon terminal xterm
-	icon firefox "firefox-bin"
+	icon xterm "xterm -geometry 80x40"
+	icon firefox
+	icon gimp
+	icon inkscape
 	*
 end
 
 menu window-list
 	**
+end
+
+menu windows-of-active
+	***
 end
 
 menu window-control
@@ -67,10 +67,6 @@ menu window-control
 	icon lower "piedockutils -o $WID"
 	icon stick "piedockutils -s $WID"
 	icon shade "piedockutils -d $WID"
-end
-
-menu windows-of-active
-	***
 end
 
 preload menus

@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+# Add, commit, tag and push
+tag_and_push() {
+	local VERSION=$1
+
+	if [ -z "$VERSION" ]
+	then
+		# find version (x.x.x) in uncommitted changes
+		VERSION=$(git diff -U0 |
+			grep -E "^\+.*([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2})")
+
+		# cut out version if between double quotes
+		VERSION=${VERSION#*\"}
+		VERSION=${VERSION%\"*}
+
+		# cut out version if between single quotes
+		VERSION=${VERSION#*\'}
+		VERSION=${VERSION%\'*}
+	fi
+
+	if [ -z "$VERSION" ]
+	then
+		echo "error: there's no version change" >&2
+		return 1
+	fi
+
+	[ -r $(git rev-parse --show-cdup)CHANGELOG.* ] && {
+		git diff --name-only | grep 'CHANGELOG[\.md]*$' &>/dev/null || {
+			read -r -n 1 -p "CHANGELOG not changed! Proceed? (y/n) "
+			echo
+			case "$REPLY" in
+				y)
+					;;
+				*)
+					return 2
+					;;
+			esac
+		}
+	}
+
+	read -r -n 1 -p "Do you want to tag $VERSION? (y/n) "
+	echo
+	case "$REPLY" in
+		''|y)
+			git add --all &&
+				git commit -m "Advance version number to $VERSION" &&
+				git tag -a "$VERSION" -m "Version $VERSION" &&
+				git push origin master &&
+				git push origin "$VERSION"
+			;;
+	esac
+}
+
+if [ "$0" == "$BASH_SOURCE" ]
+then
+	tag_and_push "$@"
+fi

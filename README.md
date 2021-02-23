@@ -1,35 +1,46 @@
 # My dotfiles
 
-Heavily inspired by [@holman's dotfiles](https://github.com/holman/dotfiles).
+Inspired by [@holman's dotfiles](https://github.com/holman/dotfiles).
 
-## How does it work?
+This repository contains _my_
+[dotfiles](https://en.wikipedia.org/wiki/dotfile) and a small bash
+[script](update) that creates symbolic links for all `*.symlink` files
+(and directories) in this repository in the `$HOME` directory.
 
-Have a look at [bin/dotfiles](bin/dotfiles).
-Basically it links all *.symlink files to
-their corresponding dotfiles in $HOME and sources all *.sh files in
-~/.bash_aliases (what should get sourced in your ~/.bashrc or
-~/.bash_profile by default).
+The name of the directory containing a `*.symlink` file must be an executable
+command on the target system. This way, only locally relevant configuration
+files (or directories) are linked. This is important for me because I use
+this on Linux and macOS.
 
-## Usage
+## How to use it
 
-Clone the repository somewhere into your home path (e.g. `~/.dotfiles`),
-change into the new directory and run:
+Since this is my configuration, you should fork it first.
+Then clone your fork into `$HOME/.dotfiles`:
 
-	$ bin/dotfiles update
+	$ git clone git@github.com:your_account/dotfiles.git .dotfiles
 
-Then log out and in again.
+Change into it and make it yours:
 
-## Make it your own
+	$ cd .dotfiles
+	$ vim git/gitconfig.symlink
+	…
 
-This repository contains _my_ setup. Chances are you like it different.
-At least in `git/gitconfig.symlink`. So the only action that makes sense for
-someone else is probably to fork and adapt it.
+Then run `update` to create the symlinks:
+
+	$ ./update
+
+On any other machine you may just clone the repository and run `update` to
+install your configuration there.
+
+## How to update an existing repository
+
+Call `update unwire` to clean up previously existing symlinks. Then pull
+and run `update` again to install from the updated repository:
+
+	$ cd ~/.dotfiles
+	$ ./update unwire && git pull origin master && ./update
 
 ## Caution
 
-Since I wrote this for myself, existing files will be __overwritten__
-without further notice. I'm a daredevil. However, you may run
-
-	$ bin/dotfiles
-
-to see a diff for all files that are about to change.
+Since I wrote this for myself, existing configuration files will be
+_overwritten_ without further notice. I'm a daredevil.

@@ -113,7 +113,7 @@ decode_quoted_printable() {
 
 	while (( ! EOF ))
 	do
-		read -r -d '=' || EOF=1
+		read -rd '=' || EOF=1
 
 		(( C )) &&
 			if [[ $REPLY == [$'\r'$'\n']* ]]
@@ -767,7 +767,7 @@ read_next_message() {
 		}
 	done
 
-	(( NEXT )) && read_message $NEXT
+	(( NEXT )) && read_message "$NEXT"
 }
 
 # Check for new messages and set NEW_MAILS accordingly
@@ -827,7 +827,7 @@ write_message() {
 
 		while [ -z "$TO" ]
 		do
-			read -r -p 'To         : ' -e TO || return
+			read -erp 'To         : ' TO || return
 		done
 
 		set "${TO//,/ }"
@@ -837,14 +837,14 @@ write_message() {
 	then
 		echo "Subject    : $SUBJECT"
 	else
-		read -r -p 'Subject    : ' -e SUBJECT
+		read -erp 'Subject    : ' SUBJECT
 	fi
 
 	if [ "$ATTACHMENTS" ]
 	then
 		echo "Attachments: $ATTACHMENTS"
 	else
-		read -r -p 'Attachments: ' -e ATTACHMENTS
+		read -erp 'Attachments: ' ATTACHMENTS
 	fi
 
 	[ "$ATTACHMENTS" ] && {
@@ -853,7 +853,7 @@ write_message() {
 		do
 			while ! [ -r "${A[$N]}" ]
 			do
-				read -r -p "${A[$N]} not found, try again: " -e || {
+				read -erp "${A[$N]} not found, try again: " || {
 					A[$N]=
 					break
 				}
@@ -901,7 +901,7 @@ Message-ID: <$MESSAGE_ID>
 MIME-Version: 1.0"
 
 			BODY=$(echo "$BODY" |
-				while read -r -n 76; do echo "$REPLY"; done)
+				while read -rn 76; do echo "$REPLY"; done)
 
 			[ "$SIGNATURE" ] && BODY=$BODY"
 
@@ -964,7 +964,7 @@ $BODY
 #
 # @param 1 - directory in MIME tree
 quote_message() {
-	mime_decode_message "$1" | while read -r -n 76
+	mime_decode_message "$1" | while read -rn 76
 	do
 		echo "> $REPLY"
 	done
@@ -1014,7 +1014,7 @@ config_prompt() {
 	do
 		# SILENT_FLAG contains an additional flag
 		# shellcheck disable=SC2229
-		read -r "$SILENT_FLAG" -p "$2$PRESET: " -e || break
+		read -erp "$2$PRESET: " $SILENT_FLAG || break
 
 		[ "$REPLY" ] || {
 			[ "$OPTIONAL" ] && break
@@ -1026,8 +1026,7 @@ config_prompt() {
 		[ "$OPTIONAL" ] && return
 	}
 
-	[ "$VOLATILE" ] ||
-		echo "$1='$REPLY'" >> "$CONFIG"
+	[ "$VOLATILE" ] || echo "$1='$REPLY'" >> "$CONFIG"
 
 	eval "$1=\$REPLY"
 }
@@ -1071,7 +1070,7 @@ EOF
 	fi
 
 	local ANSWER
-	read -r -e ANSWER
+	read -re ANSWER
 
 	case "$ANSWER" in
 		[Yy]*|'')
@@ -1171,7 +1170,7 @@ EOF
 			# FORMAT should be configurable
 			# shellcheck disable=SC2059
 			new_messages &&
-				printf "$FORMAT" $NEW_MAILS
+				printf "$FORMAT" "$NEW_MAILS"
 			;;
 		s*)
 			local STATUS MAILS SIZE FORMAT=${FORMAT:-"%d mails (%d bytes)\\n"}
@@ -1307,8 +1306,8 @@ done
 if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
 	# interactive operation
-	while read -r -p "$POP_ACCOUNT> " -e
+	while read -erp "$POP_ACCOUNT> "
 	do
-		run $REPLY
+		run "$REPLY"
 	done
 fi

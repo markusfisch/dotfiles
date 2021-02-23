@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+echo '# Change Log'
+echo
+git tag --sort version:refname | tail -r | {
+	LAST_TAG=
+	while read -r
+	do
+		[ "$LAST_TAG" ] && {
+			echo "## $LAST_TAG"
+			git log "${LAST_TAG}...${REPLY}" --format=format:"* %s" |
+				fgrep -v 'Advanced version number to'
+			echo
+		}
+		LAST_TAG=$REPLY
+	done
+}

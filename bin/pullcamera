@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
-
+# Pull all photos from the connected Android device
 for CAMERA in "${@:-sdcard/DCIM/Camera}"
 do
 	adb shell ls "$CAMERA" | while read -r
 	do
 		FILE=${REPLY%$'\r'*}
-
 		[ -r "$FILE" ] && continue
-
 		adb pull "$CAMERA/$FILE"
 	done
 done

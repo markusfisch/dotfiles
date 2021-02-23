@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+convert "$1" \( +clone -alpha Extract \) \
+	-channel RGB \
+	-compose Multiply \
+	-composite "${2:-premultiplied.png}"

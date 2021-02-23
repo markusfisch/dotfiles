@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Print files by size
+find "${@:-.}" -type f -exec du -hk {} \; | sort -n

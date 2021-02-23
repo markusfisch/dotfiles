@@ -34,23 +34,6 @@ activity() {
 	manifest '<activity' 'android:name=\"'
 }
 
-# Clean builds & resources
-clean() {
-	ant clean
-}
-
-# Build
-#
-# @param ... - additional build arguments
-build() {
-	ant "${TARGET:-debug}" "$@"
-}
-
-# Build & install
-install() {
-	build install
-}
-
 # Uninstall package
 #
 # @param ... - package name (optional)
@@ -71,26 +54,6 @@ stress() {
 # @param 1 - full package and activity name (optional)
 start() {
 	adb shell "am start -n ${1:-$(package)/.$(activity)}"
-}
-
-# Build, install & run
-run() {
-	local PACKAGE
-
-	PACKAGE=$(package) &&
-		[ "$PACKAGE" ] &&
-		install &&
-		start "${PACKAGE}/.$(activity)"
-}
-
-# Run release, needs key.store & key.name to be set in ant.properties
-release() {
-	TARGET=release "${@:-run}"
-}
-
-# Run debug
-debug() {
-	TARGET=debug "${@:-run}"
 }
 
 # List available emulators or only the requested one
@@ -247,50 +210,6 @@ latest_target() {
 	android list target -c | grep android | tail -n 1
 }
 
-# Update existing sources with a build.xml file
-update() {
-	[ -r project.properties ] ||
-		if [ -r default.properties ]
-		then
-			mv default.properties project.properties
-		else
-			cat <<EOF > project.properties
-target=$(latest_target)
-EOF
-		fi
-
-	android update project --path . -s
-}
-
-# Create a new android project
-#
-# @param 1 - full namespace with default activity
-# @param 2 - SDK target version (optional)
-create() {
-	local P=${1%.} A=
-
-	if (( $# < 1 )) || [[ $P != *.* ]]
-	then
-		echo 'error: missing namespace and/or main activity' >&2
-		return 1
-	fi
-
-	A=${P##*.}
-
-	if [[ $A != [A-Z]* ]]
-	then
-		A=MainActivity
-	else
-		P=${P%.*}
-	fi
-
-	android create project \
-		--target "${2:-$(latest_target)}" \
-		--package "$P" \
-		--activity "$A" \
-		--path .
-}
-
 # Start intent to view given data
 #
 # @param 1 - data
@@ -305,7 +224,7 @@ view() {
 # @param 1 - application id
 apk() {
 	local APK_PATH
-	APK_PATH=$(adb shell pm path "$1")
+	APK_PATH=$(adb shell pm path "${1:-$(package)}")
 	APK_PATH=${APK_PATH#*:}
 	APK_PATH=${APK_PATH%$'\r'}
 	adb pull "$APK_PATH"
@@ -354,5 +273,5 @@ help() {
 
 if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
-	"${@:-debug}"
+	"${@:-help}"
 fi

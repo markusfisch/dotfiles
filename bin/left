@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+# Print seconds since given date and time
+#
+# @param 1 - date and time in format 'YYYY-MM-DD HH:MM:SS'
+seconds_since() {
+	if date --version &>/dev/null
+	then
+		# GNU
+		date -d "$@" +%s
+	else
+		# BSD
+		date -j -f '%Y-%m-%d %H:%M:%S' "$@" +%s
+	fi
+}
+
+# Show a bar of how many time is left
+#
+# @param 1 - start date and time in format 'YYYY-MM-DD HH:MM:SS'
+# @param 2 - stop date and time in same format
+left() {
+	local START
+	START=$(seconds_since "$1")
+
+	local STOP
+	STOP=$(seconds_since "$2")
+
+	local NOW
+	NOW=$(date +%s)
+
+	local SECONDS=$(( NOW - START ))
+	(( SECONDS < 0 )) && SECONDS=0
+	local CONTINGENT=$(( STOP - START ))
+	(( SECONDS > CONTINGENT )) && SECONDS=$CONTINGENT
+
+	local COLS
+	COLS=$(tput cols)
+
+	local FULL=$(( COLS * SECONDS / CONTINGENT ))
+	local REST=
+	local BAR=
+
+	while (( ${#BAR} < COLS ))
+	do
+		BAR=$BAR${BAR:-'.'}
+	done
+	REST=${BAR//./|}
+	REST=${REST:0:$(( COLS - FULL ))}
+
+	echo "${BAR:0:$FULL}$REST"
+}
+
+# Show how many time remains until we call it a (work)day
+day() {
+	local DAY
+	DAY=$(date +%Y-%m-%d)
+	left "$DAY 09:00:00" "$DAY 17:30:00"
+}
+
+# Show how many time remains until the year is over
+year() {
+	local YEAR
+	YEAR=$(date +%Y)
+	left "$YEAR-01-01 00:00:00" "$YEAR-12-31 23:59:59"
+}
+
+if [ "${BASH_SOURCE[0]}" == "$0" ]
+then
+	"${@:-day}"
+fi

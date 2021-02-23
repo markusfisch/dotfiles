@@ -5,13 +5,11 @@
 # @param ... - make arguments (optional)
 makep() {
 	local LEVELS=${LEVELS:-3}
-
 	while (( LEVELS-- ))
 	do
 		[ -r "Makefile" ] && break
 		cd ..
 	done
-
 	make "$@"
 }
 

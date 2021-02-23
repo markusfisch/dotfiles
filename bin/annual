@@ -6,39 +6,35 @@ chart() {
 	TMP=$(mktemp)
 	while read -r NAME VALUE
 	do
-		(( VALUE > MAX )) && MAX=$VALUE
-		(( VALUE < MIN )) && MIN=$VALUE
+		((VALUE > MAX)) && MAX=$VALUE
+		((VALUE < MIN)) && MIN=$VALUE
 		echo "$NAME" "$VALUE"
 	done > "$TMP"
 	local COLS=${COLS:-$(tput cols)}
 	((COLS -= 21))
-	local PBAR=${POSITIVES:-'*'} NBAR=${NEGATIVES:-'-'} BLANK=' '
-	while ((${#PBAR} < COLS))
-	do
-		PBAR=$PBAR$PBAR
-		NBAR=$NBAR$NBAR
-		BLANK=$BLANK$BLANK
-	done
+	local BLANK PBAR NBAR
+	BLANK=$(printf "%${COLS}s")
+	PBAR=${BLANK// /${POSITIVES:-'*'}}
+	NBAR=${BLANK// /${NEGATIVES:-'-'}}
 	((MIN < 0)) && {
 		((MAX -= MIN))
 		((MIN = -MIN))
 	}
-	local F=$(((MAX << 16) / COLS)) BAR
+	local F=$(((MAX << 16) / COLS)) BAR FILL
+	local BASE=$(((MIN << 16) / F))
 	((F < 1)) && F=1
 	while read -r NAME VALUE
 	do
 		if ((VALUE > 0))
 		then
-			BAR=${BLANK:0:$(((MIN << 16) / F))}
+			BAR=${BLANK:0:$BASE}
 			BAR=$BAR${PBAR:0:$(((VALUE << 16) / F))}
 		else
-			BAR=${BLANK:0:$((((MIN + VALUE) << 16) / F))}
-			BAR=$BAR${NBAR:0:$(((-VALUE << 16) / F))}
+			FILL=$(((-VALUE << 16) / F))
+			BAR=${BLANK:0:$((BASE - FILL))}
+			BAR=$BAR${NBAR:0:$FILL}
 		fi
-		printf '%10s %7s %s\n' \
-			"$NAME" \
-			"$VALUE" \
-			"$BAR"
+		printf '%10s %7s %s\n' "$NAME" "$VALUE" "$BAR"
 	done < "$TMP"
 	rm -rf "$TMP"
 }
@@ -215,11 +211,11 @@ EOF
 # @param 1 - number of words (optional)
 top_words() {
 	grep -Eoa '[a-zA-Z0-9]+' |
-		fgrep -vE '(^[a-zA-Z]{1,3}$|^[0-9]+$)' |
+		grep -FvE '(^[a-zA-Z]{1,3}$|^[0-9]+$)' |
 		sort |
 		uniq -c |
 		sort -rn |
-		head -n ${1:-3} | while read -r COUNT WORD
+		head -n "${1:-3}" | while read -r COUNT WORD
 	do
 		echo "$WORD $COUNT"
 	done
@@ -268,7 +264,7 @@ annual_report() {
 				--format='tformat:%aD' \
 				$AUTHOR_TAGS \
 				$PROJECTS_EXTRA_ARGS > "$CACHE_PROJECT" &&
-			git log -c \
+			git log \
 				--numstat \
 				--branches \
 				--since="$SINCE" \
@@ -319,7 +315,7 @@ annual_report() {
 		echo
 
 		echo 'Top 3 words in commit messages (ignoring words up to three letters)'
-		top_words < "$CACHE_MESSAGES" | chart
+		top_words 3 < "$CACHE_MESSAGES" | chart
 		echo
 	}
 

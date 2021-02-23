@@ -8,11 +8,6 @@ type softwareupdate &>/dev/null && {
 	softwareupdate --install --all
 }
 
-type emerge &>/dev/null && {
-	emerge --sync && emerge -uDU --with-bdeps=y @world &&
-		emerge -av --depclean && revdep-rebuild && eclean-dist
-}
-
 [[ $SHELL == *termux* ]] && {
 	apt update && apt upgrade && apt autoclean
 	# exit because apt-get is also available in termux

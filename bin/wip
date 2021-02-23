@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
+# List subdirectories with uncommitted changes
 
 # '*' should be expanded
 # shellcheck disable=SC2068
 for D in ${@:-*}
 do
-	[ -d "$D" ] && (
-		cd "$D" && [ -d '.git' ] && git status | {
-			grep -F clean &>/dev/null || echo "$D"
+	[ -d "$D/.git" ] && (
+		cd "$D" && git status | {
+			grep -F 'nothing to commit' &>/dev/null || echo "$D"
 		}
 	)
 done

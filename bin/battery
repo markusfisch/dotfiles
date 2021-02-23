@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Print battery status in percent
+pmset -g batt | grep -o '[0-9]*%'

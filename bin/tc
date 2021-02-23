@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+# Print clock time of given timestamp
+#
+# @param 1 - timestamp
+clocktime() {
+	if date --version &>/dev/null
+	then
+		# GNU
+		date -d "@$*" +%H:%M
+	else
+		# BSD
+		date -j -f '%s' "$@" +%H:%M
+	fi
+}
+
+# Print timestamp of given date and time
+#
+# @param ... - date and time in format 'YYYY-MM-DD HH:MM:SS'
+timestamp() {
+	if date --version &>/dev/null
+	then
+		# GNU
+		date -d "$@" +%s
+	else
+		# BSD
+		date -j -f '%Y-%m-%d %H:%M:%S' "$@" +%s
+	fi
+}
+
+# Print timestamp of given time of day
+#
+# @param 1 - time in HH[:MM] format
+hours_to_timestamp() {
+	local TIME=$1
+	[[ $TIME == 'now' ]] && TIME=$(date +%H:%M)
+	[[ $TIME == *:* ]] || TIME=$TIME':00'
+	timestamp "$(date +%Y-%m-%d) $TIME:00"
+}
+
+# Convert duration from hours and minutes into seconds
+#
+# @param 1 - duration in [HH:]MM format
+minutes_to_seconds() {
+	local D=$1
+	[[ $D == *:* ]] && {
+		local SIGN=
+		[[ $D == -* ]] && SIGN=-
+		D=$(($SIGN${D##*:} + ${D%%:*} * 60))
+	}
+	echo $((D * 60))
+}
+
+# Expand duration to HH:MM format
+#
+# @param 1 - duration in [HH:]MM format
+minutes_to_clocktime() {
+	local T=${1#-}
+	[[ $T == *:* ]] || T=$(printf '%02d:%02d' "$((T / 60))" "$((T % 60))")
+	local SIGN=
+	[[ $1 == -* ]] && SIGN=-
+	echo "$SIGN$T"
+}
+
+# Print time ruler
+#
+# @param 1 - target time in HH[:MM] format
+# @param ... - time ranges in [HH:]MM format
+ruler() {
+	local TIME
+	TIME=$(hours_to_timestamp "$1")
+	clocktime "$TIME"
+	shift
+	for T
+	do
+		((TIME += $(minutes_to_seconds "$T")))
+		echo "$(clocktime "$TIME")" "$(minutes_to_clocktime "$T")"
+	done
+	clocktime "$TIME"
+}
+
+if [ "${BASH_SOURCE[0]}" == "$0" ]
+then
+	if (($# < 2))
+	then
+		echo "usage: ${0##*/} HH[:MM] [HH:]MM..."
+	else
+		ruler "$@"
+	fi
+fi
