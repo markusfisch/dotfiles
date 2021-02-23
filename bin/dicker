@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+docker-machine ls | grep -F Running &>/dev/null || docker-machine start default
+[ -z "$DOCKER_HOST" ] && eval "$(docker-machine env default)"
+docker "$@"
