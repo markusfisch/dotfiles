@@ -59,6 +59,7 @@ au BufNewFile,BufRead *.jl set filetype=julia
 au BufNewFile,BufRead *.kt set filetype=kotlin
 au BufNewFile,BufRead *.md set filetype=markdown
 au BufNewFile,BufRead *.nim set filetype=nim
+au BufNewFile,BufRead *.rust set filetype=rust
 au BufNewFile,BufRead *.swift set filetype=swift
 
 " Set a default file type
