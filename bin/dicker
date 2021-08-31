@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Either run this to execute a docker command or source it to start the
+# default machine and setup the environment (e.g. for docker-compose):
+# $ . ~/.dotfiles/bin/dicker
 docker-machine ls | grep -F Running &>/dev/null || docker-machine start default
 [ -z "$DOCKER_HOST" ] && eval "$(docker-machine env default)"
-docker "$@"
+(($# > 0)) && docker "$@"
