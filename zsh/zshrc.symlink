@@ -23,6 +23,8 @@ alias m=makep
 alias mc='makep clean'
 alias mu='makep uninstall'
 alias j=jobs
-t() { tree "$@" | less -FX }
+t() {
+	tree "$@" | less -FX
+}
 
 set -o vi
