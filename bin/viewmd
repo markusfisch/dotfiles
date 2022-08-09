@@ -48,18 +48,20 @@ while socket = server.accept
 <title>#{file}</title>
 <style>
 html, body { background: #fff; color: #333; }
-body { margin: 0 auto 2em; padding: 1em; max-width: 50em;
-  font: 110% sans-serif; line-height: 1.45; }
+body { margin: 0 auto 2em; padding: 1em; max-width: 50em; font: 110% sans-serif; line-height: 1.45; }
 h1, h2 { font-weight: normal; border-bottom: 1px solid #eaecef; }
 a { color: #0366d6; text-decoration: none; }
 pre, code { background: #f6f8fa; -webkit-print-color-adjust: exact; }
 code { display: inline-block; padding: .25em .5em; }
 pre { padding: 1em; }
 pre > code { padding: 0; }
+table { border-spacing: 0; border-collapse: collapse; }
+td, th { padding: 6px 13px; border: 1px solid #eaecef; }
+tbody tr:nth-child(odd) { background: #f6f8fa; }
 </style>
 </head>
 <body>
-#{CommonMarker.render_html(File.read(file), :UNSAFE)}
+#{CommonMarker.render_html(File.read(file), :UNSAFE, [:table])}
 </body>
 </html>
 }
