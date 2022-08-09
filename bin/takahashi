@@ -5,12 +5,12 @@ slide_close() {
 	cat <<EOF
 		</div>
 EOF
-	(( N-2 > 0 )) && cat <<EOF
-		<a href="#slide$(( N-2 ))" class="Prev">&#9664;</a>
+	((N - 2 > 0)) && cat <<EOF
+		<a href="#slide$((N - 2))" class="Prev">&#9664;</a>
 EOF
 
 	[ "$1" ] || cat <<EOF
-		<a href="#slide$(( N ))" class="Next">&#9654;</a>
+		<a href="#slide$((N))" class="Next">&#9654;</a>
 	</li>
 EOF
 }
@@ -26,10 +26,10 @@ EOF
 
 # Open a new slide, close the previous one
 slide_new() {
-	(( N > 1 )) && slide_close
+	((N > 1)) && slide_close
 
 	slide_open
-	(( ++N ))
+	((++N))
 
 	echo "$REPLY"
 }
@@ -52,15 +52,15 @@ html_to_slides() {
 				slide_new
 				;;
 			'')
-				(( ECHO )) && echo "$REPLY"
+				((ECHO)) && echo "$REPLY"
 				;;
 			*)
-				(( ECHO )) && echo "$REPLY"
+				((ECHO)) && echo "$REPLY"
 				;;
 		esac
 	done
 
-	(( N > 1 )) && slide_close true
+	((N > 1)) && slide_close true
 }
 
 # Print HTML frame
@@ -70,10 +70,9 @@ html() {
 <html class="Background">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+<meta name="viewport" content="width=device-width"/>
 <title>${TITLE}</title>
 <style>
-
 .Background {
 	background: #fff;
 	height: 100%;
@@ -172,7 +171,6 @@ video {
 		font-size: 8pt;
 	}
 }
-
 </style>
 </head>
 <body class="Content">
@@ -197,20 +195,22 @@ generate() {
 		TITLE=${TITLE//[_-]/ }
 	fi
 
-	for FILE in "$@"
+	for FILE
 	do
 		[ -r "$FILE" ] || {
 			echo "error: $FILE does NOT exist" >&2
 			continue
 		}
-
-		markdown "$FILE"
+		ruby << EOF
+require 'commonmarker'
+print CommonMarker.render_html(File.read("$FILE"), :UNSAFE)
+EOF
 	done | html
 }
 
 if [ "${BASH_SOURCE[0]}" == "$0" ]
 then
-	if (( $# > 1 ))
+	if (($# > 1))
 	then
 		echo "usage: ${0##*/} FILE..."
 	else
