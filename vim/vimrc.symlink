@@ -2,6 +2,7 @@ set nocompatible
 set ts=4
 set sw=4
 set ls=0
+set re=2
 set nowrap
 set noruler
 set breakindent
