@@ -11,10 +11,12 @@ pull_all() {
 	do
 		D=${D%/}
 		[ -d "$D/.git" ] || continue
-		(cd "$D" && [ "$(git rev-parse --abbrev-ref HEAD)" == 'master' ] && {
+		(cd "$D" && case "$(git rev-parse --abbrev-ref HEAD)" in
+		master|main)
 			echo "pulling $D"
-			git pull origin master || echo "FAILED to pull $D" >&2
-		})
+			git pull origin || echo "FAILED to pull $D" >&2
+			;;
+		esac)
 	done
 }
 
