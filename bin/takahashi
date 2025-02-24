@@ -48,7 +48,7 @@ html_to_slides() {
 				ECHO=1
 				slide_new
 				;;
-			*\<h[123]\>*|*\<video*|*\<img*\>*)
+			*\<h[123]\>*|*\<video*|*\<iframe*|*\<img*\>*)
 				slide_new
 				;;
 			'')
@@ -164,6 +164,12 @@ img,
 video {
 	max-width: 100%;
 	max-height: 80vh;
+}
+
+iframe {
+	width: 80vh;
+	height: 80vh;
+	border: 0;
 }
 
 @media screen and (max-width: 400px), screen and (max-height: 400px) {
