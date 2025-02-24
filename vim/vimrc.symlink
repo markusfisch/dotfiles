@@ -18,7 +18,7 @@ syntax on
 " Begin syntax synchronisation always from the start
 au BufEnter * :syntax sync fromstart
 
-" Remove trailing white space before saving
+" Remove trailing white space before saving, use ':noa w' to disable
 au BufWritePre * :%s/\s\+$//e
 
 " Color scheme settings
