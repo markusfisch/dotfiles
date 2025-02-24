@@ -18,3 +18,5 @@
 	rebase = false
 [init]
 	defaultBranch = main
+[core]
+	eol = lf
