@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+for F in ${@:-*}
+do
+	du -sk "$F"
+done | sort -n
