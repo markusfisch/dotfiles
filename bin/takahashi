@@ -41,10 +41,10 @@ html_to_slides() {
 	while read -r
 	do
 		case $REPLY in
-			*\</pre\>*|*\</ul\>*)
+			*\</pre*\>*|*\</ol\>*)
 				ECHO=0
 				;;
-			*\<pre\>*|*\<ul\>*)
+			*\<pre*\>*|*\<ol\>*)
 				ECHO=1
 				slide_new
 				;;
@@ -107,7 +107,7 @@ html() {
 	left: 0; right: 0;
 	-webkit-transform: translateY( -50% );
 	transform: translateY( -50% );
-	max-width: 30em;
+	max-width: 42em;
 	margin: 0 auto; padding: 0 1em;
 	text-align: center;
 	outline: 0;
@@ -158,6 +158,8 @@ pre {
 	font: 16pt monospace;
 	letter-spacing: normal;
 	text-align: left;
+	border-radius: .5em;
+	padding: 1em;
 }
 
 img,
@@ -209,7 +211,10 @@ generate() {
 		}
 		ruby << EOF
 require 'commonmarker'
-print CommonMarker.render_html(File.read("$FILE"), :UNSAFE)
+print Commonmarker.to_html(
+	File.read("$FILE"),
+	options: { render: { unsafe: true } }
+)
 EOF
 	done | html
 }
