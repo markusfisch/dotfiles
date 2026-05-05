@@ -1,75 +1,102 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-require 'commonmarker'
-require 'socket'
+require "commonmarker"
+require "socket"
+require "uri"
 
-file = ARGV[0] || 'README.md'
-if not File.exists?(file)
-  puts "#{file} doesn't exist"
+file = ARGV[0] || "README.md"
+unless File.exist?(file)
+  warn "#{file} doesn't exist"
   exit 1
 end
 
-port = ARGV[1] || Process.pid % 32000 + 32000
+port = (ARGV[1] || (Process.pid % 32000 + 32000)).to_i
 address = "http://127.0.0.1:#{port}/"
-server = TCPServer.new port
-open_command = ARGV[2] || RUBY_PLATFORM =~ /darwin/i ? 'open' : 'xdg-open'
-if not system("#{open_command} #{address}")
-  puts "#{open_command} not found, please open #{address} in your browser"
+server = TCPServer.new(port)
+
+open_command =
+  ARGV[2] ||
+  (RUBY_PLATFORM.match?(/darwin/i) ? "open" : "xdg-open")
+
+unless system(open_command, address)
+  warn "#{open_command} not found, please open #{address} in your browser"
 end
 
-while socket = server.accept
-  request = socket.gets
-  _, full_path = request.split(' ')
-  path, _ = full_path.split('?')
-  path[0] = ''
-  content = if File.file?(path)
-    content_type = case File.extname(path)
-    when '.gif'
-      'image/gif'
-    when '.jpg', '.jpeg'
-      'image/jpeg'
-    when '.mpg'
-      'video/mpeg'
-    when '.png'
-      'image/png'
-    when '.svg'
-      'image/svg+xml'
-    else
-      'application/octet-stream'
-    end
-    File.read(path)
-  else
-    content_type = 'text/html'
-    %{<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width:device-width"/>
-<title>#{file}</title>
-<style>
-html, body { background: #fff; color: #333; }
-body { margin: 0 auto 2em; padding: 1em; max-width: 50em; font: 110% sans-serif; line-height: 1.45; }
-h1, h2 { font-weight: normal; border-bottom: 1px solid #eaecef; }
-a { color: #0366d6; text-decoration: none; }
-pre, code { background: #f6f8fa; -webkit-print-color-adjust: exact; }
-code { display: inline-block; padding: .25em .5em; }
-pre { padding: 1em; }
-pre > code { padding: 0; }
-table { border-spacing: 0; border-collapse: collapse; }
-td, th { padding: 6px 13px; border: 1px solid #eaecef; }
-tbody tr:nth-child(odd) { background: #f6f8fa; }
-</style>
-</head>
-<body>
-#{CommonMarker.render_html(File.read(file), :UNSAFE, [:table])}
-</body>
-</html>
-}
+def mime_for(ext)
+  {
+    ".gif"  => "image/gif",
+    ".jpg"  => "image/jpeg",
+    ".jpeg" => "image/jpeg",
+    ".mpg"  => "video/mpeg",
+    ".png"  => "image/png",
+    ".svg"  => "image/svg+xml",
+  }.fetch(ext, "application/octet-stream")
+end
+
+loop do
+  socket = server.accept
+  request = socket.gets&.strip
+
+  unless request && request.start_with?("GET")
+    socket.close
+    next
   end
-  socket.puts %{HTTP/1.1 200 OK\r
-Content-Type: #{content_type}\r
-\r
-#{content}
-}
+
+  _method, raw_path, _ver = request.split(" ", 3)
+  uri = URI(raw_path)
+  path = uri.path.sub(%r{\A/}, "")  # remove leading slash
+
+  if !path.empty? && File.file?(path)
+    content_type = mime_for(File.extname(path))
+    content = File.binread(path)
+  else
+    content_type = "text/html"
+
+    content = <<~HTML
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width"/>
+      <title>#{file}</title>
+
+      <style>
+      html, body { background: #fff; color: #333; }
+      body { margin: 0 auto 2em; padding: 1em; max-width: 50em;
+             font: 110% sans-serif; line-height: 1.45; }
+      h1, h2 { font-weight: normal; border-bottom: 1px solid #eaecef; }
+      a { color: #0366d6; text-decoration: none; }
+      pre, code { background: #f6f8fa; -webkit-print-color-adjust: exact; }
+      code { display: inline-block; padding: .25em .5em; }
+      pre { padding: 1em; }
+      pre > code { padding: 0; }
+      table { border-spacing: 0; border-collapse: collapse; }
+      td, th { padding: 6px 13px; border: 1px solid #eaecef; }
+      tbody tr:nth-child(odd) { background: #f6f8fa; }
+      </style>
+      </head>
+      <body>
+        #{Commonmarker.to_html(
+          File.read(file),
+          options: {
+            render: { unsafe: true },
+            extension: { table:  true }
+          }
+        )}
+      </body>
+      </html>
+    HTML
+  end
+
+  socket.write(
+    "HTTP/1.1 200 OK\r\n" \
+    "Content-Type: #{content_type}\r\n" \
+    "Content-Length: #{content.bytesize}\r\n" \
+    "Connection: close\r\n" \
+    "\r\n" \
+    "#{content}"
+  )
+
   socket.close
 end
