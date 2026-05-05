@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+(( $# < 1 )) && {
+	echo "${0##*/} COMMAND"
+	exit
+}
+if "$@"
+then
+	afplay /System/Library/Sounds/Blow.aiff &
+else
+	afplay /System/Library/Sounds/Hero.aiff &
+fi
