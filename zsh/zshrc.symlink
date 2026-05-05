@@ -17,14 +17,16 @@ alias gap='git add -p'
 alias gd='git diff'
 alias gdc='git diff --cached'
 alias gb='git branch --sort=-committerdate'
-alias fgrl='fgrep -rl'
+alias fgrl='grep -Frl'
 alias e=edit
 alias m=makep
 alias mc='makep clean'
 alias mu='makep uninstall'
 alias j=jobs
+alias f='df -h /dev/disk3s1'
 t() {
 	tree "$@" | less -FX
 }
 
 set -o vi
+setopt correct
